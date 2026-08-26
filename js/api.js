@@ -25,6 +25,8 @@ class ApiService {
 
 // api.js
 
+// api.js
+
 async request(method, path, data = null, requireAuth = true) {
     const url = new URL(this.baseUrl);
     url.searchParams.set('path', path);
@@ -52,13 +54,20 @@ async request(method, path, data = null, requireAuth = true) {
 
     try {
         const response = await fetch(url.toString(), options);
-        const result = await response.json();
-        
+        const textText = await response.text(); // Ambil sebagai text dulu untuk cegah crash JSON
+
+        let result;
+        try {
+            result = JSON.parse(textText);
+        } catch (e) {
+            console.error('Server mengembalikan HTML bukannya JSON:', textText);
+            throw new Error('Akses ke backend ditolak atau deployment Apps Script belum diset ke Anyone.');
+        }
+
         if (result.status === 'error') {
             throw new Error(result.message || 'API error');
         }
-        
-        // Mengembalikan result.data jika ada, atau fallback ke result
+
         return result.data !== undefined ? result.data : result;
     } catch (error) {
         console.error('API Request Error:', error);
