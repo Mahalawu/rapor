@@ -1,1 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem Rapor SD Kecamatan Sine</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" class="navbar hidden">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="assets/icons/icon-192.png" alt="Logo" class="nav-logo">
+                <span class="nav-title">E-Rapor Sine</span>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                ☰
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" data-page="schools">Sekolah</a></li>
+                <li><a href="#" data-page="students">Siswa</a></li>
+                <li><a href="#" data-page="grades">Nilai</a></li>
+                <li><a href="#" data-page="reports">Rapor</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
 
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Login Page -->
+        <div id="page-login" class="page active">
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <img src="assets/icons/icon-192.png" alt="Logo" class="login-logo">
+                        <h1>Sistem Rapor SD</h1>
+                        <p>Kecamatan Sine</p>
+                    </div>
+                    
+                    <!-- Sync Status -->
+                    <div id="syncStatus" class="sync-status">
+                        <span class="status-dot offline"></span>
+                        <span class="status-text">Mengecek koneksi...</span>
+                    </div>
+                    
+                    <form id="loginForm" class="login-form">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" placeholder="Masukkan username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" placeholder="Masukkan password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+                            <span id="loginText">Login</span>
+                            <span id="loginLoading" class="hidden">Loading...</span>
+                        </button>
+                        <div id="loginError" class="error-message hidden"></div>
+                    </form>
+                    
+                    <div class="login-footer">
+                        <p>Version <span id="appVersion">1.0.0</span></p>
+                        <p class="offline-notice hidden">⚠️ Mode Offline - Data tersimpan lokal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="page-dashboard" class="page hidden">
+            <div class="page-header">
+                <h2>Dashboard</h2>
+                <div class="header-actions">
+                    <button class="btn btn-sm btn-sync" id="syncBtn">
+                        🔄 Sinkronkan
+                    </button>
+                    <span id="lastSync" class="last-sync"></span>
+                </div>
+            </div>
+            <div class="dashboard-grid" id="dashboardGrid">
+                <!-- Cards will be rendered by JS -->
+            </div>
+        </div>
+
+        <!-- Schools Page -->
+        <div id="page-schools" class="page hidden">
+            <div class="page-header">
+                <h2>Manajemen Sekolah</h2>
+                <button class="btn btn-primary" id="addSchoolBtn">+ Tambah Sekolah</button>
+            </div>
+            <div class="table-container">
+                <table id="schoolsTable">
+                    <thead>
+                        <tr>
+                            <th>NPSN</th>
+                            <th>Nama Sekolah</th>
+                            <th>Alamat</th>
+                            <th>Kepala Sekolah</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schoolsTableBody">
+                        <tr><td colspan="6" class="text-center">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Students Page -->
+        <div id="page-students" class="page hidden">
+            <div class="page-header">
+                <h2>Manajemen Siswa</h2>
+                <button class="btn btn-primary" id="addStudentBtn">+ Tambah Siswa</button>
+            </div>
+            <div class="filters">
+                <select id="classFilter">
+                    <option value="">Semua Kelas</option>
+                </select>
+                <input type="text" id="searchStudent" placeholder="Cari siswa...">
+            </div>
+            <div class="table-container">
+                <table id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th>NISN</th>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <tr><td colspan="5" class="text-center">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports Page -->
+        <div id="page-reports" class="page hidden">
+            <div class="page-header">
+                <h2>Rapor</h2>
+                <button class="btn btn-primary" id="generateReportBtn">Generate Rapor</button>
+            </div>
+            <div class="reports-container" id="reportsContainer">
+                <p class="text-center">Belum ada rapor yang dibuat.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal Title</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/pages/login.js"></script>
+    <script src="js/pages/dashboard.js"></script>
+    <script src="js/pages/schools.js"></script>
+    <script src="js/pages/students.js"></script>
+    <script src="js/pages/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
