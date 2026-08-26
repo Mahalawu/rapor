@@ -28,9 +28,14 @@ class ApiService {
 
     // ============ GENERIC REQUEST ============
 
-    async request(method, path, data = null, requireAuth = true) {
-        const url = new URL(this.baseUrl);
-        url.searchParams.set('path', path);
+async request(method, path, data = null, requireAuth = true) {
+    // Gunakan proxy untuk CORS
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    const isGAS = this.baseUrl.includes('script.google.com');
+    const baseUrl = isGAS ? proxyUrl + this.baseUrl : this.baseUrl;
+    
+    const url = new URL(baseUrl);
+    url.searchParams.set('path', path);
 
         const options = {
             method: method,
