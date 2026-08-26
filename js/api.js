@@ -23,66 +23,67 @@ class ApiService {
 
     // ============ GENERIC REQUEST ============
 
-    async request(method, path, data = null, requireAuth = true) {
-        const url = new URL(this.baseUrl);
-        url.searchParams.set('path', path);
+// api.js
 
-        const token = this.getToken();
-        if (requireAuth && token) {
-            url.searchParams.set('token', token);
-        }
+async request(method, path, data = null, requireAuth = true) {
+    const url = new URL(this.baseUrl);
+    url.searchParams.set('path', path);
 
-        let bodyData = data || {};
-        if (requireAuth && token) {
-            bodyData.token = token;
-        }
-
-        const options = {
-            method: 'POST', // Selalu gunakan POST untuk menghindari preflight CORS
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8' // Wajib text/plain untuk Apps Script
-            },
-            redirect: 'follow'
-        };
-
-        if (method !== 'GET') {
-            bodyData._method = method;
-        } else {
-            bodyData._method = 'GET';
-        }
-
-        options.body = JSON.stringify(bodyData);
-
-        try {
-            const response = await fetch(url.toString(), options);
-            const result = await response.json();
-            
-            if (result.status === 'error') {
-                throw new Error(result.message || 'API error');
-            }
-            
-            return result.data;
-        } catch (error) {
-            console.error('API Request Error:', error);
-            throw error;
-        }
+    const token = this.getToken();
+    if (requireAuth && token) {
+        url.searchParams.set('token', token);
     }
 
-    // ============ AUTH ENDPOINTS ============
+    let bodyData = data || {};
+    if (requireAuth && token) {
+        bodyData.token = token;
+    }
 
-    async login(username, password) {
-        const result = await this.request('POST', 'api/auth/login', {
-            username: username,
-            password: password
-        }, false);
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+        },
+        redirect: 'follow'
+    };
+
+    bodyData._method = method;
+    options.body = JSON.stringify(bodyData);
+
+    try {
+        const response = await fetch(url.toString(), options);
+        const result = await response.json();
         
-        if (result && result.token) {
-            this.setToken(result.token);
-            setStorage('user', result.user);
+        if (result.status === 'error') {
+            throw new Error(result.message || 'API error');
         }
         
-        return result;
+        // Mengembalikan result.data jika ada, atau fallback ke result
+        return result.data !== undefined ? result.data : result;
+    } catch (error) {
+        console.error('API Request Error:', error);
+        throw error;
     }
+}
+
+async login(username, password) {
+    const result = await this.request('POST', 'api/auth/login', {
+        username: username,
+        password: password
+    }, false);
+    
+    // Validasi keberadaan result dan result.user
+    if (!result || !result.user) {
+        throw new Error('Response login tidak valid dari server.');
+    }
+
+    if (result.token) {
+        this.setToken(result.token);
+        setStorage('user', result.user);
+    }
+    
+    return result;
+}
 
     async verifyToken() {
         const token = this.getToken();
