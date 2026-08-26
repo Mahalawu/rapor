@@ -46,24 +46,25 @@ class RaporDB {
         });
     }
 
-    createStores(db) {
-        Object.entries(this.stores).forEach(([name, keyPath]) => {
-            if (!db.objectStoreNames.contains(name)) {
-                const store = db.createObjectStore(name, { 
-                    keyPath: 'localId',
-                    autoIncrement: true 
-                });
-                
-                // Create indexes
-                const keys = keyPath.split(', ');
-                keys.forEach(key => {
-                    if (key !== '++localId') {
-                        store.createIndex(key, key);
-                    }
-                });
-            }
-        });
-    }
+createStores(db) {
+    Object.entries(this.stores).forEach(([name, keyPath]) => {
+        if (!db.objectStoreNames.contains(name)) {
+            const store = db.createObjectStore(name, { 
+                keyPath: 'localId',
+                autoIncrement: true 
+            });
+            
+            // Create indexes
+            const keys = keyPath.split(', ');
+            keys.forEach(key => {
+                // Abaikan key yang mengandung '++' (autoIncrement key)
+                if (!key.includes('++')) {
+                    store.createIndex(key, key);
+                }
+            });
+        }
+    });
+}
 
     // ============ GENERIC CRUD ============
 
