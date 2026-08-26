@@ -80,18 +80,27 @@ async login(username, password) {
         username: username,
         password: password
     }, false);
-    
-    // Validasi keberadaan result dan result.user
-    if (!result || !result.user) {
-        throw new Error('Response login tidak valid dari server.');
+
+    console.log('📦 Server Login Response:', result); // Untuk pengecekan di Console
+
+    // Ekstrak data user dan token (toleran terhadap wrapper data)
+    const loginData = result.data || result;
+    const user = loginData.user;
+    const token = loginData.token;
+
+    if (!user) {
+        throw new Error('User tidak ditemukan pada respon backend.');
     }
 
-    if (result.token) {
-        this.setToken(result.token);
-        setStorage('user', result.user);
+    if (token) {
+        this.setToken(token);
     }
     
-    return result;
+    if (user) {
+        setStorage('user', user);
+    }
+    
+    return loginData;
 }
 
     async verifyToken() {
