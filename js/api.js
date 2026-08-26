@@ -23,84 +23,79 @@ class ApiService {
 
     // ============ GENERIC REQUEST ============
 
-// api.js
+    async request(method, path, data = null, requireAuth = true) {
+        const url = new URL(this.baseUrl);
+        url.searchParams.set('path', path);
 
-// api.js
+        const token = this.getToken();
+        if (requireAuth && token) {
+            url.searchParams.set('token', token);
+        }
 
-async request(method, path, data = null, requireAuth = true) {
-    const url = new URL(this.baseUrl);
-    url.searchParams.set('path', path);
+        let bodyData = data || {};
+        if (requireAuth && token) {
+            bodyData.token = token;
+        }
 
-    const token = this.getToken();
-    if (requireAuth && token) {
-        url.searchParams.set('token', token);
-    }
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            },
+            redirect: 'follow'
+        };
 
-    let bodyData = data || {};
-    if (requireAuth && token) {
-        bodyData.token = token;
-    }
+        bodyData._method = method;
+        options.body = JSON.stringify(bodyData);
 
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-        },
-        redirect: 'follow'
-    };
-
-    bodyData._method = method;
-    options.body = JSON.stringify(bodyData);
-
-    try {
-        const response = await fetch(url.toString(), options);
-        const textText = await response.text(); // Ambil sebagai text dulu untuk cegah crash JSON
-
-        let result;
         try {
-            result = JSON.parse(textText);
-        } catch (e) {
-            console.error('Server mengembalikan HTML bukannya JSON:', textText);
-            throw new Error('Akses ke backend ditolak atau deployment Apps Script belum diset ke Anyone.');
+            const response = await fetch(url.toString(), options);
+            const textText = await response.text();
+
+            let result;
+            try {
+                result = JSON.parse(textText);
+            } catch (e) {
+                console.error('Server mengembalikan HTML bukannya JSON:', textText);
+                throw new Error('Akses ke backend ditolak atau deployment Apps Script belum diset ke Anyone.');
+            }
+
+            if (result.status === 'error') {
+                throw new Error(result.message || 'API error');
+            }
+
+            return result.data !== undefined ? result.data : result;
+        } catch (error) {
+            console.error('API Request Error:', error);
+            throw error;
+        }
+    }
+
+    // ============ AUTH ENDPOINTS ============
+
+    async login(username, password) {
+        const result = await this.request('POST', 'api/auth/login', {
+            username: username,
+            password: password
+        }, false);
+
+        console.log('📦 Server Login Response:', result);
+
+        const token = result.token || (result.data && result.data.token);
+        const user = result.user || (result.data && result.data.user);
+
+        if (!user) {
+            throw new Error('User tidak ditemukan pada respon backend.');
         }
 
-        if (result.status === 'error') {
-            throw new Error(result.message || 'API error');
+        if (token) {
+            this.setToken(token);
         }
-
-        return result.data !== undefined ? result.data : result;
-    } catch (error) {
-        console.error('API Request Error:', error);
-        throw error;
+        
+        setStorage('user', user);
+        
+        return result;
     }
-}
-
-// api.js
-
-async login(username, password) {
-    const result = await this.request('POST', 'api/auth/login', {
-        username: username,
-        password: password
-    }, false);
-
-    console.log('📦 Server Login Response:', result);
-
-    // Backend mengembalikan { token: '...', user: { ... } } di dalam result.data
-    const token = result.token || (result.data && result.data.token);
-    const user = result.user || (result.data && result.data.user);
-
-    if (!user) {
-        throw new Error('User tidak ditemukan pada respon backend.');
-    }
-
-    if (token) {
-        this.setToken(token);
-    }
-    
-    setStorage('user', user);
-    
-    return result;
-}
 
     async verifyToken() {
         const token = this.getToken();
@@ -142,6 +137,28 @@ async login(username, password) {
 
     async deleteSchool(schoolId) {
         return this.request('DELETE', `api/schools/${schoolId}`);
+    }
+
+    // ============ CLASSES ENDPOINTS ============
+
+    async getClasses() {
+        return this.request('GET', 'api/classes');
+    }
+
+    async getClass(classId) {
+        return this.request('GET', `api/classes/${classId}`);
+    }
+
+    async createClass(data) {
+        return this.request('POST', 'api/classes', data);
+    }
+
+    async updateClass(classId, data) {
+        return this.request('PUT', `api/classes/${classId}`, data);
+    }
+
+    async deleteClass(classId) {
+        return this.request('DELETE', `api/classes/${classId}`);
     }
 
     // ============ STUDENTS ENDPOINTS ============
