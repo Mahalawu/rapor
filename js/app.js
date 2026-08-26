@@ -140,6 +140,10 @@ class App {
         // Load schools data
         await this.loadSchools();
         
+        // Load classes & students (untuk persiapan halaman Siswa)
+        await this.loadClasses();
+        await this.loadStudents();
+        
         // Update sync status
         this.updateConnectionStatus();
     }
@@ -202,6 +206,273 @@ class App {
             console.error('Load schools error:', error);
             document.getElementById('schoolsTableBody').innerHTML = 
                 '<tr><td colspan="6" class="text-center text-danger">Gagal memuat data</td></tr>';
+        }
+    }
+
+    // ============ CLASSES ============
+
+    async loadClasses() {
+        try {
+            const classes = await this.api.getClasses();
+            // Update class filter dropdown di halaman Siswa
+            const select = document.getElementById('classFilter');
+            if (select) {
+                select.innerHTML = '<option value="">Semua Kelas</option>';
+                if (classes && classes.length > 0) {
+                    classes.forEach(c => {
+                        const option = document.createElement('option');
+                        option.value = c.classId;
+                        option.textContent = `${c.className} (Kelas ${c.grade})`;
+                        select.appendChild(option);
+                    });
+                }
+            }
+            return classes || [];
+        } catch (error) {
+            console.error('Load classes error:', error);
+            return [];
+        }
+    }
+
+    // ============ STUDENTS ============
+
+    async loadStudents() {
+        try {
+            const classId = document.getElementById('classFilter')?.value || '';
+            const search = document.getElementById('searchStudent')?.value || '';
+            
+            let params = {};
+            if (classId) params.classId = classId;
+            
+            const students = await this.api.getStudents(params);
+            const tbody = document.getElementById('studentsTableBody');
+            
+            if (!students || students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada data siswa</td></tr>';
+                return;
+            }
+            
+            // Filter by search
+            let filtered = students;
+            if (search) {
+                filtered = students.filter(s => 
+                    s.fullName.toLowerCase().includes(search.toLowerCase()) ||
+                    (s.nisn && s.nisn.includes(search))
+                );
+            }
+            
+            tbody.innerHTML = filtered.map(s => `
+                <tr>
+                    <td>${s.nisn || '-'}</td>
+                    <td>${s.fullName || '-'}</td>
+                    <td>${s.classId || '-'}</td>
+                    <td><span class="badge ${s.status === 'active' ? 'badge-success' : 'badge-danger'}">${s.status || '-'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="window.app.editStudent('${s.studentId}')">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="window.app.deleteStudent('${s.studentId}')">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Load students error:', error);
+            document.getElementById('studentsTableBody').innerHTML = 
+                '<tr><td colspan="5" class="text-center text-danger">Gagal memuat data</td></tr>';
+        }
+    }
+
+    // ============ STUDENT MODAL ============
+
+    showAddStudentModal() {
+        // Load classes untuk dropdown
+        this.loadClasses().then(classes => {
+            const classOptions = (classes || []).map(c => 
+                `<option value="${c.classId}">${c.className} (Kelas ${c.grade})</option>`
+            ).join('');
+            
+            this.showModal('Tambah Siswa', `
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label>NISN (10 digit)</label>
+                        <input type="text" id="studentNISN" maxlength="10" pattern="[0-9]{10}" required>
+                        <small>Harus 10 digit angka</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <select id="studentClass" required>
+                            <option value="">Pilih Kelas</option>
+                            ${classOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tempat Lahir</label>
+                        <input type="text" id="studentBirthPlace">
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Lahir</label>
+                        <input type="date" id="studentBirthDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Kelamin</label>
+                        <select id="studentGender">
+                            <option value="">Pilih</option>
+                            <option value="M">Laki-laki</option>
+                            <option value="F">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <textarea id="studentAddress" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Orang Tua</label>
+                        <input type="text" id="studentParentName">
+                    </div>
+                    <div class="form-group">
+                        <label>Telepon Orang Tua</label>
+                        <input type="text" id="studentParentPhone">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Simpan</button>
+                </form>
+            `);
+            
+            document.getElementById('studentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = {
+                    classId: document.getElementById('studentClass').value,
+                    nisn: document.getElementById('studentNISN').value,
+                    fullName: document.getElementById('studentName').value,
+                    birthPlace: document.getElementById('studentBirthPlace').value,
+                    birthDate: document.getElementById('studentBirthDate').value,
+                    gender: document.getElementById('studentGender').value,
+                    address: document.getElementById('studentAddress').value,
+                    parentName: document.getElementById('studentParentName').value,
+                    parentPhone: document.getElementById('studentParentPhone').value
+                };
+                
+                // Validasi NISN
+                if (!/^\d{10}$/.test(data.nisn)) {
+                    showError('NISN harus 10 digit angka');
+                    return;
+                }
+                
+                try {
+                    await this.api.createStudent(data);
+                    document.getElementById('modal').classList.add('hidden');
+                    await this.loadStudents();
+                    showToast('Siswa berhasil ditambahkan');
+                } catch (error) {
+                    showError('Gagal menambah siswa: ' + error.message);
+                }
+            });
+        });
+    }
+
+    async editStudent(studentId) {
+        try {
+            const student = await this.api.getStudent(studentId);
+            const classes = await this.api.getClasses();
+            
+            const classOptions = (classes || []).map(c => 
+                `<option value="${c.classId}" ${c.classId === student.classId ? 'selected' : ''}>
+                    ${c.className} (Kelas ${c.grade})
+                </option>`
+            ).join('');
+            
+            this.showModal('Edit Siswa', `
+                <form id="editStudentForm">
+                    <div class="form-group">
+                        <label>NISN (10 digit)</label>
+                        <input type="text" id="editNISN" value="${student.nisn || ''}" maxlength="10" pattern="[0-9]{10}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="editName" value="${student.fullName || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <select id="editClass" required>
+                            <option value="">Pilih Kelas</option>
+                            ${classOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tempat Lahir</label>
+                        <input type="text" id="editBirthPlace" value="${student.birthPlace || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Lahir</label>
+                        <input type="date" id="editBirthDate" value="${student.birthDate || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Kelamin</label>
+                        <select id="editGender">
+                            <option value="">Pilih</option>
+                            <option value="M" ${student.gender === 'M' ? 'selected' : ''}>Laki-laki</option>
+                            <option value="F" ${student.gender === 'F' ? 'selected' : ''}>Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <textarea id="editAddress" rows="2">${student.address || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Orang Tua</label>
+                        <input type="text" id="editParentName" value="${student.parentName || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Telepon Orang Tua</label>
+                        <input type="text" id="editParentPhone" value="${student.parentPhone || ''}">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Update</button>
+                </form>
+            `);
+            
+            document.getElementById('editStudentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = {
+                    ClassID: document.getElementById('editClass').value,
+                    NISN: document.getElementById('editNISN').value,
+                    FullName: document.getElementById('editName').value,
+                    BirthPlace: document.getElementById('editBirthPlace').value,
+                    BirthDate: document.getElementById('editBirthDate').value,
+                    Gender: document.getElementById('editGender').value,
+                    Address: document.getElementById('editAddress').value,
+                    ParentName: document.getElementById('editParentName').value,
+                    ParentPhone: document.getElementById('editParentPhone').value
+                };
+                
+                if (!/^\d{10}$/.test(data.NISN)) {
+                    showError('NISN harus 10 digit angka');
+                    return;
+                }
+                
+                try {
+                    await this.api.updateStudent(studentId, data);
+                    document.getElementById('modal').classList.add('hidden');
+                    await this.loadStudents();
+                    showToast('Siswa berhasil diupdate');
+                } catch (error) {
+                    showError('Gagal update: ' + error.message);
+                }
+            });
+        } catch (error) {
+            showError('Gagal memuat data: ' + error.message);
+        }
+    }
+
+    async deleteStudent(studentId) {
+        if (!confirm('Yakin ingin menghapus siswa ini?')) return;
+        
+        try {
+            await this.api.deleteStudent(studentId);
+            await this.loadStudents();
+            showToast('Siswa berhasil dihapus');
+        } catch (error) {
+            showError('Gagal hapus: ' + error.message);
         }
     }
 
@@ -297,14 +568,13 @@ class App {
 
     // ============ SERVICE WORKER ============
 
-
-setupServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js')
-            .then(reg => console.log('Service Worker registered:', reg))
-            .catch(err => console.error('Service Worker registration failed:', err));
+    setupServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => console.log('Service Worker registered:', reg))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        }
     }
-}
 
     // ============ EVENT LISTENERS ============
 
@@ -329,6 +599,10 @@ setupServiceWorker() {
                 // Load page data
                 if (page === 'schools') this.loadSchools();
                 if (page === 'dashboard') this.loadDashboardStats();
+                if (page === 'students') {
+                    this.loadClasses();
+                    this.loadStudents();
+                }
             });
         });
 
@@ -350,6 +624,21 @@ setupServiceWorker() {
         // Add school button
         document.getElementById('addSchoolBtn')?.addEventListener('click', () => {
             this.showAddSchoolModal();
+        });
+
+        // Students page - Add student
+        document.getElementById('addStudentBtn')?.addEventListener('click', () => {
+            this.showAddStudentModal();
+        });
+
+        // Students page - Class filter
+        document.getElementById('classFilter')?.addEventListener('change', () => {
+            this.loadStudents();
+        });
+
+        // Students page - Search
+        document.getElementById('searchStudent')?.addEventListener('input', () => {
+            this.loadStudents();
         });
 
         // Modal close
