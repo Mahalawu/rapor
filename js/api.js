@@ -1,8 +1,3 @@
-/**
- * API SERVICE
- * Communication with backend Google Apps Script API
- */
-
 class ApiService {
     constructor() {
         this.baseUrl = APP_CONFIG.API_BASE_URL;
@@ -28,73 +23,73 @@ class ApiService {
 
     // ============ GENERIC REQUEST ============
 
-    // api.js
-async request(method, path, data = null, requireAuth = true) {
-    const url = new URL(this.baseUrl);
-    url.searchParams.set('path', path);
+    async request(method, path, data = null, requireAuth = true) {
+        const url = new URL(this.baseUrl);
+        url.searchParams.set('path', path);
 
-    const token = this.getToken();
+        const token = this.getToken();
+        if (requireAuth && token) {
+            url.searchParams.set('token', token);
+        }
 
-    // 1. Tambahkan token ke query string jika ada
-    if (requireAuth && token) {
-        url.searchParams.set('token', token);
-    }
+        let bodyData = data || {};
+        if (requireAuth && token) {
+            bodyData.token = token;
+        }
 
-    // 2. Siapkan konfigurasi Fetch
-    const options = {
-        method: method === 'GET' ? 'GET' : 'POST', // Kirim POST/PUT/DELETE via POST ke GAS
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8' // Menghindari Preflight OPTIONS
-        },
-        redirect: 'follow'
-    };
+        const options = {
+            method: 'POST', // Selalu gunakan POST untuk menghindari preflight CORS
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8' // Wajib text/plain untuk Apps Script
+            },
+            redirect: 'follow'
+        };
 
-    let bodyData = data || {};
-    if (requireAuth && token) {
-        bodyData.token = token;
-    }
+        if (method !== 'GET') {
+            bodyData._method = method;
+        } else {
+            bodyData._method = 'GET';
+        }
 
-    if (method !== 'GET') {
-        bodyData._method = method; // Kirim HTTP method asli di dalam body
         options.body = JSON.stringify(bodyData);
-    }
 
-    try {
-        const response = await fetch(url.toString(), options);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const response = await fetch(url.toString(), options);
+            const result = await response.json();
+            
+            if (result.status === 'error') {
+                throw new Error(result.message || 'API error');
+            }
+            
+            return result.data;
+        } catch (error) {
+            console.error('API Request Error:', error);
+            throw error;
         }
-        const result = await response.json();
-        
-        if (result.status === 'error') {
-            throw new Error(result.message || 'API error');
-        }
-        
-        return result.data;
-    } catch (error) {
-        console.error('API Request Error:', error);
-        throw error;
     }
-}
 
     // ============ AUTH ENDPOINTS ============
 
-async login(username, password) {
-    return this.request('POST', 'api/auth/login', {
-        username: username,
-        password: password
-    }, false);
-}
+    async login(username, password) {
+        const result = await this.request('POST', 'api/auth/login', {
+            username: username,
+            password: password
+        }, false);
+        
+        if (result && result.token) {
+            this.setToken(result.token);
+            setStorage('user', result.user);
+        }
+        
+        return result;
+    }
 
     async verifyToken() {
         const token = this.getToken();
         if (!token) return null;
         
         try {
-            const result = await this.request('GET', 'api/auth/verify', {
-                token: token
-            }, false);
-            return result;
+            return await this.request('GET', 'api/auth/verify', { token: token }, false);
         } catch (error) {
             this.clearToken();
             return null;
@@ -156,9 +151,7 @@ async login(username, password) {
     // ============ SYNC ENDPOINTS ============
 
     async syncUpload(pendingData) {
-        return this.request('POST', 'api/sync/upload', {
-            data: pendingData
-        });
+        return this.request('POST', 'api/sync/upload', { data: pendingData });
     }
 
     async syncDownload(since) {
@@ -186,7 +179,6 @@ async login(username, password) {
     }
 }
 
-// Singleton instance
 let apiInstance = null;
 
 function getApi() {
