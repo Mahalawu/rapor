@@ -34,35 +34,42 @@ class ApiService {
 
         const options = {
             method: method,
+            mode: 'cors',
+            credentials: 'omit',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         };
 
-        // Add token if required
+        // Token hanya di query parameter
         if (requireAuth) {
             const token = this.getToken();
             if (token) {
-                options.headers['Authorization'] = `Bearer ${token}`;
-                // Also add as query param for GET requests
-                if (method === 'GET') {
-                    url.searchParams.set('token', token);
-                }
+                url.searchParams.set('token', token);
             }
         }
 
-        // Add body for POST/PUT
+        // Body untuk POST/PUT
         if (data && (method === 'POST' || method === 'PUT')) {
             options.body = JSON.stringify(data);
         } else if (data && method === 'GET') {
-            // Add data as query params for GET
             Object.entries(data).forEach(([key, value]) => {
-                url.searchParams.set(key, value);
+                if (key !== 'token') {
+                    url.searchParams.set(key, value);
+                }
             });
         }
 
         try {
+            console.log('🌐 Fetching:', url.toString());
+            
             const response = await fetch(url.toString(), options);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const result = await response.json();
             
             if (result.status === 'error') {
@@ -79,17 +86,30 @@ class ApiService {
     // ============ AUTH ENDPOINTS ============
 
     async login(username, password) {
-        const result = await this.request('POST', 'api/auth/login', {
-            username,
-            password
-        }, false);
-        
-        if (result.token) {
-            this.setToken(result.token);
-            setStorage('user', result.user);
+        try {
+            const result = await this.request('POST', 'api/auth/login', {
+                username,
+                password
+            }, false);
+            
+            if (result.token) {
+                this.setToken(result.token);
+                setStorage('user', result.user);
+            }
+            return result;
+        } catch (error) {
+            console.warn('POST login failed, trying GET...');
+            const result = await this.request('GET', 'api/auth/login', {
+                username,
+                password
+            }, false);
+            
+            if (result.token) {
+                this.setToken(result.token);
+                setStorage('user', result.user);
+            }
+            return result;
         }
-        
-        return result;
     }
 
     async verifyToken() {
@@ -110,9 +130,7 @@ class ApiService {
     async logout() {
         try {
             await this.request('POST', 'api/auth/logout', {}, true);
-        } catch (e) {
-            // Ignore
-        }
+        } catch (e) {}
         this.clearToken();
         removeStorage('user');
     }
