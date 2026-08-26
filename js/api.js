@@ -28,60 +28,54 @@ class ApiService {
 
     // ============ GENERIC REQUEST ============
 
-    async request(method, path, data = null, requireAuth = true) {
-        const url = new URL(this.baseUrl);
-        url.searchParams.set('path', path);
+    // api.js
+async request(method, path, data = null, requireAuth = true) {
+    const url = new URL(this.baseUrl);
+    url.searchParams.set('path', path);
 
-        const options = {
-            method: method,
-            mode: 'cors',
-            credentials: 'omit',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        };
+    const token = this.getToken();
 
-        // Token hanya di query parameter
-        if (requireAuth) {
-            const token = this.getToken();
-            if (token) {
-                url.searchParams.set('token', token);
-            }
-        }
-
-        // Body untuk POST/PUT
-        if (data && (method === 'POST' || method === 'PUT')) {
-            options.body = JSON.stringify(data);
-        } else if (data && method === 'GET') {
-            Object.entries(data).forEach(([key, value]) => {
-                if (key !== 'token') {
-                    url.searchParams.set(key, value);
-                }
-            });
-        }
-
-        try {
-            console.log('🌐 Fetching:', url.toString());
-            
-            const response = await fetch(url.toString(), options);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const result = await response.json();
-            
-            if (result.status === 'error') {
-                throw new Error(result.message || 'API error');
-            }
-            
-            return result.data;
-        } catch (error) {
-            console.error('API Request Error:', error);
-            throw error;
-        }
+    // 1. Tambahkan token ke query string jika ada
+    if (requireAuth && token) {
+        url.searchParams.set('token', token);
     }
+
+    // 2. Siapkan konfigurasi Fetch
+    const options = {
+        method: method === 'GET' ? 'GET' : 'POST', // Kirim POST/PUT/DELETE via POST ke GAS
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8' // Menghindari Preflight OPTIONS
+        },
+        redirect: 'follow'
+    };
+
+    let bodyData = data || {};
+    if (requireAuth && token) {
+        bodyData.token = token;
+    }
+
+    if (method !== 'GET') {
+        bodyData._method = method; // Kirim HTTP method asli di dalam body
+        options.body = JSON.stringify(bodyData);
+    }
+
+    try {
+        const response = await fetch(url.toString(), options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        
+        if (result.status === 'error') {
+            throw new Error(result.message || 'API error');
+        }
+        
+        return result.data;
+    } catch (error) {
+        console.error('API Request Error:', error);
+        throw error;
+    }
+}
 
     // ============ AUTH ENDPOINTS ============
 
