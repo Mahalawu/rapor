@@ -5,7 +5,7 @@
 
 const APP_CONFIG = {
     // Backend API
-    API_BASE_URL: 'https://script.google.com/macros/s/AKfycbzZ2h5CciA9V8AHN3uAG_2XPfvHIGaMuf2T969mbWUyJCAP65SYwPY0KPICgM9jTzZt/exec',
+    API_BASE_URL: 'https://script.google.com/macros/s/AKfycbzZ2h5CciA9V8AHN3uAG_2XPfvHIGaMuf2T969mbWUyJCAP65SYwPY0KPICgM9jTzZt/exec?versi1.0',
     
     // App Info
     APP_NAME: 'Sistem Rapor SD Kecamatan Sine',
