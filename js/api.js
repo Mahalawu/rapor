@@ -75,18 +75,19 @@ async request(method, path, data = null, requireAuth = true) {
     }
 }
 
+// api.js
+
 async login(username, password) {
     const result = await this.request('POST', 'api/auth/login', {
         username: username,
         password: password
     }, false);
 
-    console.log('📦 Server Login Response:', result); // Untuk pengecekan di Console
+    console.log('📦 Server Login Response:', result);
 
-    // Ekstrak data user dan token (toleran terhadap wrapper data)
-    const loginData = result.data || result;
-    const user = loginData.user;
-    const token = loginData.token;
+    // Backend mengembalikan { token: '...', user: { ... } } di dalam result.data
+    const token = result.token || (result.data && result.data.token);
+    const user = result.user || (result.data && result.data.user);
 
     if (!user) {
         throw new Error('User tidak ditemukan pada respon backend.');
@@ -96,11 +97,9 @@ async login(username, password) {
         this.setToken(token);
     }
     
-    if (user) {
-        setStorage('user', user);
-    }
+    setStorage('user', user);
     
-    return loginData;
+    return result;
 }
 
     async verifyToken() {
