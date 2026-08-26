@@ -79,32 +79,12 @@ async request(method, path, data = null, requireAuth = true) {
 
     // ============ AUTH ENDPOINTS ============
 
-    async login(username, password) {
-        try {
-            const result = await this.request('POST', 'api/auth/login', {
-                username,
-                password
-            }, false);
-            
-            if (result.token) {
-                this.setToken(result.token);
-                setStorage('user', result.user);
-            }
-            return result;
-        } catch (error) {
-            console.warn('POST login failed, trying GET...');
-            const result = await this.request('GET', 'api/auth/login', {
-                username,
-                password
-            }, false);
-            
-            if (result.token) {
-                this.setToken(result.token);
-                setStorage('user', result.user);
-            }
-            return result;
-        }
-    }
+async login(username, password) {
+    return this.request('POST', 'api/auth/login', {
+        username: username,
+        password: password
+    }, false);
+}
 
     async verifyToken() {
         const token = this.getToken();
