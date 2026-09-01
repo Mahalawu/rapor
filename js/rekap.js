@@ -108,136 +108,65 @@ function renderLembarRapor() {
         document.getElementById("c_koku_tertinggi").innerText = `Ananda ${siswa.nama_lengkap} sudah baik dalam penerapan dimensi Keimanan dan Ketakwaan terhadap Tuhan YME dan perlu berlatih dalam penerapan dimensi Kemandirian.`;
       }
 
-  let secAkhir = document.getElementById("sectionAkhirSemester");
-  if (jenis === "STS") {
-    secAkhir.style.display = "none";
-  } else {
-    secAkhir.style.display = "block";
-    let abs = listAbsensiData.find(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
-    
-    let logsSiswaIni = listPresensiHarianData.filter(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
-    let autoSakit = logsSiswaIni.filter(x => x.status_kehadiran === "S").length;
-    let autoIzin = logsSiswaIni.filter(x => x.status_kehadiran === "I").length;
-    let autoAlpa = logsSiswaIni.filter(x => x.status_kehadiran === "A").length;
-
-    let htmlEkskul = "";
-    if (abs) {
-      document.getElementById("c_sakit").innerText = abs.sakit !== undefined ? abs.sakit : autoSakit;
-      document.getElementById("c_izin").innerText = abs.izin !== undefined ? abs.izin : autoIzin;
-      document.getElementById("c_alpa").innerText = abs.tanpa_keterangan !== undefined ? abs.tanpa_keterangan : autoAlpa;
-      document.getElementById("c_catatanWali").innerText = abs.catatan_walikelas || "-";
-
-      let eksList = [];
-      if (abs.ekskul_1) eksList.push({ nama: abs.ekskul_1, nilai: abs.nilai_ekskul_1, ket: abs.keterangan_ekskul_1 });
-      if (abs.ekskul_2) eksList.push({ nama: abs.ekskul_2, nilai: abs.nilai_ekskul_2, ket: abs.keterangan_ekskul_2 });
-      if (abs.ekskul_3) eksList.push({ nama: abs.ekskul_3, nilai: abs.nilai_ekskul_3, ket: abs.keterangan_ekskul_3 });
-
-      if (eksList.length > 0) {
-        eksList.forEach((eItem, eIdx) => {
-          let descE = eItem.ket ? `${eItem.nilai || 'Baik'} (${eItem.ket})` : (eItem.nilai || "Baik");
-          htmlEkskul += `<tr><td class="text-center">${eIdx + 1}</td><td>${eItem.nama}</td><td>${descE}</td></tr>`;
-        });
+let secAkhir = document.getElementById("sectionAkhirSemester");
+      if (jenis === "STS") {
+        secAkhir.style.display = "none";
       } else {
-        htmlEkskul = '<tr><td class="text-center">1</td><td>Pramuka</td><td>Baik</td></tr>';
-      }
-    } else {
-      document.getElementById("c_sakit").innerText = autoSakit;
-      document.getElementById("c_izin").innerText = autoIzin;
-      document.getElementById("c_alpa").innerText = autoAlpa;
-      document.getElementById("c_catatanWali").innerText = "-";
-      htmlEkskul = '<tr><td class="text-center">1</td><td>Pramuka</td><td>Baik</td></tr>';
-    }
-    document.getElementById("c_tabelEkskul").innerHTML = htmlEkskul;
-  }
+        secAkhir.style.display = "block";
 
-  let nilaiSiswaIni = listNilaiData.filter(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
-  
-  let mapelGrouped = {};
-  nilaiSiswaIni.forEach(n => {
-    let mKey = String(n.id_mapel).trim().toUpperCase();
-    if (!mapelGrouped[mKey]) mapelGrouped[mKey] = [];
-    mapelGrouped[mKey].push(n);
-  });
+        // LOGIKA KEPUTUSAN KENAIKAN / KELULUSAN
+        let boxKeputusan = document.getElementById("boxKeputusanAkhir");
+        let semAktif = infoSekolah.semester ? String(infoSekolah.semester).trim() : "1";
+        let kelasAktif = infoSekolah.kelas ? parseInt(infoSekolah.kelas) : 5;
 
-  let htmlRows = "";
-  let mapelKeys = Object.keys(mapelGrouped);
-
-  if (mapelKeys.length === 0) {
-    htmlRows = '<tr><td colspan="4" class="text-center text-muted py-3">Belum ada nilai terinput.</td></tr>';
-  } else {
-    mapelKeys.forEach((mKey, index) => {
-      let listNilaiMapel = mapelGrouped[mKey];
-
-      let totalNilai = 0;
-      listNilaiMapel.forEach(item => totalNilai += parseFloat(item.nilai_angka || 0));
-      let nilaiRataRata = Math.round(totalNilai / listNilaiMapel.length);
-
-      let m = listMapelData.find(x => String(x.id_mapel).trim().toUpperCase() === mKey);
-      let namaMapel = m ? m.nama_mapel : mKey;
-
-      let listLM = listNilaiMapel.filter(x => (x.jenis_asesmen || "LM") === "LM");
-      let deskripsiHasil = "";
-
-      if (listLM.length > 0) {
-        let tpTinggi = listLM.filter(x => x.nilai_angka >= 75);
-        let tpRendah = listLM.filter(x => x.nilai_angka < 75);
-
-        let kalimatTinggi = "";
-        if (tpTinggi.length > 0) {
-          let narasiArr = tpTinggi.map(item => {
-            let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
-            return tpObj ? tpObj.narasi_tp : item.id_tp;
-          });
-          kalimatTinggi = `Menunjukkan penguasaan yang sangat baik dalam ${narasiArr.join(", ")}.`;
-        }
-
-        let kalimatRendah = "";
-        if (tpRendah.length > 0) {
-          let narasiArr = tpRendah.map(item => {
-            let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
-            return tpObj ? tpObj.narasi_tp : item.id_tp;
-          });
-          kalimatRendah = `Perlu bimbingan lebih lanjut dalam ${narasiArr.join(", ")}.`;
-        }
-
-        deskripsiHasil = [kalimatTinggi, kalimatRendah].filter(Boolean).join(" ");
-      } else {
-        deskripsiHasil = "Menunjukkan penguasaan materi sesuai capaian pembelajaran.";
-      }
-
-      htmlRows += `
-        <tr>
-          <td class="text-center">${index + 1}</td>
-          <td><strong>${namaMapel}</strong></td>
-          <td class="text-center fw-bold fs-6">${nilaiRataRata}</td>
-          <td style="font-size: 0.95rem;">${deskripsiHasil}</td>
-        </tr>
-      `;
-    });
-  }
-  document.getElementById("c_tabelNilai").innerHTML = htmlRows;
-}
-// LOGIKA KEPUTUSAN KENAIKAN / KELULUSAN (SEMESTER 2)
-      let boxKeputusan = document.getElementById("boxKeputusanAkhir");
-      
-      // Ambil nilai semester dan buat lebih fleksibel (bisa string "2" atau angka 2)
-      let semAktif = infoSekolah.semester ? String(infoSekolah.semester).trim() : "1";
-      let kelasAktif = infoSekolah.kelas ? parseInt(infoSekolah.kelas) : 5;
-
-      // Logika: Tampilkan JIKA jenis rapor SAS DAN semester = 2
-      if (jenis === "SAS" && (semAktif === "2" || semAktif === "Semester 2")) {
-        boxKeputusan.style.display = "block";
-        
-        if (kelasAktif === 6) {
-          document.getElementById("labelKeputusanHeader").innerText = "Keputusan Kelulusan:";
-          document.getElementById("textKeputusanDetail").innerHTML = `Berdasarkan pencapaian seluruh kompetensi, siswa dinyatakan: <strong class="text-uppercase">LULUS</strong> dari satuan pendidikan.`;
+        if (semAktif === "2" || semAktif === "Semester 2") {
+          boxKeputusan.style.display = "block";
+          if (kelasAktif === 6) {
+            document.getElementById("labelKeputusanHeader").innerText = "Keputusan Kelulusan:";
+            document.getElementById("textKeputusanDetail").innerHTML = `Berdasarkan pencapaian seluruh kompetensi, siswa dinyatakan: <strong class="text-uppercase">LULUS</strong> dari satuan pendidikan.`;
+          } else {
+            let kelasNaik = kelasAktif + 1;
+            let namaKelasTeks = ["I", "II", "III", "IV", "V", "VI"][kelasNaik - 1] || kelasNaik;
+            document.getElementById("labelKeputusanHeader").innerText = "Keputusan Kenaikan Kelas:";
+            document.getElementById("textKeputusanDetail").innerHTML = `Berdasarkan pencapaian seluruh kompetensi, siswa dinyatakan: <strong class="text-uppercase">NAIK KE KELAS ${namaKelasTeks}</strong>.`;
+          }
         } else {
-          let kelasNaik = kelasAktif + 1;
-          let namaKelasTeks = ["I", "II", "III", "IV", "V", "VI"][kelasNaik - 1] || kelasNaik;
-          document.getElementById("labelKeputusanHeader").innerText = "Keputusan Kenaikan Kelas:";
-          document.getElementById("textKeputusanDetail").innerHTML = `Berdasarkan pencapaian seluruh kompetensi, siswa dinyatakan: <strong class="text-uppercase">NAIK KE KELAS ${namaKelasTeks}</strong>.`;
+          boxKeputusan.style.display = "none";
         }
-      } else {
-        // Jika Semester 1 atau Rapor STS, sembunyikan kotak keputusan
-        boxKeputusan.style.display = "none";
+
+        // RENDER ABSENSI DAN EKSKUL SEPERTI BIASA...
+        let abs = listAbsensiData.find(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
+        let logsSiswaIni = listPresensiHarianData.filter(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
+        let autoSakit = logsSiswaIni.filter(x => x.status_kehadiran === "S").length;
+        let autoIzin = logsSiswaIni.filter(x => x.status_kehadiran === "I").length;
+        let autoAlpa = logsSiswaIni.filter(x => x.status_kehadiran === "A").length;
+
+        let htmlEkskul = "";
+        if (abs) {
+          document.getElementById("c_sakit").innerText = abs.sakit !== undefined ? abs.sakit : autoSakit;
+          document.getElementById("c_izin").innerText = abs.izin !== undefined ? abs.izin : autoIzin;
+          document.getElementById("c_alpa").innerText = abs.tanpa_keterangan !== undefined ? abs.tanpa_keterangan : autoAlpa;
+          document.getElementById("c_catatanWali").innerText = abs.catatan_walikelas || "-";
+
+          let eksList = [];
+          if (abs.ekskul_1) eksList.push({ nama: abs.ekskul_1, nilai: abs.nilai_ekskul_1, ket: abs.keterangan_ekskul_1 });
+          if (abs.ekskul_2) eksList.push({ nama: abs.ekskul_2, nilai: abs.nilai_ekskul_2, ket: abs.keterangan_ekskul_2 });
+          if (abs.ekskul_3) eksList.push({ nama: abs.ekskul_3, nilai: abs.nilai_ekskul_3, ket: abs.keterangan_ekskul_3 });
+
+          if (eksList.length > 0) {
+            eksList.forEach((eItem, eIdx) => {
+              let descE = eItem.ket ? `${eItem.nilai || 'Baik'} (${eItem.ket})` : (eItem.nilai || "Baik");
+              htmlEkskul += `<tr><td class="text-center">${eIdx + 1}</td><td>${eItem.nama}</td><td>${descE}</td></tr>`;
+            });
+          } else {
+            htmlEkskul = '<tr><td class="text-center">1</td><td>Pramuka</td><td>Baik</td></tr>';
+          }
+        } else {
+          document.getElementById("c_sakit").innerText = autoSakit;
+          document.getElementById("c_izin").innerText = autoIzin;
+          document.getElementById("c_alpa").innerText = autoAlpa;
+          document.getElementById("c_catatanWali").innerText = "-";
+          htmlEkskul = '<tr><td class="text-center">1</td><td>Pramuka</td><td>Baik</td></tr>';
+        }
+        document.getElementById("c_tabelEkskul").innerHTML = htmlEkskul;
       }
