@@ -71,6 +71,18 @@ async function muatDataAwal() {
     let today = new Date().toISOString().split('T')[0];
     document.getElementById("tglPresensiHarian").value = today;
 
+    // Di dalam fungsi muatDataAwal(), tambahkan pemanggilan data Nilai:
+try {
+  let resNilai = await fetch(`${API_URL}?action=getNilai`);
+  let dataNilai = await resNilai.json();
+  if (dataNilai.status === "success") {
+    listNilaiData = dataNilai.data || [];
+  }
+} catch (e) { console.log("Gagal memuat data nilai awal:", e); }
+
+// Setelah semua data termuat, panggil renderDashboard()
+renderDashboard();
+
     // Muat Dashboard begitu data selesai dimuat
     renderDashboard();
 
