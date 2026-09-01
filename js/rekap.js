@@ -3,9 +3,17 @@ async function muatRekapNilai() {
   try {
     let res = await fetch(`${API_URL}?action=getNilai`);
     let result = await res.json();
+    let semAktif = String(infoSekolah.semester || "1").trim();
 
     if (result.status === "success" && result.data.length > 0) {
-      listNilaiData = result.data;
+      // Filter Nilai berdasarkan semester aktif
+      listNilaiData = result.data.filter(n => String(n.semester || semAktif).trim() === semAktif);
+      
+      if (listNilaiData.length === 0) {
+        document.getElementById("tabelRekap").innerHTML = `<tr><td colspan="8" class="text-center text-muted py-3">Belum ada data nilai untuk Semester ${semAktif}.</td></tr>`;
+        return;
+      }
+
       let html = "";
       listNilaiData.forEach((n, idx) => {
         let s = listSiswaData.find(x => String(x.id_siswa).trim() === String(n.id_siswa).trim());
