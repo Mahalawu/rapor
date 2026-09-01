@@ -1,0 +1,65 @@
+function pilihSiswaKokurikuler() {
+  let idSiswa = document.getElementById("selectSiswaKokurikuler").value;
+  let formBody = document.getElementById("formKokurikulerBody");
+  if (!idSiswa) { formBody.style.display = "none"; return; }
+
+  formBody.style.display = "block";
+
+  let koku = listKokurikulerData.find(x => String(x.id_siswa).trim() === String(idSiswa).trim());
+  if (koku) {
+    document.getElementById("koku_wadah").value = koku.wadah_kokurikuler || "7 KAIH";
+    document.getElementById("koku_judul").value = koku.judul_tema || "";
+    document.getElementById("koku_dimensi_tertinggi").value = koku.dimensi_tertinggi || "Keimanan dan Ketakwaan terhadap Tuhan YME";
+    document.getElementById("koku_dimensi_terendah").value = koku.dimensi_terendah || "Kemandirian";
+  } else {
+    document.getElementById("koku_dimensi_tertinggi").value = "Keimanan dan Ketakwaan terhadap Tuhan YME";
+    document.getElementById("koku_dimensi_terendah").value = "Kemandirian";
+  }
+  updateLivePreviewKoku();
+}
+
+function updateLivePreviewKoku() {
+  let dimTinggi = document.getElementById("koku_dimensi_tertinggi").value;
+  let dimRendah = document.getElementById("koku_dimensi_terendah").value;
+
+  document.getElementById("prev_desc_tertinggi").innerText = `Sudah baik dalam penerapan dimensi ${dimTinggi}.`;
+  document.getElementById("prev_desc_terendah").innerText = `Dan perlu berlatih dalam penerapan dimensi ${dimRendah}.`;
+}
+
+async function simpanKokurikulerSiswa() {
+  let idSiswa = document.getElementById("selectSiswaKokurikuler").value;
+  if (!idSiswa) { alert("Pilih siswa terlebih dahulu!"); return; }
+
+  let dimTinggi = document.getElementById("koku_dimensi_tertinggi").value;
+  let dimRendah = document.getElementById("koku_dimensi_terendah").value;
+
+  let payload = {
+    id_siswa: idSiswa,
+    wadah_kokurikuler: document.getElementById("koku_wadah").value,
+    judul_tema: document.getElementById("koku_judul").value.trim(),
+    dimensi_tertinggi: dimTinggi,
+    dimensi_terendah: dimRendah,
+    deskripsi_tertinggi: `Sudah baik dalam penerapan dimensi ${dimTinggi}.`,
+    deskripsi_terendah: `Dan perlu berlatih dalam penerapan dimensi ${dimRendah}.`
+  };
+
+  let btn = document.getElementById("btnSimpanKokurikuler");
+  btn.disabled = true; btn.innerHTML = "⏳ Menyimpan Kokurikuler...";
+
+  try {
+    let response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "simpanKokurikuler", data: payload })
+    });
+
+    let result = await response.json();
+    if (result.status === "success") {
+      alert("🎉 Data Kokurikuler berhasil disimpan!");
+      let idx = listKokurikulerData.findIndex(x => String(x.id_siswa).trim() === String(idSiswa).trim());
+      if (idx >= 0) { listKokurikulerData[idx] = payload; } else { listKokurikulerData.push(payload); }
+      renderDashboard();
+    } else { alert("Gagal menyimpan: " + result.message); }
+  } catch (err) { alert("Terjadi kesalahan koneksi!"); }
+  finally { btn.disabled = false; btn.innerHTML = "💾 Simpan Penilaian Kokurikuler Siswa"; }
+}
