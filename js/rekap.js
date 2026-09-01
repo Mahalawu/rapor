@@ -293,3 +293,20 @@ function renderTabCetakRapor() {
 
   container.innerHTML = html;
 }
+
+function cetakSemuaRaporSeKelas() {
+  if (listSiswaData.length === 0) {
+    alert("Belum ada data siswa untuk dicetak!");
+    return;
+  }
+  
+  // Konfirmasi sebelum cetak masal
+  if (confirm(`Apakah Anda yakin ingin mencetak Rapor untuk seluruh siswa (${listSiswaData.length} Anak)?`)) {
+    // Buka preview siswa pertama sebagai trigger cetak dokumen
+    bukaPreviewRapor(listSiswaData[0].id_siswa);
+    
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  }
+}
