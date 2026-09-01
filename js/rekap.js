@@ -45,16 +45,13 @@ async function muatRekapNilai() {
 
         html += `
           <tr>
-            <td>${idx + 1}</td>
+            <td class="text-center">${idx + 1}</td>
             <td><strong>${namaSiswa}</strong></td>
             <td><span class="badge bg-secondary px-2 py-1">${namaMapel}</span></td>
-            <td><span class="badge ${badgeJenis} px-2 py-1">${jenisLabel}</span></td>
-            <td><span class="badge bg-info text-dark">${n.id_tp || '-'}</span></td>
-            <td><span class="fw-bold fs-6">${n.nilai_angka}</span></td>
+            <td class="text-center"><span class="badge ${badgeJenis} px-2 py-1">${jenisLabel}</span></td>
+            <td class="text-center"><span class="badge bg-info text-dark">${n.id_tp || '-'}</span></td>
+            <td class="text-center fw-bold fs-6">${n.nilai_angka}</td>
             <td><small class="text-dark">${deskripsi}</small></td>
-            <td class="text-center">
-              <button onclick="bukaPreviewRapor('${String(n.id_siswa).trim()}')" class="btn btn-sm btn-outline-primary fw-bold">🖨️ Cetak</button>
-            </td>
           </tr>
         `;
       });
@@ -277,13 +274,13 @@ function renderTabCetakRapor() {
 
     html += `
       <tr>
-        <td class="text-center">${idx + 1}</td>
-        <td><small class="text-muted">${siswa.nis} / ${siswa.nisn}</small></td>
+        <td class="text-center" style="width: 50px;">${idx + 1}</td>
+        <td style="width: 180px;"><small class="text-muted font-monospace">${siswa.nis} / ${siswa.nisn}</small></td>
         <td><strong>${siswa.nama_lengkap}</strong></td>
-        <td class="text-center">${siswa.jenis_kelamin || 'L'}</td>
-        <td class="text-center">${badgeStatus}</td>
-        <td class="text-center">
-          <button onclick="bukaPreviewRapor('${idS}')" class="btn btn-sm btn-outline-primary fw-bold">
+        <td class="text-center" style="width: 70px;">${siswa.jenis_kelamin || 'L'}</td>
+        <td class="text-center" style="width: 150px;">${badgeStatus}</td>
+        <td class="text-center" style="width: 170px;">
+          <button onclick="bukaPreviewRapor('${idS}')" class="btn btn-sm btn-outline-primary fw-bold px-3">
             🔍 Preview & Cetak
           </button>
         </td>
