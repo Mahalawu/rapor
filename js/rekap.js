@@ -217,3 +217,24 @@ function renderLembarRapor() {
   }
   document.getElementById("c_tabelNilai").innerHTML = htmlRows;
 }
+// LOGIKA KEPUTUSAN KENAIKAN / KELULUSAN (SEMESTER 2)
+      let boxKeputusan = document.getElementById("boxKeputusanAkhir");
+      let semAktif = String(infoSekolah.semester || "1").trim();
+      let kelasAktif = parseInt(infoSekolah.kelas || 5);
+
+      if (jenis === "SAS" && semAktif === "2") {
+        boxKeputusan.style.display = "block";
+        
+        if (kelasAktif === 6) {
+          document.getElementById("labelKeputusanHeader").innerText = "Keputusan Kelulusan:";
+          document.getElementById("textKeputusanDetail").innerHTML = `Berdasarkan pencapaian seluruh kompetensi, siswa dinyatakan: <strong class="text-uppercase">LULUS</strong> dari satuan pendidikan.`;
+        } else {
+          let kelasNaiK = kelasAktif + 1;
+          let namaKelasTeks = ["I", "II", "III", "IV", "V", "VI"][kelasNaiK - 1] || kelasNaiK;
+          document.getElementById("labelKeputusanHeader").innerText = "Keputusan Kenaikan Kelas:";
+          document.getElementById("textKeputusanDetail").innerHTML = `Berdasarkan pencapaian seluruh kompetensi, siswa dinyatakan: <strong class="text-uppercase">NAIK KE KELAS ${namaKelasTeks}</strong>.`;
+        }
+      } else {
+        // Jika Semester 1 atau Rapor STS, sembunyikan kotak keputusan
+        boxKeputusan.style.display = "none";
+      }
