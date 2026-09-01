@@ -1,0 +1,23 @@
+@media print {
+  body * { 
+    visibility: hidden; 
+  }
+  #areaCetakRapor, #areaCetakRapor * { 
+    visibility: visible; 
+  }
+  #areaCetakRapor { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    padding: 0; 
+    margin: 0; 
+  }
+  .no-print { 
+    display: none !important; 
+  }
+}
+
+.ttd-box { 
+  margin-top: 40px; 
+}
