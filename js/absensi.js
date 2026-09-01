@@ -91,13 +91,19 @@ function pilihSiswaAbsensi() {
   if (!idSiswa) { formBody.style.display = "none"; return; }
 
   formBody.style.display = "block";
+  let semAktif = String(infoSekolah.semester || "1").trim();
   
+  // Filter jurnal harian berdasarkan semester (jika ada flag semester) atau tanggal semester
   let logsSiswaIni = listPresensiHarianData.filter(x => String(x.id_siswa).trim() === String(idSiswa).trim());
   let autoSakit = logsSiswaIni.filter(x => x.status_kehadiran === "S").length;
   let autoIzin = logsSiswaIni.filter(x => x.status_kehadiran === "I").length;
   let autoAlpa = logsSiswaIni.filter(x => x.status_kehadiran === "A").length;
 
-  let abs = listAbsensiData.find(x => String(x.id_siswa).trim() === String(idSiswa).trim());
+  // Filter data absensi khusus semester aktif
+  let abs = listAbsensiData.find(x => 
+    String(x.id_siswa).trim() === String(idSiswa).trim() &&
+    String(x.semester || semAktif).trim() === semAktif
+  );
 
   if (abs) {
     document.getElementById("abs_sakit").value = abs.sakit !== undefined ? abs.sakit : autoSakit;
@@ -119,9 +125,9 @@ function pilihSiswaAbsensi() {
     document.getElementById("box_ekskul_3").style.display = abs.ekskul_3 ? "flex" : "none";
 
     ekskulCountAktif = abs.ekskul_3 ? 3 : (abs.ekskul_2 ? 2 : 1);
-
     document.getElementById("abs_catatan").value = abs.catatan_walikelas || "";
   } else {
+    // Jika belum ada data di semester 2, reset ke 0 / default
     document.getElementById("abs_sakit").value = autoSakit;
     document.getElementById("abs_izin").value = autoIzin;
     document.getElementById("abs_alpa").value = autoAlpa;
@@ -139,11 +145,9 @@ function pilihSiswaAbsensi() {
     document.getElementById("box_ekskul_3").style.display = "none";
 
     ekskulCountAktif = 1;
-
     document.getElementById("abs_catatan").value = "";
   }
 }
-
 async function simpanAbsensiSiswa() {
   let idSiswa = document.getElementById("selectSiswaAbsensi").value;
   if (!idSiswa) { alert("Pilih siswa terlebih dahulu!"); return; }
