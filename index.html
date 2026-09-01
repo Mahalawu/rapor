@@ -21,14 +21,12 @@
           </p>
         </div>
         <div>
-          <li class="nav-item d-none">
-          <button class="btn btn-outline-light btn-sm fw-bold" onclick="document.getElementById('').click()">⚙️ Pengaturan Sekolah</button>
-          </li>
+          <button class="btn btn-outline-light btn-sm fw-bold" onclick="document.getElementById('tab-pengaturan-tab').click()">⚙️ Pengaturan Sekolah</button>
         </div>
       </div>
     </div>
 
-    <!-- Navigasi Tab Menu (Default Landing Page: Dashboard) -->
+    <!-- Navigasi Tab Menu -->
     <ul class="nav nav-pills mb-4 fw-bold" id="pills-tab" role="tablist">
       <li class="nav-item">
         <button class="nav-link active me-2" id="tab-dashboard-tab" data-bs-toggle="pill" data-bs-target="#tab-dashboard" type="button" onclick="renderDashboard()">🏠 Dashboard</button>
@@ -52,20 +50,19 @@
         <button class="nav-link me-2" id="tab-rekap-tab" data-bs-toggle="pill" data-bs-target="#tab-rekap" type="button" onclick="muatRekapNilai()">📊 Rekap & Cetak</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" id="" data-bs-toggle="pill" data-bs-target="#tab-pengaturan" type="button" onclick="loadFormPengaturan()">⚙️ Pengaturan</button>
+        <button class="nav-link" id="tab-pengaturan-tab" data-bs-toggle="pill" data-bs-target="#tab-pengaturan" type="button" onclick="loadFormPengaturan()">⚙️ Pengaturan</button>
       </li>
     </ul>
 
     <div class="tab-content" id="pills-tabContent">
       
-      <!-- TAB 0: DASHBOARD (LANDING PAGE UTAMA) -->
+      <!-- TAB 0: DASHBOARD -->
       <div class="tab-pane fade show active" id="tab-dashboard">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-body p-4">
             <h4 class="fw-bold text-dark mb-1">Selamat Datang di Aplikasi Rapor Digital 👋</h4>
             <p class="text-secondary mb-4">Gambaran umum progres pengisian Rapor Kurikulum Merdeka di kelas Anda.</p>
 
-            <!-- STATS CARDS -->
             <div class="row g-3 mb-4">
               <div class="col-md-4">
                 <div class="card border-0 bg-primary bg-opacity-10 p-3">
@@ -87,7 +84,6 @@
               </div>
             </div>
 
-            <!-- OVERALL PROGRESS TRACKER -->
             <div class="card bg-light border-0 p-3 mb-4">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="fw-bold text-dark">Progres Kelengkapan Rapor Kelas</span>
@@ -97,11 +93,10 @@
               </div>
             </div>
 
-            <!-- WORKFLOW GUIDELINE -->
             <h5 class="fw-bold text-dark mb-3">📍 Alur Kerja Pengisian Rapor:</h5>
             <div class="row g-2 text-center">
               <div class="col-md-2">
-                <div class="p-3 border rounded bg-white h-100 cursor-pointer" onclick="document.getElementById('').click()">
+                <div class="p-3 border rounded bg-white h-100 cursor-pointer" onclick="document.getElementById('tab-pengaturan-tab').click()">
                   <div class="fs-4 mb-1">⚙️</div>
                   <small class="fw-bold d-block text-dark">1. Identitas Sekolah</small>
                 </div>
@@ -379,7 +374,7 @@
         </div>
       </div>
 
-      <!-- TAB 3: KOKURIKULER (8 DIMENSI PROFIL LULUSAN) -->
+      <!-- TAB 3: KOKURIKULER -->
       <div class="tab-pane fade" id="tab-kokurikuler">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white py-3">
@@ -457,10 +452,6 @@
                   <small class="text-success fw-bold">Deskripsi Tertinggi:</small>
                   <p id="prev_desc_tertinggi" class="mb-1 text-dark font-monospace bg-white p-2 rounded border">-</p>
                 </div>
-                <div>
-                  <small class="text-danger fw-bold">Deskripsi Terendah:</small>
-                  <p id="prev_desc_terendah" class="mb-0 text-dark font-monospace bg-white p-2 rounded border">-</p>
-                </div>
               </div>
 
               <button id="btnSimpanKokurikuler" onclick="simpanKokurikulerSiswa()" class="btn btn-primary btn-lg fw-bold w-100">
@@ -527,7 +518,7 @@
         </div>
       </div>
 
-      <!-- TAB 5: KELOLA TUJUAN PEMBELAJARAN (TP) -->
+      <!-- TAB 5: KELOLA TP -->
       <div class="tab-pane fade" id="tab-tp">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -767,15 +758,16 @@
               <p class="fw-bold mb-1">Catatan Wali Kelas</p>
               <div class="border border-dark p-2 rounded" id="c_catatanWali" style="min-height: 60px;">-</div>
             </div>
-          </div>
 
-          <!-- KEPUTUSAN KENAIKAN KELAS / KELULUSAN (HANYA SEMESTER 2) -->
-          <div id="boxKeputusanAkhir" class="mb-4 fs-6" style="display: none;">
-            <div class="border border-dark p-3 text-dark fw-bold" style="background-color: #f8f9fa;">
-              <p class="mb-1" id="labelKeputusanHeader">Keputusan:</p>
-              <p class="mb-0 fs-6 fw-normal" id="textKeputusanDetail">-</p>
+            <!-- KEPUTUSAN KENAIKAN KELAS / KELULUSAN (DALAM sectionAkhirSemester) -->
+            <div id="boxKeputusanAkhir" class="mb-4 fs-6" style="display: none;">
+              <div class="border border-dark p-3 text-dark fw-bold" style="background-color: #f8f9fa;">
+                <p class="mb-1" id="labelKeputusanHeader">Keputusan:</p>
+                <p class="mb-0 fs-6 fw-normal" id="textKeputusanDetail">-</p>
+              </div>
             </div>
-          </div>
+
+          </div> <!-- PENUTUP DARI sectionAkhirSemester -->
 
           <div class="row ttd-box text-center fs-6" style="page-break-inside: avoid;">
             <div class="col-4">
