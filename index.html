@@ -93,6 +93,46 @@
               </div>
             </div>
 
+            <!-- OVERALL PROGRESS TRACKER -->
+            <div class="card bg-light border-0 p-3 mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold text-dark">Progres Kelengkapan Rapor Kelas</span>
+              </div>
+              <div class="progress" style="height: 24px;">
+                <div id="dash_overallProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success fw-bold" role="progressbar" style="width: 0%;">0% Selesai</div>
+              </div>
+            </div>
+
+            <!-- TABEL MONITOR KELENGKAPAN PER SISWA (FITUR BARU) -->
+            <div class="card border-0 shadow-sm mb-4">
+              <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold text-dark mb-0">📋 Monitor Kelengkapan Data Siswa</h5>
+                <small class="text-muted">Status Pengisian Rapor per Individu</small>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th style="width: 50px;" class="text-center">No</th>
+                        <th>Nama Siswa</th>
+                        <th style="width: 130px;" class="text-center">Nilai Sumatif</th>
+                        <th style="width: 140px;" class="text-center">Presensi & Catatan</th>
+                        <th style="width: 130px;" class="text-center">Kokurikuler</th>
+                        <th style="width: 140px;" class="text-center">Status Rapor</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dash_tabelStatusSiswa">
+                      <tr><td colspan="6" class="text-center text-muted py-3">Memuat status kelengkapan...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- WORKFLOW GUIDELINE -->
+            <h5 class="fw-bold text-dark mb-3">📍 Alur Kerja Pengisian Rapor:</h5>
+
             <h5 class="fw-bold text-dark mb-3">📍 Alur Kerja Pengisian Rapor:</h5>
             <div class="row g-2 text-center">
               <div class="col-md-2">
