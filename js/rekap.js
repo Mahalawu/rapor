@@ -482,9 +482,38 @@ function renderLembarRapor() {
 }
 
 function cetakSemuaRaporSeKelas() {
-  if (listSiswaData.length === 0) { alert("Belum ada data siswa!"); return; }
-  if (confirm(`Apakah Anda yakin ingin mencetak Rapor untuk seluruh siswa (${listSiswaData.length} Anak)?`)) {
-    bukaPreviewRapor(listSiswaData[0].id_siswa);
-    setTimeout(() => { window.print(); }, 500);
+  if (listSiswaData.length === 0) { 
+    alert("Belum ada data siswa!"); 
+    return; 
+  }
+
+  if (confirm(`Cetak Rapor Masal untuk seluruh (${listSiswaData.length} Siswa)?`)) {
+    let area = document.getElementById("areaCetakRapor");
+    if (!area) return;
+
+    let htmlFull = "";
+    
+    // Loop gabungkan seluruh rapor siswa sekelas
+    listSiswaData.forEach((siswa) => {
+      siswaAktifId = String(siswa.id_siswa).trim();
+      renderLembarRapor(); // generate isi #areaCetakRapor
+      
+      htmlFull += `
+        <div class="lembar-rapor-siswa mb-5">
+          ${area.innerHTML}
+        </div>
+      `;
+    });
+
+    // Masukkan gabungan semua lembar siswa ke container modal
+    area.innerHTML = htmlFull;
+
+    // Tampilkan Modal & Trigered Cetak PDF
+    var myModal = new bootstrap.Modal(document.getElementById('modalCetak'));
+    myModal.show();
+
+    setTimeout(() => {
+      window.print();
+    }, 600);
   }
 }
