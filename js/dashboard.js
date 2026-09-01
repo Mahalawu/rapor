@@ -6,16 +6,19 @@ function renderDashboard() {
   document.getElementById("dash_totSiswa").innerText = totalSiswa;
   document.getElementById("dash_totTP").innerText = listTPData.length || 0;
   
-  // Hitung jumlah siswa yang sudah diisi Kokurikuler di semester aktif
+  // Hitung siswa kokurikuler di semester aktif
   let siswaKokuUnik = new Set(
     listKokurikulerData
-      .filter(k => String(k.semester || semAktif).trim() === semAktif)
+      .filter(k => {
+        let kSem = (k.semester !== undefined && k.semester !== "") ? String(k.semester).trim() : "1";
+        return kSem === semAktif;
+      })
       .map(k => String(k.id_siswa).trim())
   ).size;
   
   document.getElementById("dash_totKoku").innerText = `${siswaKokuUnik} / ${totalSiswa}`;
 
-  // 2. Render Tabel Status Kelengkapan Siswa
+  // 2. Render Tabel Status & Progress Bar
   renderTabelStatusSiswa(semAktif);
 }
 
@@ -24,7 +27,7 @@ function renderTabelStatusSiswa(semAktif) {
   if (!container) return;
 
   if (listSiswaData.length === 0) {
-    container.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data siswa. Silakan tambah data siswa terlebih dahulu.</td></tr>';
+    container.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data siswa.</td></tr>';
     return;
   }
 
@@ -34,16 +37,24 @@ function renderTabelStatusSiswa(semAktif) {
   listSiswaData.forEach((siswa, idx) => {
     let idS = String(siswa.id_siswa).trim();
 
-    // Cek status Nilai
-    let adaNilai = listNilaiData.some(n => String(n.id_siswa).trim() === idS && String(n.semester || semAktif).trim() === semAktif);
+    // 1. Cek Nilai (Juga membaca data lama yang belum berlabel semester jika di semester 1)
+    let adaNilai = listNilaiData.some(n => {
+      let nSem = (n.semester !== undefined && n.semester !== "") ? String(n.semester).trim() : "1";
+      return String(n.id_siswa).trim() === idS && nSem === semAktif;
+    });
     
-    // Cek status Presensi & Catatan
-    let adaAbs = listAbsensiData.some(a => String(a.id_siswa).trim() === idS && String(a.catatan_walikelas || "").trim() !== "");
+    // 2. Cek Presensi & Catatan Wali Kelas
+    let adaAbs = listAbsensiData.some(a => {
+      let aSem = (a.semester !== undefined && a.semester !== "") ? String(a.semester).trim() : "1";
+      return String(a.id_siswa).trim() === idS && 
+             aSem === semAktif && 
+             String(a.catatan_walikelas || "").trim() !== "";
+    });
 
-    // Cek status Kokurikuler
+    // 3. Cek Kokurikuler
     let adaKoku = listKokurikulerData.some(k => String(k.id_siswa).trim() === idS);
 
-    // Hitung status kelengkapan total siswa
+    // Evaluasi Status Kelengkapan Rapor
     let isFullyComplete = adaNilai && adaAbs && adaKoku;
     if (isFullyComplete) totalLengkap++;
 
@@ -69,11 +80,22 @@ function renderTabelStatusSiswa(semAktif) {
 
   container.innerHTML = html;
 
-  // 3. Update Progress Bar Keseluruhan Rapor Kelas
-  let overallPct = listSiswaData.length > 0 ? Math.round((totalLengkap / listSiswaData.length) * 100) : 0;
+  // Update Progress Bar
+  let totalSiswaCount = listSiswaData.length;
+  let overallPct = totalSiswaCount > 0 ? Math.round((totalLengkap / totalSiswaCount) * 100) : 0;
   let barProgress = document.getElementById("dash_overallProgressBar");
+  
   if (barProgress) {
     barProgress.style.width = `${overallPct}%`;
-    barProgress.innerText = `${overallPct}% Selesai (${totalLengkap} dari ${listSiswaData.length} Siswa Siap Cetak)`;
+    
+    if (overallPct === 0) {
+      barProgress.classList.remove("bg-success");
+      barProgress.classList.add("bg-secondary");
+      barProgress.innerText = `0% Selesai (0 dari ${totalSiswaCount} Siswa Siap Cetak)`;
+    } else {
+      barProgress.classList.remove("bg-secondary");
+      barProgress.classList.add("bg-success");
+      barProgress.innerText = `${overallPct}% Selesai (${totalLengkap} dari ${totalSiswaCount} Siswa Siap Cetak)`;
+    }
   }
 }
