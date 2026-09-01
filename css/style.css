@@ -35,3 +35,89 @@
     margin-bottom: 0.5rem; 
   }
 }
+
+/* ==========================================
+   CSS KHUSUS PREVIEW & CETAK RAPOR (PRINT A4)
+   ========================================== */
+
+@media print {
+  /* 1. Atur Ukuran Kertas & Margin Halaman */
+  @page {
+    size: A4 portrait;
+    margin: 1.2cm 1.5cm 1.2cm 1.5cm;
+  }
+
+  /* 2. Sembunyikan Semua Elemen Aplikasi Saat Cetak */
+  body * {
+    visibility: hidden;
+  }
+
+  /* 3. Hanya Tampilkan Area Dokumen Rapor */
+  #modalCetak,
+  #modalCetak .modal-content,
+  #areaCetakRapor,
+  #areaCetakRapor * {
+    visibility: visible !important;
+  }
+
+  /* 4. Reset Posisi Modal Supaya Pas di Atas Kertas Cetak */
+  #modalCetak {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  .modal-dialog {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .modal-content {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .modal-body {
+    padding: 0 !important;
+  }
+
+  /* 5. Rapikan Tabel Rapor & Teks Narasi */
+  #areaCetakRapor table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  #areaCetakRapor th, 
+  #areaCetakRapor td {
+    padding: 5px 8px !important;
+    font-size: 10.5pt !important;
+    line-height: 1.35 !important;
+    color: #000 !important;
+  }
+
+  /* Kunci Lebar Kolom Tabel Nilai Utama */
+  #c_tabelNilai td:nth-child(1) { width: 35px !important; text-align: center; }
+  #c_tabelNilai td:nth-child(2) { width: 170px !important; }
+  #c_tabelNilai td:nth-child(3) { width: 65px !important; text-align: center; }
+  #c_tabelNilai td:nth-child(4) { text-align: justify; }
+
+  /* 6. Cegah Pemotongan Elemen Penting (Page Break Protection) */
+  .ttd-box, 
+  #sectionAkhirSemester,
+  #sectionKokurikulerRapor {
+    page-break-inside: avoid !important;
+  }
+
+  /* 7. Sembunyikan Elemen yang Berlabel no-print */
+  .no-print,
+  .btn-close,
+  .modal-header,
+  .modal-footer {
+    display: none !important;
+  }
+}
