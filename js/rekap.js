@@ -247,3 +247,49 @@ function renderLembarRapor() {
     document.getElementById("c_tabelEkskul").innerHTML = htmlEkskul;
   }
 }
+
+function renderTabCetakRapor() {
+  let semAktif = String(infoSekolah.semester || "1").trim();
+  let container = document.getElementById("tabelDaftarCetakSiswa");
+  if (!container) return;
+
+  if (listSiswaData.length === 0) {
+    container.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa.</td></tr>';
+    return;
+  }
+
+  let html = "";
+  listSiswaData.forEach((siswa, idx) => {
+    let idS = String(siswa.id_siswa).trim();
+
+    // Check data completeness
+    let adaNilai = listNilaiData.some(n => {
+      let nSem = (n.semester !== undefined && n.semester !== "") ? String(n.semester).trim() : "1";
+      return String(n.id_siswa).trim() === idS && nSem === semAktif;
+    });
+    let adaAbs = listAbsensiData.some(a => String(a.id_siswa).trim() === idS && String(a.catatan_walikelas || "").trim() !== "");
+    let adaKoku = listKokurikulerData.some(k => String(k.id_siswa).trim() === idS);
+
+    let isFullyComplete = adaNilai && adaAbs && adaKoku;
+    let badgeStatus = isFullyComplete 
+      ? '<span class="badge bg-success px-2 py-1">🟢 Siap Cetak</span>' 
+      : '<span class="badge bg-warning text-dark px-2 py-1">⚠️ Belum Lengkap</span>';
+
+    html += `
+      <tr>
+        <td class="text-center">${idx + 1}</td>
+        <td><small class="text-muted">${siswa.nis} / ${siswa.nisn}</small></td>
+        <td><strong>${siswa.nama_lengkap}</strong></td>
+        <td class="text-center">${siswa.jenis_kelamin || 'L'}</td>
+        <td class="text-center">${badgeStatus}</td>
+        <td class="text-center">
+          <button onclick="bukaPreviewRapor('${idS}')" class="btn btn-sm btn-outline-primary fw-bold">
+            🔍 Preview & Cetak
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  container.innerHTML = html;
+}
