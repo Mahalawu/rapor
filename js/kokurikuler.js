@@ -19,28 +19,44 @@ function pilihSiswaKokurikuler() {
 }
 
 function updateLivePreviewKoku() {
+  let idSiswa = document.getElementById("selectSiswaKokurikuler").value;
+  let s = listSiswaData.find(x => String(x.id_siswa).trim() === String(idSiswa).trim());
+  let namaSiswa = s ? s.nama_lengkap : "SISWA";
+
   let dimTinggi = document.getElementById("koku_dimensi_tertinggi").value;
   let dimRendah = document.getElementById("koku_dimensi_terendah").value;
+  let tema = document.getElementById("koku_judul").value.trim() || "Kegiatan Kokurikuler";
 
-  document.getElementById("prev_desc_tertinggi").innerText = `Sudah baik dalam penerapan dimensi ${dimTinggi}.`;
-  document.getElementById("prev_desc_terendah").innerText = `Dan perlu berlatih dalam penerapan dimensi ${dimRendah}.`;
+  let narasiUtuh = `Ananda ${namaSiswa} sudah baik dalam penerapan dimensi ${dimTinggi} dan perlu berlatih dalam penerapan dimensi ${dimRendah} dalam tema "${tema}".`;
+
+  document.getElementById("prev_desc_tertinggi").innerText = narasiUtuh;
+  // Sembunyikan container deskripsi terendah jika masih ada di UI
+  if (document.getElementById("prev_desc_terendah")) {
+    document.getElementById("prev_desc_terendah").parentElement.style.display = "none";
+  }
 }
 
 async function simpanKokurikulerSiswa() {
   let idSiswa = document.getElementById("selectSiswaKokurikuler").value;
   if (!idSiswa) { alert("Pilih siswa terlebih dahulu!"); return; }
 
+  let s = listSiswaData.find(x => String(x.id_siswa).trim() === String(idSiswa).trim());
+  let namaSiswa = s ? s.nama_lengkap : "SISWA";
+
   let dimTinggi = document.getElementById("koku_dimensi_tertinggi").value;
   let dimRendah = document.getElementById("koku_dimensi_terendah").value;
+  let tema = document.getElementById("koku_judul").value.trim() || "Kegiatan Kokurikuler";
+
+  let narasiUtuh = `Ananda ${namaSiswa} sudah baik dalam penerapan dimensi ${dimTinggi} dan perlu berlatih dalam penerapan dimensi ${dimRendah} dalam tema "${tema}".`;
 
   let payload = {
     id_siswa: idSiswa,
     wadah_kokurikuler: document.getElementById("koku_wadah").value,
-    judul_tema: document.getElementById("koku_judul").value.trim(),
+    judul_tema: tema,
     dimensi_tertinggi: dimTinggi,
     dimensi_terendah: dimRendah,
-    deskripsi_tertinggi: `Sudah baik dalam penerapan dimensi ${dimTinggi}.`,
-    deskripsi_terendah: `Dan perlu berlatih dalam penerapan dimensi ${dimRendah}.`
+    deskripsi_tertinggi: narasiUtuh,
+    deskripsi_terendah: "-"
   };
 
   let btn = document.getElementById("btnSimpanKokurikuler");
