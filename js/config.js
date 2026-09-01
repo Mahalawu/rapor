@@ -51,7 +51,10 @@ async function muatDataAwal() {
 
     let resTP = await fetch(`${API_URL}?action=getTP`);
     let dataTP = await resTP.json();
-    if (dataTP.status === "success") { listTPData = dataTP.data; }
+    if (dataTP.status === "success") { 
+    let semAktif = String(infoSekolah.semester || "1").trim();
+    listTPData = dataTP.data.filter(tp => String(tp.semester || "1").trim() === semAktif); 
+    }
 
     let resAbs = await fetch(`${API_URL}?action=getAbsensi`);
     let dataAbs = await resAbs.json();
