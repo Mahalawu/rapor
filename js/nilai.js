@@ -26,18 +26,21 @@ function renderTabelSiswaInput() {
 function updateDropdownTP() {
   let selectedMapel = document.getElementById("selectMapel").value;
   let selectTP = document.getElementById("selectTPInput");
+  let semAktif = String(infoSekolah.semester || "1").trim();
 
   if (!selectedMapel) {
     selectTP.innerHTML = '<option value="">-- Pilih Mapel Terlebih Dahulu --</option>';
     return;
   }
 
+  // Filter TP berdasarkan Mapel DAN Semester Aktif
   let tpFiltered = listTPData.filter(tp => 
-    String(tp.id_mapel).trim().toUpperCase() === String(selectedMapel).trim().toUpperCase()
+    String(tp.id_mapel).trim().toUpperCase() === String(selectedMapel).trim().toUpperCase() &&
+    String(tp.semester || "1").trim() === semAktif
   );
 
   if (tpFiltered.length === 0) {
-    selectTP.innerHTML = '<option value="">-- Belum Ada TP untuk Mapel Ini --</option>';
+    selectTP.innerHTML = `<option value="">-- Belum Ada TP untuk Semester ${semAktif} --</option>`;
     return;
   }
 
@@ -47,7 +50,6 @@ function updateDropdownTP() {
   });
   selectTP.innerHTML = html;
 }
-
 async function simpanSemuaNilai() {
   let jenis = document.getElementById("selectJenisAsesmen").value;
   let mapel = document.getElementById("selectMapel").value;
