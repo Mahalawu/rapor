@@ -7,7 +7,10 @@ async function muatRekapNilai() {
 
     if (result.status === "success" && result.data.length > 0) {
       // Filter Nilai berdasarkan semester aktif
-      listNilaiData = result.data.filter(n => String(n.semester || semAktif).trim() === semAktif);
+      listNilaiData = result.data.filter(n => {
+  let nSem = (n.semester !== undefined && n.semester !== "") ? String(n.semester).trim() : "1";
+  return nSem === semAktif;
+});
       
       if (listNilaiData.length === 0) {
         document.getElementById("tabelRekap").innerHTML = `<tr><td colspan="8" class="text-center text-muted py-3">Belum ada data nilai untuk Semester ${semAktif}.</td></tr>`;
