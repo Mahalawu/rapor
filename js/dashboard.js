@@ -27,7 +27,7 @@ function renderTabelStatusSiswa(semAktif) {
   if (!container) return;
 
   if (listSiswaData.length === 0) {
-    container.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada data siswa.</td></tr>';
+    container.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa.</td></tr>';
     return;
   }
 
@@ -37,13 +37,13 @@ function renderTabelStatusSiswa(semAktif) {
   listSiswaData.forEach((siswa, idx) => {
     let idS = String(siswa.id_siswa).trim();
 
-    // 1. Cek Nilai (Juga membaca data lama yang belum berlabel semester jika di semester 1)
+    // Cek apakah siswa ini sudah punya minimal 1 nilai di semester aktif
     let adaNilai = listNilaiData.some(n => {
       let nSem = (n.semester !== undefined && n.semester !== "") ? String(n.semester).trim() : "1";
       return String(n.id_siswa).trim() === idS && nSem === semAktif;
     });
     
-    // 2. Cek Presensi & Catatan Wali Kelas
+    // Cek Presensi & Catatan Wali Kelas
     let adaAbs = listAbsensiData.some(a => {
       let aSem = (a.semester !== undefined && a.semester !== "") ? String(a.semester).trim() : "1";
       return String(a.id_siswa).trim() === idS && 
@@ -51,10 +51,10 @@ function renderTabelStatusSiswa(semAktif) {
              String(a.catatan_walikelas || "").trim() !== "";
     });
 
-    // 3. Cek Kokurikuler
+    // Cek Kokurikuler
     let adaKoku = listKokurikulerData.some(k => String(k.id_siswa).trim() === idS);
 
-    // Evaluasi Status Kelengkapan Rapor
+    // Hitung status kelengkapan
     let isFullyComplete = adaNilai && adaAbs && adaKoku;
     if (isFullyComplete) totalLengkap++;
 
@@ -80,7 +80,7 @@ function renderTabelStatusSiswa(semAktif) {
 
   container.innerHTML = html;
 
-  // Update Progress Bar
+  // Update Progress Bar Keseluruhan
   let totalSiswaCount = listSiswaData.length;
   let overallPct = totalSiswaCount > 0 ? Math.round((totalLengkap / totalSiswaCount) * 100) : 0;
   let barProgress = document.getElementById("dash_overallProgressBar");
