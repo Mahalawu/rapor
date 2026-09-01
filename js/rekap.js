@@ -95,14 +95,18 @@ function renderLembarRapor() {
   }
   document.getElementById("c_tglRapor").innerText = `${tempat}, ${tglIndo}`;
 
-  let koku = listKokurikulerData.find(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
-  if (koku) {
-    document.getElementById("c_koku_tertinggi").innerText = koku.deskripsi_tertinggi || `Sudah baik dalam penerapan dimensi ${koku.dimensi_tertinggi}.`;
-    document.getElementById("c_koku_terendah").innerText = koku.deskripsi_terendah || `Dan perlu berlatih dalam penerapan dimensi ${koku.dimensi_terendah}.`;
-  } else {
-    document.getElementById("c_koku_tertinggi").innerText = "Sudah baik dalam penerapan dimensi Keimanan dan Ketakwaan terhadap Tuhan YME.";
-    document.getElementById("c_koku_terendah").innerText = "Dan perlu berlatih dalam penerapan dimensi Kemandirian.";
-  }
+// RENDER DESKRIPSI KOKURIKULER TUNGGAL DI RAPOR
+      let koku = listKokurikulerData.find(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
+      if (koku) {
+        let tema = koku.judul_tema || "Kegiatan Kokurikuler";
+        let textKoku = koku.deskripsi_tertinggi && koku.deskripsi_tertinggi.includes("Ananda")
+          ? koku.deskripsi_tertinggi
+          : `Ananda ${siswa.nama_lengkap} sudah baik dalam penerapan dimensi ${koku.dimensi_tertinggi || 'Keimanan dan Ketakwaan terhadap Tuhan YME'} dan perlu berlatih dalam penerapan dimensi ${koku.dimensi_terendah || 'Kemandirian'} dalam tema "${tema}".`;
+        
+        document.getElementById("c_koku_tertinggi").innerText = textKoku;
+      } else {
+        document.getElementById("c_koku_tertinggi").innerText = `Ananda ${siswa.nama_lengkap} sudah baik dalam penerapan dimensi Keimanan dan Ketakwaan terhadap Tuhan YME dan perlu berlatih dalam penerapan dimensi Kemandirian.`;
+      }
 
   let secAkhir = document.getElementById("sectionAkhirSemester");
   if (jenis === "STS") {
