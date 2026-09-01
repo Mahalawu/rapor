@@ -21,3 +21,17 @@
 .ttd-box { 
   margin-top: 40px; 
 }
+
+/* Menyesuaikan ukuran Tab Navigasi agar sejajar 1 baris */
+#pills-tab .nav-link {
+  padding: 0.5rem 0.75rem; /* Mengurangi padding kiri-kanan */
+  font-size: 0.92rem; /* Sedikit memperkecil ukuran huruf */
+  margin-right: 0.25rem !important; /* Mengurangi jarak spasi antar tombol */
+}
+
+/* Memberikan jarak rapi jika dibuka di layar HP/Tablet yang sempit */
+@media (max-width: 992px) {
+  #pills-tab .nav-link {
+    margin-bottom: 0.5rem; 
+  }
+}
