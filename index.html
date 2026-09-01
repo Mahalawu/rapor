@@ -599,31 +599,88 @@
         </div>
       </div>
 
-      <!-- TAB 6: REKAP NILAI -->
+<!-- TAB 6: REKAP NILAI (FILTER, PAGINATION & MODE LEGER) -->
       <div class="tab-pane fade" id="tab-rekap">
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white py-3">
-            <h4 class="card-title mb-0 fw-bold text-dark">Rekap Cepat Nilai Asesmen</h4>
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h4 class="card-title mb-0 fw-bold text-dark">📊 Rekapitulasi Nilai Asesmen</h4>
+            <!-- Switch Mode Tampilan -->
+            <div class="btn-group" role="group">
+              <button type="button" id="btnModeDetail" onclick="gantiModeRekap('detail')" class="btn btn-primary btn-sm fw-bold active">📝 Mode Detail</button>
+              <button type="button" id="btnModeLeger" onclick="gantiModeRekap('leger')" class="btn btn-outline-primary btn-sm fw-bold">📋 Mode Leger Matriks</button>
+            </div>
           </div>
           <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered align-middle">
-                <thead class="table-secondary">
-                  <tr>
-                    <th style="width: 50px;" class="text-center">No</th>
-                    <th>Nama Siswa</th>
-                    <th style="width: 140px;">Mapel</th>
-                    <th style="width: 130px;" class="text-center">Jenis Asesmen</th>
-                    <th style="width: 100px;" class="text-center">Kode TP</th>
-                    <th style="width: 80px;" class="text-center">Nilai</th>
-                    <th>Deskripsi Otomatis Rapor</th>              
-                  </tr>
-                </thead>
-                <tbody id="tabelRekap">
-                  <tr><td colspan="7" class="text-center text-muted py-3">Klik tab untuk memuat rekap...</td></tr>
-                </tbody>
-              </table>
+            
+            <!-- BARIS FILTER & SEARCH -->
+            <div class="row g-2 mb-3 align-items-center">
+              <div class="col-md-3">
+                <input type="text" id="rekapSearch" oninput="filterDanRenderRekap()" class="form-control form-control-sm" placeholder="🔍 Cari Nama Siswa...">
+              </div>
+              <div class="col-md-3">
+                <select id="rekapFilterMapel" onchange="filterDanRenderRekap()" class="form-select form-select-sm">
+                  <option value="">-- Semua Mapel --</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="rekapFilterAsesmen" onchange="filterDanRenderRekap()" class="form-select form-select-sm">
+                  <option value="">-- Semua Jenis Asesmen --</option>
+                  <option value="LM">Sumatif Materi (LM)</option>
+                  <option value="STS">Tengah Semester (STS)</option>
+                  <option value="SAS">Akhir Semester (SAS)</option>
+                </select>
+              </div>
+              <div class="col-md-3 text-end">
+                <small class="text-muted fw-semibold" id="rekapInfoTotal">Total: 0 Data</small>
+              </div>
             </div>
+
+            <!-- CONTAINER MODE 1: TABEL DETAIL (DEFAULT) -->
+            <div id="containerRekapDetail">
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0">
+                  <thead class="table-secondary">
+                    <tr>
+                      <th style="width: 50px;" class="text-center">No</th>
+                      <th style="width: 200px;">Nama Siswa</th>
+                      <th style="width: 140px;">Mapel</th>
+                      <th style="width: 110px;" class="text-center">Asesmen</th>
+                      <th style="width: 90px;" class="text-center">Kode TP</th>
+                      <th style="width: 70px;" class="text-center">Nilai</th>
+                      <th>Deskripsi Otomatis Rapor</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelRekap">
+                    <tr><td colspan="7" class="text-center text-muted py-3">Memuat rekap...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- NAVIGASI PAGINATION -->
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted" id="rekapPaginationInfo">Halaman 1 dari 1</small>
+                <nav>
+                  <ul class="pagination pagination-sm mb-0" id="rekapPaginationNav">
+                    <!-- Dynamic Pagination -->
+                  </ul>
+                </nav>
+              </div>
+            </div>
+
+            <!-- CONTAINER MODE 2: TABEL LEGER MATRIKS -->
+            <div id="containerRekapLeger" style="display: none;">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                  <thead class="table-dark text-center" id="headerLegerMatriks">
+                    <!-- Header Mapel Dinamis -->
+                  </thead>
+                  <tbody id="tabelLegerMatriks">
+                    <tr><td colspan="8" class="text-center text-muted py-3">Memuat Leger Matriks...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
