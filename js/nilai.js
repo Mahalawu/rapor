@@ -69,7 +69,8 @@ async function simpanSemuaNilai() {
         id_mapel: mapel,
         jenis_asesmen: jenis,
         id_tp: jenis === "LM" ? tp : "-",
-        nilai_angka: parseFloat(val)
+        nilai_angka: parseFloat(val),
+        semester: infoSekolah.semester || 1
       });
     }
   });
