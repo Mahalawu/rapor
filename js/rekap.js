@@ -259,7 +259,6 @@ function renderTabCetakRapor() {
   listSiswaData.forEach((siswa, idx) => {
     let idS = String(siswa.id_siswa).trim();
 
-    // Check data completeness
     let adaNilai = listNilaiData.some(n => {
       let nSem = (n.semester !== undefined && n.semester !== "") ? String(n.semester).trim() : "1";
       return String(n.id_siswa).trim() === idS && nSem === semAktif;
@@ -274,12 +273,12 @@ function renderTabCetakRapor() {
 
     html += `
       <tr>
-        <td class="text-center" style="width: 50px;">${idx + 1}</td>
-        <td style="width: 180px;"><small class="text-muted font-monospace">${siswa.nis} / ${siswa.nisn}</small></td>
+        <td class="text-center">${idx + 1}</td>
+        <td><small class="text-muted font-monospace">${siswa.nis} / ${siswa.nisn}</small></td>
         <td><strong>${siswa.nama_lengkap}</strong></td>
-        <td class="text-center" style="width: 70px;">${siswa.jenis_kelamin || 'L'}</td>
-        <td class="text-center" style="width: 150px;">${badgeStatus}</td>
-        <td class="text-center" style="width: 170px;">
+        <td class="text-center">${siswa.jenis_kelamin || 'L'}</td>
+        <td class="text-center">${badgeStatus}</td>
+        <td class="text-center">
           <button onclick="bukaPreviewRapor('${idS}')" class="btn btn-sm btn-outline-primary fw-bold px-3">
             🔍 Preview & Cetak
           </button>
