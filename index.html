@@ -782,6 +782,35 @@
               <div class="col-md-6"><label class="form-label fw-semibold">NIP Wali Kelas:</label><input type="text" id="cfg_nip_walikelas" class="form-control"></div>
             </div>
 
+            <!-- SEKSI BARU: PEMBOBOTAN NILAI -->
+            <h5 class="fw-bold text-primary mb-3">3. Pembobotan Nilai Akhir Rapor (%)</h5>
+            <div class="alert alert-info py-2 fs-6 mb-3">
+              💡 Setel persentase pembobotan Nilai Akhir Rapor. Jika sekolah <strong>100% murni TP/LM</strong>, setel LM = 100%, STS = 0%, SAS = 0%.
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Bobot Sumatif Material (LM / TP):</label>
+                <div class="input-group">
+                  <input type="number" id="cfg_bobot_lm" class="form-control" value="100" min="0" max="100">
+                  <span class="input-group-text">%</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Bobot Tengah Semester (STS):</label>
+                <div class="input-group">
+                  <input type="number" id="cfg_bobot_sts" class="form-control" value="0" min="0" max="100">
+                  <span class="input-group-text">%</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Bobot Akhir Semester (SAS):</label>
+                <div class="input-group">
+                  <input type="number" id="cfg_bobot_sas" class="form-control" value="0" min="0" max="100">
+                  <span class="input-group-text">%</span>
+                </div>
+              </div>
+            </div>
+
             <button id="btnSimpanPengaturan" onclick="simpanPengaturanSekolah()" class="btn btn-primary btn-lg fw-bold w-100">
               💾 Simpan Pengaturan Identitas
             </button>
