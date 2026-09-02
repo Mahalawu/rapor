@@ -517,3 +517,124 @@ function cetakSemuaRaporSeKelas() {
     }, 600);
   }
 }
+
+// Helper Kalkulasi Nilai Akhir Berdasarkan Pembobotan
+function hitungNilaiAkhirMapel(listNilaiMapel) {
+  let bLM = parseFloat(infoSekolah.bobot_lm !== undefined ? infoSekolah.bobot_lm : 100);
+  let bSTS = parseFloat(infoSekolah.bobot_sts !== undefined ? infoSekolah.bobot_sts : 0);
+  let bSAS = parseFloat(infoSekolah.bobot_sas !== undefined ? infoSekolah.bobot_sas : 0);
+
+  let listLM = listNilaiMapel.filter(x => (x.jenis_asesmen || "LM") === "LM");
+  let itemSTS = listNilaiMapel.find(x => x.jenis_asesmen === "STS");
+  let itemSAS = listNilaiMapel.find(x => x.jenis_asesmen === "SAS");
+
+  let rerataLM = 0;
+  if (listLM.length > 0) {
+    let sumLM = 0;
+    listLM.forEach(x => sumLM += parseFloat(x.nilai_angka || 0));
+    rerataLM = sumLM / listLM.length;
+  }
+
+  let valSTS = itemSTS ? parseFloat(itemSTS.nilai_angka || 0) : 0;
+  let valSAS = itemSAS ? parseFloat(itemSAS.nilai_angka || 0) : 0;
+
+  // Jika setelan 100% Murni LM (Default Kurikulum Merdeka)
+  if (bLM === 100 && bSTS === 0 && bSAS === 0) {
+    return listLM.length > 0 ? Math.round(rerataLM) : 0;
+  }
+
+  // Kalkulasi Proporsional sesuai Bobot Persentase
+  let totalBobotAktif = 0;
+  let totalNilaiTerbobot = 0;
+
+  if (listLM.length > 0 && bLM > 0) {
+    totalNilaiTerbobot += (rerataLM * bLM);
+    totalBobotAktif += bLM;
+  }
+  if (itemSTS && bSTS > 0) {
+    totalNilaiTerbobot += (valSTS * bSTS);
+    totalBobotAktif += bSTS;
+  }
+  if (itemSAS && bSAS > 0) {
+    totalNilaiTerbobot += (valSAS * bSAS);
+    totalBobotAktif += bSAS;
+  }
+
+  if (totalBobotAktif === 0) return 0;
+  return Math.round(totalNilaiTerbobot / totalBobotAktif);
+}
+
+// Fungsi Ekspor Tabel Leger ke File Excel (.xlsx)
+function exportLegerToExcel() {
+  if (listSiswaData.length === 0 || listMapelData.length === 0) {
+    alert("Data Siswa atau Mapel belum lengkap untuk di-export!");
+    return;
+  }
+
+  let nSekolah = infoSekolah.nama_sekolah || "SDN";
+  let thnSem = `${infoSekolah.tahun_ajaran || "2025-2026"}_Sem_${infoSekolah.semester || "1"}`;
+  
+  // 1. Matriks Data Excel
+  let excelData = [];
+
+  // Header Informasi Sekolah
+  excelData.push([`LEGER NILAI RAPOR - ${nSekolah.toUpperCase()}`]);
+  excelData.push([`Tahun Ajaran: ${infoSekolah.tahun_ajaran || "-"} | Semester: ${infoSekolah.semester || "-"}`]);
+  excelData.push([]); // Baris Kosong
+
+  // Header Kolom Tabel
+  let headerRow = ["No", "NIS", "NISN", "Nama Lengkap Siswa", "L/P"];
+  listMapelData.forEach(m => headerRow.push(m.nama_mapel));
+  headerRow.push("Rata-Rata Akhir");
+  excelData.push(headerRow);
+
+  // Isi Baris Siswa
+  listSiswaData.forEach((siswa, idx) => {
+    let idS = String(siswa.id_siswa).trim();
+    let row = [
+      idx + 1,
+      siswa.nis || "-",
+      siswa.nisn || "-",
+      siswa.nama_lengkap,
+      siswa.jenis_kelamin || "L"
+    ];
+
+    let totalNilaiSemuaMapel = 0;
+    let countMapelAdaNilai = 0;
+
+    listMapelData.forEach(m => {
+      let mKey = String(m.id_mapel).trim().toUpperCase();
+      let nilaiSiswaMapel = listNilaiData.filter(n => 
+        String(n.id_siswa).trim() === idS && 
+        String(n.id_mapel).trim().toUpperCase() === mKey
+      );
+
+      if (nilaiSiswaMapel.length > 0) {
+        let nilaiAkhir = hitungNilaiAkhirMapel(nilaiSiswaMapel);
+        row.push(nilaiAkhir);
+        totalNilaiSemuaMapel += nilaiAkhir;
+        countMapelAdaNilai++;
+      } else {
+        row.push("-");
+      }
+    });
+
+    let avgAkhir = countMapelAdaNilai > 0 ? Math.round(totalNilaiSemuaMapel / countMapelAdaNilai) : "-";
+    row.push(avgAkhir);
+
+    excelData.push(row);
+  });
+
+  // 2. Generate Workbook via SheetJS
+  let wb = XLSX.utils.book_new();
+  let ws = XLSX.utils.aoa_to_sheet(excelData);
+
+  // Set Auto Width Kolom Nama Siswa
+  ws['!cols'] = [{ wch: 5 }, { wch: 12 }, { wch: 14 }, { wch: 30 }, { wch: 6 }];
+
+  XLSX.utils.book_append_sheet(wb, ws, "Leger Nilai");
+
+  // 3. Download File Excel
+  let fileName = `Leger_Nilai_${nSekolah.replace(/\s+/g, '_')}_${thnSem}.xlsx`;
+  XLSX.writeFile(wb, fileName);
+}
