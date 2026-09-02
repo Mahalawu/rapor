@@ -6,6 +6,9 @@ function loadFormPengaturan() {
   document.getElementById("cfg_tahun_ajaran").value = infoSekolah.tahun_ajaran || "2025/2026";
   document.getElementById("cfg_semester").value = infoSekolah.semester || "1";
   document.getElementById("cfg_tempat_cetak").value = infoSekolah.tempat_cetak || "Sine";
+  document.getElementById("cfg_bobot_lm").value = infoSekolah.bobot_lm !== undefined ? infoSekolah.bobot_lm : 100;
+  document.getElementById("cfg_bobot_sts").value = infoSekolah.bobot_sts !== undefined ? infoSekolah.bobot_sts : 0;
+  document.getElementById("cfg_bobot_sas").value = infoSekolah.bobot_sas !== undefined ? infoSekolah.bobot_sas : 0;
   
   if (infoSekolah.tanggal_rapor) {
     let tglRaw = new Date(infoSekolah.tanggal_rapor);
@@ -39,6 +42,9 @@ async function simpanPengaturanSekolah() {
     nip_kepsek: document.getElementById("cfg_nip_kepsek").value.trim(),
     nama_walikelas: document.getElementById("cfg_nama_walikelas").value.trim(),
     nip_walikelas: document.getElementById("cfg_nip_walikelas").value.trim()
+    infoSekolah.bobot_lm = parseFloat(document.getElementById("cfg_bobot_lm").value) || 0;
+    infoSekolah.bobot_sts = parseFloat(document.getElementById("cfg_bobot_sts").value) || 0;
+    infoSekolah.bobot_sas = parseFloat(document.getElementById("cfg_bobot_sas").value) || 0;
   };
 
   if (!payload.nama_sekolah) { alert("Nama Sekolah wajib diisi!"); return; }
