@@ -607,6 +607,9 @@
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h4 class="card-title mb-0 fw-bold text-dark">📊 Rekapitulasi Nilai Asesmen</h4>
+              <!-- Ditaruh di header atau atas tabel Mode Leger -->
+              <button onclick="exportLegerToExcel()" class="btn btn-success btn-sm fw-bold me-2">📥 Export Leger ke Excel (.xlsx)
+              </button>
             <!-- Switch Mode Tampilan -->
             <div class="btn-group" role="group">
               <button type="button" id="btnModeDetail" onclick="gantiModeRekap('detail')" class="btn btn-primary btn-sm fw-bold active">📝 Mode Detail</button>
@@ -672,9 +675,6 @@
 
             <!-- CONTAINER MODE 2: TABEL LEGER MATRIKS -->
             <div id="containerRekapLeger" style="display: none;">
-              <!-- Ditaruh di header atau atas tabel Mode Leger -->
-              <button onclick="exportLegerToExcel()" class="btn btn-success btn-sm fw-bold me-2">📥 Export Leger ke Excel (.xlsx)
-              </button>
               <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle mb-0">
                   <thead class="table-dark text-center" id="headerLegerMatriks">
