@@ -607,11 +607,10 @@
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h4 class="card-title mb-0 fw-bold text-dark">📊 Rekapitulasi Nilai Asesmen</h4>
-              <!-- Ditaruh di header atau atas tabel Mode Leger -->
+            <!-- Switch Mode Tampilan -->
+            <div class="btn-group" role="group">                          
               <button onclick="exportLegerToExcel()" class="btn btn-success btn-sm fw-bold me-2">📥 Export Leger ke Excel (.xlsx)
               </button>
-            <!-- Switch Mode Tampilan -->
-            <div class="btn-group" role="group">
               <button type="button" id="btnModeDetail" onclick="gantiModeRekap('detail')" class="btn btn-primary btn-sm fw-bold active">📝 Mode Detail</button>
               <button type="button" id="btnModeLeger" onclick="gantiModeRekap('leger')" class="btn btn-outline-primary btn-sm fw-bold">📋 Mode Leger Matriks</button>
             </div>
