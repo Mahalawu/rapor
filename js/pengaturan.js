@@ -41,10 +41,10 @@ async function simpanPengaturanSekolah() {
     nama_kepsek: document.getElementById("cfg_nama_kepsek").value.trim(),
     nip_kepsek: document.getElementById("cfg_nip_kepsek").value.trim(),
     nama_walikelas: document.getElementById("cfg_nama_walikelas").value.trim(),
-    nip_walikelas: document.getElementById("cfg_nip_walikelas").value.trim()
-    infoSekolah.bobot_lm = parseFloat(document.getElementById("cfg_bobot_lm").value) || 0;
-    infoSekolah.bobot_sts = parseFloat(document.getElementById("cfg_bobot_sts").value) || 0;
-    infoSekolah.bobot_sas = parseFloat(document.getElementById("cfg_bobot_sas").value) || 0;
+    nip_walikelas: document.getElementById("cfg_nip_walikelas").value.trim(),
+    bobot_lm: parseFloat(document.getElementById("cfg_bobot_lm").value) || 0,
+    bobot_sts: parseFloat(document.getElementById("cfg_bobot_sts").value) || 0,
+    bobot_sas: parseFloat(document.getElementById("cfg_bobot_sas").value) || 0
   };
 
   if (!payload.nama_sekolah) { alert("Nama Sekolah wajib diisi!"); return; }
