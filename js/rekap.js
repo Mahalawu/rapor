@@ -63,9 +63,18 @@ function filterDanRenderRekap() {
   let search = (document.getElementById("rekapSearch")?.value || "").toLowerCase().trim();
   let filterMapel = (document.getElementById("rekapFilterMapel")?.value || "").toUpperCase().trim();
   let filterAsesmen = (document.getElementById("rekapFilterAsesmen")?.value || "").toUpperCase().trim();
+  
+  // Ambil daftar ID siswa yang berada di KELAS AKTIF
+  let listSiswaKelasAktif = getSiswaKelasAktif();
+  let setIdsSiswaKelasAktif = new Set(listSiswaKelasAktif.map(s => String(s.id_siswa).trim()));
 
   filteredRekapData = listNilaiData.filter(n => {
-    let s = listSiswaData.find(x => String(x.id_siswa).trim() === String(n.id_siswa).trim());
+    let idSiswaStr = String(n.id_siswa).trim();
+    
+    // Hanya proses nilai jika siswanya termasuk di kelas aktif
+    if (!setIdsSiswaKelasAktif.has(idSiswaStr)) return false;
+
+    let s = listSiswaKelasAktif.find(x => String(x.id_siswa).trim() === idSiswaStr);
     let namaSiswa = s ? s.nama_lengkap.toLowerCase() : "";
     
     let matchSearch = search === "" || namaSiswa.includes(search);
