@@ -19,7 +19,7 @@
   "theme_color": "#06C3C9",
   "icons": [
     {
-      "src": "https://mahalawu.github.io/rapor/logo.png",
+      "src": "https://mahalawu.github.io/rapor/logo192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
