@@ -1,10 +1,20 @@
 function renderTabelSiswaMaster() {
-  if (listSiswaData.length === 0) {
-    document.getElementById("tabelListSiswaMaster").innerHTML = '<tr><td colspan="5" class="text-center text-muted">Belum ada data siswa.</td></tr>';
+  let kAktif = String(infoSekolah.kelas || 5).trim();
+  
+  // FILTER SISWA SESUAI KELAS AKTIF
+  let listSiswaAktif = listSiswaData.filter(item => {
+    let kSiswa = String(item.kelas || (infoSekolah.kelas || 5)).trim();
+    return kSiswa === kAktif;
+  });
+
+  if (listSiswaAktif.length === 0) {
+    document.getElementById("tabelListSiswaMaster").innerHTML = 
+      `<tr><td colspan="5" class="text-center text-muted">Belum ada data siswa untuk Kelas ${kAktif}.</td></tr>`;
     return;
   }
+
   let html = "";
-  listSiswaData.forEach((item, idx) => {
+  listSiswaAktif.forEach((item, idx) => {
     let jk = item.jenis_kelamin || 'L';
     let kelas = item.kelas || (infoSekolah.kelas || 5);
     html += `
