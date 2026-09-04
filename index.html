@@ -982,5 +982,11 @@
     document.getElementById("selectMapel").addEventListener("change", updateDropdownTP);
     muatDataAwal();
   </script>
+
+  <script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
+</script>
 </body>
 </html>
