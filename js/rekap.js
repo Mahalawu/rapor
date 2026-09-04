@@ -182,13 +182,16 @@ function gantiHalamanRekap(page) {
   renderTabelDetail();
 }
 
+// Sesuaikan fungsi renderTabelLeger() di rekap.js
 function renderTabelLeger() {
   let headerContainer = document.getElementById("headerLegerMatriks");
   let bodyContainer = document.getElementById("tabelLegerMatriks");
   if (!bodyContainer) return;
 
-  if (listSiswaData.length === 0 || listMapelData.length === 0) {
-    bodyContainer.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Data siswa / mapel belum tersedia.</td></tr>';
+  let siswaAktifList = getSiswaKelasAktif();
+
+  if (siswaAktifList.length === 0 || listMapelData.length === 0) {
+    bodyContainer.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Data siswa / mapel belum tersedia untuk Kelas ${infoSekolah.kelas || 5}.</td></tr>`;
     return;
   }
 
@@ -207,7 +210,7 @@ function renderTabelLeger() {
 
   let bodyHtml = "";
   let search = (document.getElementById("rekapSearch")?.value || "").toLowerCase().trim();
-  let listSiswaFiltered = listSiswaData.filter(s => search === "" || s.nama_lengkap.toLowerCase().includes(search));
+  let listSiswaFiltered = siswaAktifList.filter(s => search === "" || s.nama_lengkap.toLowerCase().includes(search));
 
   if (listSiswaFiltered.length === 0) {
     bodyContainer.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-3">Tidak ada siswa yang cocok.</td></tr>';
@@ -231,14 +234,10 @@ function renderTabelLeger() {
       );
 
       if (nilaiSiswaMapel.length > 0) {
-        let sum = 0;
-        nilaiSiswaMapel.forEach(n => sum += parseFloat(n.nilai_angka || 0));
-        let avg = Math.round(sum / nilaiSiswaMapel.length);
-        
-        totalRataMapel += avg;
+        let nilaiAkhir = hitungNilaiAkhirMapel(nilaiSiswaMapel);
+        totalRataMapel += nilaiAkhir;
         countMapelAdaNilai++;
-        
-        bodyHtml += `<td class="text-center fw-bold">${avg}</td>`;
+        bodyHtml += `<td class="text-center fw-bold">${nilaiAkhir}</td>`;
       } else {
         bodyHtml += `<td class="text-center text-muted">-</td>`;
       }
@@ -251,18 +250,21 @@ function renderTabelLeger() {
   bodyContainer.innerHTML = bodyHtml;
 }
 
+// Sesuaikan fungsi renderTabCetakRapor() di rekap.js
 function renderTabCetakRapor() {
   let semAktif = String(infoSekolah.semester || "1").trim();
   let container = document.getElementById("tabelDaftarCetakSiswa");
   if (!container) return;
 
-  if (listSiswaData.length === 0) {
-    container.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa.</td></tr>';
+  let siswaAktifList = getSiswaKelasAktif();
+
+  if (siswaAktifList.length === 0) {
+    container.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa untuk Kelas ${infoSekolah.kelas || 5}.</td></tr>`;
     return;
   }
 
   let html = "";
-  listSiswaData.forEach((siswa, idx) => {
+  siswaAktifList.forEach((siswa, idx) => {
     let idS = String(siswa.id_siswa).trim();
 
     let adaNilai = listNilaiData.some(n => {
@@ -280,7 +282,7 @@ function renderTabCetakRapor() {
     html += `
       <tr>
         <td class="text-center">${idx + 1}</td>
-        <td><small class="text-muted font-monospace">${siswa.nis} / ${siswa.nisn}</small></td>
+        <td><small class="text-muted font-monospace">${siswa.nis || '-'} / ${siswa.nisn || '-'}</small></td>
         <td><strong>${siswa.nama_lengkap}</strong></td>
         <td class="text-center">${siswa.jenis_kelamin || 'L'}</td>
         <td class="text-center">${badgeStatus}</td>
@@ -294,6 +296,43 @@ function renderTabCetakRapor() {
   });
 
   container.innerHTML = html;
+}
+
+// Sesuaikan fungsi cetakSemuaRaporSeKelas() di rekap.js
+function cetakSemuaRaporSeKelas() {
+  let siswaAktifList = getSiswaKelasAktif();
+
+  if (siswaAktifList.length === 0) { 
+    alert(`Belum ada data siswa untuk Kelas ${infoSekolah.kelas || 5}!`); 
+    return; 
+  }
+
+  if (confirm(`Cetak Rapor Masal untuk seluruh (${siswaAktifList.length} Siswa) Kelas ${infoSekolah.kelas || 5}?`)) {
+    let area = document.getElementById("areaCetakRapor");
+    if (!area) return;
+
+    let htmlFull = "";
+    
+    siswaAktifList.forEach((siswa) => {
+      siswaAktifId = String(siswa.id_siswa).trim();
+      renderLembarRapor();
+      
+      htmlFull += `
+        <div class="lembar-rapor-siswa mb-5">
+          ${area.innerHTML}
+        </div>
+      `;
+    });
+
+    area.innerHTML = htmlFull;
+
+    var myModal = new bootstrap.Modal(document.getElementById('modalCetak'));
+    myModal.show();
+
+    setTimeout(() => {
+      window.print();
+    }, 600);
+  }
 }
 
 /* ===================================================
@@ -478,43 +517,6 @@ function renderLembarRapor() {
       htmlEkskul = '<tr><td class="text-center">1</td><td>Pramuka</td><td>Baik</td></tr>';
     }
     document.getElementById("c_tabelEkskul").innerHTML = htmlEkskul;
-  }
-}
-
-function cetakSemuaRaporSeKelas() {
-  if (listSiswaData.length === 0) { 
-    alert("Belum ada data siswa!"); 
-    return; 
-  }
-
-  if (confirm(`Cetak Rapor Masal untuk seluruh (${listSiswaData.length} Siswa)?`)) {
-    let area = document.getElementById("areaCetakRapor");
-    if (!area) return;
-
-    let htmlFull = "";
-    
-    // Loop gabungkan seluruh rapor siswa sekelas
-    listSiswaData.forEach((siswa) => {
-      siswaAktifId = String(siswa.id_siswa).trim();
-      renderLembarRapor(); // generate isi #areaCetakRapor
-      
-      htmlFull += `
-        <div class="lembar-rapor-siswa mb-5">
-          ${area.innerHTML}
-        </div>
-      `;
-    });
-
-    // Masukkan gabungan semua lembar siswa ke container modal
-    area.innerHTML = htmlFull;
-
-    // Tampilkan Modal & Trigered Cetak PDF
-    var myModal = new bootstrap.Modal(document.getElementById('modalCetak'));
-    myModal.show();
-
-    setTimeout(() => {
-      window.print();
-    }, 600);
   }
 }
 
