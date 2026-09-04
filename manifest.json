@@ -47,8 +47,8 @@
   ],
   "screenshots": [
     {
-      "src": "https://mahalawu.github.io/rapor/logo.png",
-      "sizes": "512x1052",
+      "src": "https://mahalawu.github.io/rapor/screenshot.png",
+      "sizes": "1009x817",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Halaman Produk"
