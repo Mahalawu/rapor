@@ -25,6 +25,12 @@
       "purpose": "any"
     },
         {
+      "src": "https://mahalawu.github.io/rapor/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+        {
       "src": "https://mahalawu.github.io/rapor/logo.png",
       "sizes": "512x512",
       "type": "image/png",
