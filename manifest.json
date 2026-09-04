@@ -16,7 +16,7 @@
 ],
   "orientation": "any",
   "background_color": "#F55427",
-  "theme_color": "#06C3C9",
+  "theme_color": "#F55427",
   "icons": [
     {
       "src": "https://mahalawu.github.io/rapor/logo192.png",
