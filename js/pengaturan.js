@@ -63,6 +63,14 @@ async function simpanPengaturanSekolah() {
       alert("🎉 Pengaturan Identitas Sekolah & Wali Kelas berhasil diperbarui!");
       infoSekolah = payload;
       updateHeaderTampilan();
+      
+      // TRIGGER RE-RENDER SELURUH TAB BERDASARKAN KELAS BARU:
+      if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
+      if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
+      if (typeof renderTabelTP === "function") renderTabelTP();
+      if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
+      if (typeof renderTabCetakRapor === "function") renderTabCetakRapor();
+      if (typeof renderDashboard === "function") renderDashboard();
     } else { alert("Gagal menyimpan: " + result.message); }
   } catch (err) { alert("Terjadi kesalahan koneksi!"); }
   finally { btn.disabled = false; btn.innerHTML = "💾 Simpan Pengaturan Identitas"; }
