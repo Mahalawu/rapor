@@ -8,13 +8,28 @@ function gantiModeAsesmen() {
   }
 }
 
+// 1. RENDER TABEL INPUT NILAI (FILTER BY KELAS AKTIF)
 function renderTabelSiswaInput() {
+  let kAktif = String(infoSekolah.kelas || 5).trim();
+
+  // Filter siswa yang kelasnya cocok dengan kelas aktif
+  let listSiswaAktif = listSiswaData.filter(siswa => {
+    let kSiswa = String(siswa.kelas || (infoSekolah.kelas || 5)).trim();
+    return kSiswa === kAktif;
+  });
+
+  if (listSiswaAktif.length === 0) {
+    document.getElementById("tabelSiswaInput").innerHTML = 
+      `<tr><td colspan="4" class="text-center text-muted py-3">Belum ada data siswa untuk Kelas ${kAktif}. Silakan tambah siswa di tab Data Siswa.</td></tr>`;
+    return;
+  }
+
   let html = "";
-  listSiswaData.forEach((siswa, index) => {
+  listSiswaAktif.forEach((siswa, index) => {
     html += `
       <tr>
-        <td>${index + 1}</td>
-        <td><small class="text-muted">${siswa.nis} / ${siswa.nisn}</small></td>
+        <td class="text-center">${index + 1}</td>
+        <td><small class="text-muted">${siswa.nis || '-'} / ${siswa.nisn || '-'}</small></td>
         <td><strong>${siswa.nama_lengkap}</strong></td>
         <td><input type="number" min="0" max="100" class="form-control input-nilai-siswa" data-idsiswa="${siswa.id_siswa}" placeholder="0-100"></td>
       </tr>
@@ -23,24 +38,27 @@ function renderTabelSiswaInput() {
   document.getElementById("tabelSiswaInput").innerHTML = html;
 }
 
+// 2. UPDATE DROPDOWN TP (FILTER BY MAPEL, SEMESTER, DAN KELAS AKTIF)
 function updateDropdownTP() {
   let selectedMapel = document.getElementById("selectMapel").value;
   let selectTP = document.getElementById("selectTPInput");
   let semAktif = String(infoSekolah.semester || "1").trim();
+  let kAktif = String(infoSekolah.kelas || "5").trim();
 
   if (!selectedMapel) {
     selectTP.innerHTML = '<option value="">-- Pilih Mapel Terlebih Dahulu --</option>';
     return;
   }
 
-  // Filter TP berdasarkan Mapel DAN Semester Aktif
+  // Filter TP berdasarkan Mapel, Semester, DAN Kelas Aktif
   let tpFiltered = listTPData.filter(tp => 
     String(tp.id_mapel).trim().toUpperCase() === String(selectedMapel).trim().toUpperCase() &&
-    String(tp.semester || "1").trim() === semAktif
+    String(tp.semester || "1").trim() === semAktif &&
+    String(tp.kelas || "5").trim() === kAktif
   );
 
   if (tpFiltered.length === 0) {
-    selectTP.innerHTML = `<option value="">-- Belum Ada TP untuk Semester ${semAktif} --</option>`;
+    selectTP.innerHTML = `<option value="">-- Belum Ada TP untuk Kelas ${kAktif} Semester ${semAktif} --</option>`;
     return;
   }
 
@@ -50,6 +68,7 @@ function updateDropdownTP() {
   });
   selectTP.innerHTML = html;
 }
+
 async function simpanSemuaNilai() {
   let jenis = document.getElementById("selectJenisAsesmen").value;
   let mapel = document.getElementById("selectMapel").value;
