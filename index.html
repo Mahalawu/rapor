@@ -10,6 +10,11 @@
   <!-- LOGO / FAVICON -->
   <link rel="icon" type="image/png" href="https://mahalawu.github.io/rapor/logo.png">
   <link rel="apple-touch-icon" href="https://mahalawu.github.io/rapor/logo.png">
+    <script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
+</script>
 </head>
 <body class="bg-light p-4">
 
@@ -982,11 +987,5 @@
     document.getElementById("selectMapel").addEventListener("change", updateDropdownTP);
     muatDataAwal();
   </script>
-
-  <script>
-  if (typeof navigator.serviceWorker !== 'undefined') {
-    navigator.serviceWorker.register('sw.js')
-  }
-</script>
 </body>
 </html>
