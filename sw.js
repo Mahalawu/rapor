@@ -1,12 +1,11 @@
-const CACHE_NAME = 'pwa-wifi-billing-v1';
+const CACHE_NAME = 'app-rapor-sdn-sine1-v1';
 const urlsToCache = [
   './',
   './index.html',
   './style.css',
-  './api.js',
   './script.js',
   './manifest.json',
-  './assets/qrcode-client.png'
+  './logo.png'
 ];
 
 // 1. Fase Install (Hanya satu fungsi, menggunakan variabel urlsToCache yang benar)
