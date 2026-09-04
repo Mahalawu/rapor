@@ -2,8 +2,16 @@ const CACHE_NAME = 'app-rapor-sdn-sine1-v1';
 const urlsToCache = [
   './',
   './index.html',
-  './style.css',
+  './css/style.css',
   './script.js',
+  './absensi.js',
+  './config.js',
+  './dashboard.js',
+  './nilai.js',
+  './pengaturan.js',
+  './rekap.js',
+  './siswa.js',
+  './tp.js',
   './manifest.json',
   './logo.png'
 ];
