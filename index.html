@@ -609,9 +609,14 @@
             <h4 class="card-title mb-0 fw-bold text-dark">📊 Rekapitulasi Nilai Asesmen</h4>
             <!-- Switch Mode Tampilan -->
             <div class="btn-group" role="group">                          
-              <button type="button" id="btnModeExport" onclick="exportLegerToExcel()" class="btn btn-success btn-sm fw-bold me-2">📥 Export Leger ke Excel (.xlsx)</button>
-              <button type="button" id="btnModeDetail" onclick="gantiModeRekap('detail')" class="btn btn-primary btn-sm fw-bold active">📝 Mode Detail</button>
-              <button type="button" id="btnModeLeger" onclick="gantiModeRekap('leger')" class="btn btn-outline-primary btn-sm fw-bold">📋 Mode Leger Matriks</button>
+              <button type="button" onclick="exportLegerToExcel()" class="btn btn-success btn-sm fw-bold">
+                📥 Export Leger ke Excel (.xlsx)</button>
+              <button type="button" id="btnModeDetail" onclick="gantiModeRekap('detail')" class="btn btn-primary btn-sm fw-bold active">
+                📝 Mode Detail
+              </button>
+              <button type="button" id="btnModeLeger" onclick="gantiModeRekap('leger')" class="btn btn-outline-primary btn-sm fw-bold">
+                📋 Mode Leger Matriks
+              </button>
             </div>
           </div>
           <div class="card-body">
