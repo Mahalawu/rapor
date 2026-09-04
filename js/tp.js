@@ -1,10 +1,20 @@
 function renderTabelTP() {
-  if (listTPData.length === 0) {
-    document.getElementById("tabelListTP").innerHTML = '<tr><td colspan="4" class="text-center text-muted">Belum ada data TP.</td></tr>';
+  let kAktif = String(infoSekolah.kelas || 5).trim();
+
+  // FILTER TP SESUAI KELAS AKTIF
+  let listTPAktif = listTPData.filter(item => {
+    let kTP = String(item.kelas || (infoSekolah.kelas || 5)).trim();
+    return kTP === kAktif;
+  });
+
+  if (listTPAktif.length === 0) {
+    document.getElementById("tabelListTP").innerHTML = 
+      `<tr><td colspan="4" class="text-center text-muted">Belum ada data TP untuk Kelas ${kAktif}.</td></tr>`;
     return;
   }
+
   let html = "";
-  listTPData.forEach((item, idx) => {
+  listTPAktif.forEach((item, idx) => {
     let m = listMapelData.find(x => String(x.id_mapel).trim().toUpperCase() === String(item.id_mapel).trim().toUpperCase());
     let namaMapel = m ? m.nama_mapel : item.id_mapel;
 
