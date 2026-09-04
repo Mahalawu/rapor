@@ -12,7 +12,9 @@ const urlsToCache = [
   './siswa.js',
   './tp.js',
   './manifest.json',
-  './logo.png'
+  './logo.png',
+  './logo512.png',
+  './logo192.png'
 ];
 
 // 1. Fase Install (Hanya satu fungsi, menggunakan variabel urlsToCache yang benar)
