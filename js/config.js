@@ -12,22 +12,89 @@ let siswaAktifId = null;
 let ekskulCountAktif = 1;
 let listRiwayatSesiIni = [];
 
-// Helper Global: Dapatkan daftar siswa khusus KELAS AKTIF
+/* ===================================================
+   HELPER GLOBAL KELAS & FASE LOKAL
+   =================================================== */
+
+// 1. Dapatkan Kelas Aktif User dari localStorage atau Default Database
+function getKelasAktifUser() {
+  let kSimpanan = localStorage.getItem("kelasAktif_User");
+  if (kSimpanan) {
+    return String(kSimpanan).trim();
+  }
+  return String(infoSekolah.kelas || "5").trim();
+}
+
+// 2. Dapatkan Fase Otomatis Berdasarkan Kelas (1-2=A, 3-4=B, 5-6=C)
+function getFaseKelasAktif() {
+  let kAktif = getKelasAktifUser();
+  let kNum = parseInt(kAktif) || 5;
+  
+  if (kNum === 1 || kNum === 2) return "A";
+  if (kNum === 3 || kNum === 4) return "B";
+  return "C";
+}
+
+// 3. Dapatkan Daftar Siswa Khusus KELAS AKTIF
 function getSiswaKelasAktif() {
-  let kAktif = String(infoSekolah.kelas || 5).trim();
+  let kAktif = getKelasAktifUser();
   return listSiswaData.filter(s => {
-    let kSiswa = String(s.kelas || (infoSekolah.kelas || 5)).trim();
+    let kSiswa = String(s.kelas || kAktif).trim();
     return kSiswa === kAktif;
   });
 }
 
-// Helper Global: Populasi Dropdown Siswa (Absensi & Kokurikuler)
+// 4. Update Tampilan Header Utama & Badge Kelas/Fase
+function updateHeaderTampilan() {
+  let kAktif = getKelasAktifUser();
+  let faseAktif = getFaseKelasAktif();
+  
+  infoSekolah.kelas = kAktif; 
+  infoSekolah.fase = faseAktif; // Kunci konsistensi memori lokal
+
+  if (document.getElementById("namaSekolah")) {
+    document.getElementById("namaSekolah").innerText = infoSekolah.nama_sekolah || "Nama Sekolah Belum Diatur";
+  }
+  if (document.getElementById("tahunAjaran")) {
+    document.getElementById("tahunAjaran").innerText = infoSekolah.tahun_ajaran || "-";
+  }
+  if (document.getElementById("semester")) {
+    document.getElementById("semester").innerText = infoSekolah.semester || "-";
+  }
+  if (document.getElementById("labelKelasFase")) {
+    document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${faseAktif})`;
+  }
+  
+  let elSelect = document.getElementById("selectKelasLokal");
+  if (elSelect) elSelect.value = kAktif;
+}
+
+// 5. Ubah Kelas dari Dropdown Switcher Header
+function gantiKelasLokal(kelasBaru) {
+  localStorage.setItem("kelasAktif_User", kelasBaru);
+  
+  updateHeaderTampilan();
+  
+  // Re-render seluruh tampilan aplikasi secara otomatis
+  if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
+  if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
+  if (typeof renderTabelTP === "function") renderTabelTP();
+  if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
+  if (typeof renderTabCetakRapor === "function") renderTabCetakRapor();
+  if (typeof renderDashboard === "function") renderDashboard();
+  if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
+  
+  alert(`🔄 Tampilan berhasil disesuaikan untuk Kelas ${kelasBaru} (Fase ${infoSekolah.fase})!`);
+}
+
+// 6. Populasi Dropdown Siswa (Absensi & Kokurikuler)
 function populateDropdownSiswaGlobal() {
   let siswaAktif = getSiswaKelasAktif();
+  let kAktif = getKelasAktifUser();
   let selectAbsHtml = '<option value="">-- Pilih Siswa --</option>';
   
   siswaAktif.forEach(s => {
-    selectAbsHtml += `<option value="${s.id_siswa}">${s.nama_lengkap} (Kelas ${s.kelas || infoSekolah.kelas || 5})</option>`;
+    selectAbsHtml += `<option value="${s.id_siswa}">${s.nama_lengkap} (Kelas ${s.kelas || kAktif})</option>`;
   });
 
   let elAbs = document.getElementById("selectSiswaAbsensi");
@@ -35,6 +102,10 @@ function populateDropdownSiswaGlobal() {
   if (elAbs) elAbs.innerHTML = selectAbsHtml;
   if (elKoku) elKoku.innerHTML = selectAbsHtml;
 }
+
+/* ===================================================
+   LOAD DATA AWAL APLIKASI
+   =================================================== */
 
 async function muatDataAwal() {
   try {
@@ -62,8 +133,8 @@ async function muatDataAwal() {
     let dataSiswa = await resSiswa.json();
     if (dataSiswa.status === "success") {
       listSiswaData = dataSiswa.data;
-      renderTabelSiswaInput();
-      renderTabelSiswaMaster();
+      if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
+      if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
       populateDropdownSiswaGlobal();
     }
 
@@ -99,91 +170,7 @@ async function muatDataAwal() {
       }
     } catch (e) { console.log("Gagal memuat data nilai awal:", e); }
 
-    renderDashboard();
+    if (typeof renderDashboard === "function") renderDashboard();
 
   } catch (error) { alert("Gagal memuat data awal!"); }
-}
-
-function updateHeaderTampilan() {
-  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
-  let faseAktif = getFaseKelasAktif();
-  
-  infoSekolah.kelas = kAktif; 
-  infoSekolah.fase = faseAktif; // Kunci konsistensi Fase lokal
-
-  document.getElementById("namaSekolah").innerText = infoSekolah.nama_sekolah || "Nama Sekolah Belum Diatur";
-  document.getElementById("tahunAjaran").innerText = infoSekolah.tahun_ajaran || "-";
-  document.getElementById("semester").innerText = infoSekolah.semester || "-";
-  document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${faseAktif})`;
-  
-  let elSelect = document.getElementById("selectKelasLokal");
-  if (elSelect) elSelect.value = kAktif;
-}
-
-// 1. FUNGSI SINKRONISASI KELAS DARI LOCALSTORAGE / DATABASE PUSAT
-function getKelasAktifUser() {
-  let kSimpanan = localStorage.getItem("kelasAktif_User");
-  if (kSimpanan) {
-    return String(kSimpanan).trim();
-  }
-  // Jika belum pernah diset lokal, gunakan default dari database Google Sheets
-  return String(infoSekolah.kelas || "5").trim();
-}
-
-// 2. FUNGSI UNTUK MENGUBAH KELAS DARI DROPDOWN HEADER
-function gantiKelasLokal(kelasBaru) {
-  localStorage.setItem("kelasAktif_User", kelasBaru);
-  infoSekolah.kelas = kelasBaru; // Update variabel memori lokal
-  
-  // Auto Set Fase sesuai Kelas yang dipilih
-  if (kelasBaru === "1" || kelasBaru === "2") infoSekolah.fase = "A";
-  else if (kelasBaru === "3" || kelasBaru === "4") infoSekolah.fase = "B";
-  else infoSekolah.fase = "C";
-
-  updateHeaderTampilan();
-  
-  // Re-render seluruh tampilan aplikasi secara otomatis
-  if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
-  if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
-  if (typeof renderTabelTP === "function") renderTabelTP();
-  if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
-  if (typeof renderTabCetakRapor === "function") renderTabCetakRapor();
-  if (typeof renderDashboard === "function") renderDashboard();
-  if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
-  
-  alert(`🔄 Tampilan berhasil disesuaikan untuk Kelas ${kelasBaru} (Fase ${infoSekolah.fase})!`);
-}
-
-// 3. SESUAIKAN FUNGSI getSiswaKelasAktif()
-function getSiswaKelasAktif() {
-  let kAktif = getKelasAktifUser();
-  return listSiswaData.filter(s => {
-    let kSiswa = String(s.kelas || getKelasAktifUser()).trim();
-    return kSiswa === kAktif;
-  });
-}
-
-// 4. SESUAIKAN FUNGSI updateHeaderTampilan()
-function updateHeaderTampilan() {
-  let kAktif = getKelasAktifUser();
-  infoSekolah.kelas = kAktif; // Kunci konsistensi
-  
-  document.getElementById("namaSekolah").innerText = infoSekolah.nama_sekolah || "Nama Sekolah Belum Diatur";
-  document.getElementById("tahunAjaran").innerText = infoSekolah.tahun_ajaran || "-";
-  document.getElementById("semester").innerText = infoSekolah.semester || "-";
-  document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${infoSekolah.fase || 'C'})`;
-  
-  // Set posisi dropdown switcher sesuai kelas aktif
-  let elSelect = document.getElementById("selectKelasLokal");
-  if (elSelect) elSelect.value = kAktif;
-}
-
-// Helper Global: Dapatkan Fase secara otomatis berdasarkan Kelas Aktif
-function getFaseKelasAktif() {
-  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
-  let kNum = parseInt(kAktif);
-  
-  if (kNum === 1 || kNum === 2) return "A";
-  if (kNum === 3 || kNum === 4) return "B";
-  return "C"; // Default Kelas 5 & 6 (atau jika tidak valid)
 }
