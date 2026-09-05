@@ -31,6 +31,20 @@
           <span class="badge ms-2" id="labelKelasFase">Kelas -</span>
         </p>
       </div>
+
+      <!-- DROPDOWN SWITCHER KELAS LOKAL -->
+<div class="d-flex align-items-center gap-2 bg-light p-2 rounded border border-primary">
+  <label for="selectKelasLokal" class="fw-bold mb-0 text-primary small">📌 Kelas Aktif Anda:</label>
+  <select id="selectKelasLokal" class="form-select form-select-sm fw-bold border-primary" style="width: auto;" onchange="gantiKelasLokal(this.value)">
+    <option value="1">Kelas 1</option>
+    <option value="2">Kelas 2</option>
+    <option value="3">Kelas 3</option>
+    <option value="4">Kelas 4</option>
+    <option value="5">Kelas 5</option>
+    <option value="6">Kelas 6</option>
+  </select>
+</div>
+      
       <div>
         <button class="btn btn-outline-light btn-sm fw-bold px-3" onclick="document.getElementById('tab-pengaturan-tab').click()">
           ⚙️ Pengaturan
