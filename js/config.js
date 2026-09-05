@@ -105,10 +105,19 @@ async function muatDataAwal() {
 }
 
 function updateHeaderTampilan() {
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
+  let faseAktif = getFaseKelasAktif();
+  
+  infoSekolah.kelas = kAktif; 
+  infoSekolah.fase = faseAktif; // Kunci konsistensi Fase lokal
+
   document.getElementById("namaSekolah").innerText = infoSekolah.nama_sekolah || "Nama Sekolah Belum Diatur";
   document.getElementById("tahunAjaran").innerText = infoSekolah.tahun_ajaran || "-";
   document.getElementById("semester").innerText = infoSekolah.semester || "-";
-  document.getElementById("labelKelasFase").innerText = `Kelas ${infoSekolah.kelas || '5'} (Fase ${infoSekolah.fase || 'C'})`;
+  document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${faseAktif})`;
+  
+  let elSelect = document.getElementById("selectKelasLokal");
+  if (elSelect) elSelect.value = kAktif;
 }
 
 // 1. FUNGSI SINKRONISASI KELAS DARI LOCALSTORAGE / DATABASE PUSAT
@@ -167,4 +176,14 @@ function updateHeaderTampilan() {
   // Set posisi dropdown switcher sesuai kelas aktif
   let elSelect = document.getElementById("selectKelasLokal");
   if (elSelect) elSelect.value = kAktif;
+}
+
+// Helper Global: Dapatkan Fase secara otomatis berdasarkan Kelas Aktif
+function getFaseKelasAktif() {
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
+  let kNum = parseInt(kAktif);
+  
+  if (kNum === 1 || kNum === 2) return "A";
+  if (kNum === 3 || kNum === 4) return "B";
+  return "C"; // Default Kelas 5 & 6 (atau jika tidak valid)
 }
