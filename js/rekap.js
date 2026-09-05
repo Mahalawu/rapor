@@ -65,7 +65,7 @@ function filterDanRenderRekap() {
   let filterAsesmen = (document.getElementById("rekapFilterAsesmen")?.value || "").toUpperCase().trim();
   
   // Ambil daftar ID siswa yang berada di KELAS AKTIF
-  let listSiswaKelasAktif = getSiswaKelasAktif();
+  let listSiswaKelasAktif = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
   let setIdsSiswaKelasAktif = new Set(listSiswaKelasAktif.map(s => String(s.id_siswa).trim()));
 
   filteredRekapData = listNilaiData.filter(n => {
@@ -191,13 +191,12 @@ function gantiHalamanRekap(page) {
   renderTabelDetail();
 }
 
-// Sesuaikan fungsi renderTabelLeger() di rekap.js
 function renderTabelLeger() {
   let headerContainer = document.getElementById("headerLegerMatriks");
   let bodyContainer = document.getElementById("tabelLegerMatriks");
   if (!bodyContainer) return;
 
-  let siswaAktifList = getSiswaKelasAktif();
+  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
 
   if (siswaAktifList.length === 0 || listMapelData.length === 0) {
     bodyContainer.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Data siswa / mapel belum tersedia untuk Kelas ${infoSekolah.kelas || 5}.</td></tr>`;
@@ -259,13 +258,12 @@ function renderTabelLeger() {
   bodyContainer.innerHTML = bodyHtml;
 }
 
-// Sesuaikan fungsi renderTabCetakRapor() di rekap.js
 function renderTabCetakRapor() {
   let semAktif = String(infoSekolah.semester || "1").trim();
   let container = document.getElementById("tabelDaftarCetakSiswa");
   if (!container) return;
 
-  let siswaAktifList = getSiswaKelasAktif();
+  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
 
   if (siswaAktifList.length === 0) {
     container.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa untuk Kelas ${infoSekolah.kelas || 5}.</td></tr>`;
@@ -307,9 +305,8 @@ function renderTabCetakRapor() {
   container.innerHTML = html;
 }
 
-// Sesuaikan fungsi cetakSemuaRaporSeKelas() di rekap.js
 function cetakSemuaRaporSeKelas() {
-  let siswaAktifList = getSiswaKelasAktif();
+  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
 
   if (siswaAktifList.length === 0) { 
     alert(`Belum ada data siswa untuk Kelas ${infoSekolah.kelas || 5}!`); 
@@ -345,7 +342,7 @@ function cetakSemuaRaporSeKelas() {
 }
 
 /* ===================================================
-   FUNGSI CETAK RAPOR & RENDER LEMBAR RAPOR (YANG KETINGGALAN)
+   FUNGSI CETAK RAPOR & RENDER LEMBAR RAPOR
    =================================================== */
 
 function bukaPreviewRapor(idSiswa) {
@@ -378,8 +375,13 @@ function renderLembarRapor() {
   document.getElementById("c_namaKepsek").innerText = infoSekolah.nama_kepsek || "(....................)";
   document.getElementById("c_nipKepsek").innerText = infoSekolah.nip_kepsek ? `NIP. ${infoSekolah.nip_kepsek}` : "-";
 
-  document.getElementById("c_waliKelas").innerText = infoSekolah.nama_walikelas || "(....................)";
-  document.getElementById("c_nipWaliKelas").innerText = infoSekolah.nip_walikelas ? `NIP. ${infoSekolah.nip_walikelas}` : "-";
+  // BACA NAMA WALI KELAS BERDASARKAN KELAS AKTIF SISWA/USER
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (siswa.kelas || infoSekolah.kelas || "5");
+  let namaWaliSpesifik = localStorage.getItem(`wali_kelas_${kAktif}`) || infoSekolah.nama_walikelas || "(....................)";
+  let nipWaliSpesifik = localStorage.getItem(`nip_wali_kelas_${kAktif}`) || infoSekolah.nip_walikelas || "";
+
+  document.getElementById("c_waliKelas").innerText = namaWaliSpesifik;
+  document.getElementById("c_nipWaliKelas").innerText = nipWaliSpesifik ? `NIP. ${nipWaliSpesifik}` : "-";
 
   let tempat = infoSekolah.tempat_cetak || "Sine";
   let tglIndo = "-";
@@ -475,7 +477,7 @@ function renderLembarRapor() {
 
     let boxKeputusan = document.getElementById("boxKeputusanAkhir");
     let semAktif = infoSekolah.semester ? String(infoSekolah.semester).trim() : "1";
-    let kelasAktif = infoSekolah.kelas ? parseInt(infoSekolah.kelas) : 5;
+    let kelasAktif = parseInt(kAktif) || 5;
 
     if (semAktif === "2" || semAktif === "Semester 2") {
       boxKeputusan.style.display = "block";
@@ -577,19 +579,22 @@ function hitungNilaiAkhirMapel(listNilaiMapel) {
 
 // Fungsi Ekspor Tabel Leger ke File Excel (.xlsx)
 function exportLegerToExcel() {
-  if (listSiswaData.length === 0 || listMapelData.length === 0) {
+  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
+
+  if (siswaAktifList.length === 0 || listMapelData.length === 0) {
     alert("Data Siswa atau Mapel belum lengkap untuk di-export!");
     return;
   }
 
   let nSekolah = infoSekolah.nama_sekolah || "SDN";
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
   let thnSem = `${infoSekolah.tahun_ajaran || "2025-2026"}_Sem_${infoSekolah.semester || "1"}`;
   
   // 1. Matriks Data Excel
   let excelData = [];
 
   // Header Informasi Sekolah
-  excelData.push([`LEGER NILAI RAPOR - ${nSekolah.toUpperCase()}`]);
+  excelData.push([`LEGER NILAI RAPOR - ${nSekolah.toUpperCase()} (KELAS ${kAktif})`]);
   excelData.push([`Tahun Ajaran: ${infoSekolah.tahun_ajaran || "-"} | Semester: ${infoSekolah.semester || "-"}`]);
   excelData.push([]); // Baris Kosong
 
@@ -600,7 +605,7 @@ function exportLegerToExcel() {
   excelData.push(headerRow);
 
   // Isi Baris Siswa
-  listSiswaData.forEach((siswa, idx) => {
+  siswaAktifList.forEach((siswa, idx) => {
     let idS = String(siswa.id_siswa).trim();
     let row = [
       idx + 1,
@@ -643,9 +648,9 @@ function exportLegerToExcel() {
   // Set Auto Width Kolom Nama Siswa
   ws['!cols'] = [{ wch: 5 }, { wch: 12 }, { wch: 14 }, { wch: 30 }, { wch: 6 }];
 
-  XLSX.utils.book_append_sheet(wb, ws, "Leger Nilai");
+  XLSX.utils.book_append_sheet(wb, ws, `Leger Kelas ${kAktif}`);
 
   // 3. Download File Excel
-  let fileName = `Leger_Nilai_${nSekolah.replace(/\s+/g, '_')}_${thnSem}.xlsx`;
+  let fileName = `Leger_Nilai_Kelas_${kAktif}_${nSekolah.replace(/\s+/g, '_')}_${thnSem}.xlsx`;
   XLSX.writeFile(wb, fileName);
 }
