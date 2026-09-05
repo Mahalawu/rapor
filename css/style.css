@@ -1,15 +1,15 @@
 /* ==========================================
-   ROOT VARIABLES - WARNA HIJAU
+   ROOT VARIABLES - WARNA BIRU
    ========================================== */
 :root {
-  --hijau-primary: #14853D;
-  --hijau-dark: #0D6A2F;
-  --hijau-darker: #09521E;
-  --hijau-light: #E8F5EE;
-  --hijau-gradient: linear-gradient(135deg, #14853D 0%, #0D6A2F 50%, #09521E 100%);
-  --hijau-gradient-soft: linear-gradient(135deg, #14853D 0%, #0D6A2F 100%);
-  --shadow-sm: 0 2px 8px rgba(13, 106, 47, 0.08);
-  --shadow-md: 0 4px 16px rgba(13, 106, 47, 0.12);
+  --hijau-primary: #1A73E8;        /* Biru Google */
+  --hijau-dark: #1557B0;           /* Biru lebih gelap */
+  --hijau-darker: #0D47A1;         /* Biru paling gelap */
+  --hijau-light: #E8F0FE;          /* Biru sangat terang */
+  --hijau-gradient: linear-gradient(135deg, #1A73E8 0%, #1557B0 50%, #0D47A1 100%);
+  --hijau-gradient-soft: linear-gradient(135deg, #1A73E8 0%, #1557B0 100%);
+  --shadow-sm: 0 2px 8px rgba(26, 115, 232, 0.08);
+  --shadow-md: 0 4px 16px rgba(26, 115, 232, 0.12);
   --radius: 10px;
 }
 
