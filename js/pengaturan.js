@@ -1,7 +1,9 @@
 function loadFormPengaturan() {
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
+
   document.getElementById("cfg_nama_sekolah").value = infoSekolah.nama_sekolah || "";
   document.getElementById("cfg_npsn").value = infoSekolah.npsn || "";
-  document.getElementById("cfg_kelas").value = infoSekolah.kelas || "5";
+  document.getElementById("cfg_kelas").value = kAktif;
   document.getElementById("cfg_fase").value = infoSekolah.fase || "C";
   document.getElementById("cfg_tahun_ajaran").value = infoSekolah.tahun_ajaran || "2025/2026";
   document.getElementById("cfg_semester").value = infoSekolah.semester || "1";
@@ -17,8 +19,13 @@ function loadFormPengaturan() {
   
   document.getElementById("cfg_nama_kepsek").value = infoSekolah.nama_kepsek || "";
   document.getElementById("cfg_nip_kepsek").value = infoSekolah.nip_kepsek || "";
-  document.getElementById("cfg_nama_walikelas").value = infoSekolah.nama_walikelas || "";
-  document.getElementById("cfg_nip_walikelas").value = infoSekolah.nip_walikelas || "";
+
+  // BACA NAMA & NIP WALI KELAS BERDASARKAN KELAS AKTIF DARI LOCALSTORAGE
+  let namaWaliLokal = localStorage.getItem(`wali_kelas_${kAktif}`);
+  let nipWaliLokal = localStorage.getItem(`nip_wali_kelas_${kAktif}`);
+
+  document.getElementById("cfg_nama_walikelas").value = namaWaliLokal || infoSekolah.nama_walikelas || "";
+  document.getElementById("cfg_nip_walikelas").value = nipWaliLokal || infoSekolah.nip_walikelas || "";
 }
 
 function autoSetFase() {
@@ -40,10 +47,14 @@ async function simpanPengaturanSekolah() {
     return; // Hentikan proses simpan
   }
 
+  let kAktif = document.getElementById("cfg_kelas").value;
+  let namaWaliInput = document.getElementById("cfg_nama_walikelas").value.trim();
+  let nipWaliInput = document.getElementById("cfg_nip_walikelas").value.trim();
+
   let payload = {
     nama_sekolah: document.getElementById("cfg_nama_sekolah").value.trim(),
     npsn: document.getElementById("cfg_npsn").value.trim(),
-    kelas: document.getElementById("cfg_kelas").value,
+    kelas: kAktif,
     fase: document.getElementById("cfg_fase").value,
     tahun_ajaran: document.getElementById("cfg_tahun_ajaran").value.trim(),
     semester: document.getElementById("cfg_semester").value,
@@ -51,8 +62,8 @@ async function simpanPengaturanSekolah() {
     tanggal_rapor: document.getElementById("cfg_tanggal_rapor").value,
     nama_kepsek: document.getElementById("cfg_nama_kepsek").value.trim(),
     nip_kepsek: document.getElementById("cfg_nip_kepsek").value.trim(),
-    nama_walikelas: document.getElementById("cfg_nama_walikelas").value.trim(),
-    nip_walikelas: document.getElementById("cfg_nip_walikelas").value.trim(),
+    nama_walikelas: namaWaliInput,
+    nip_walikelas: nipWaliInput,
     bobot_lm: bLM,
     bobot_sts: bSTS,
     bobot_sas: bSAS
@@ -71,19 +82,26 @@ async function simpanPengaturanSekolah() {
     });
     let result = await response.json();
     if (result.status === "success") {
-      alert("🎉 Pengaturan Identitas Sekolah & Wali Kelas berhasil diperbarui!");
+      // 1. SIMPAN STATUS KELAS & WALI KELAS LOKAL TERLEBIH DAHULU
+      localStorage.setItem("kelasAktif_User", kAktif);
+      localStorage.setItem(`wali_kelas_${kAktif}`, namaWaliInput);
+      localStorage.setItem(`nip_wali_kelas_${kAktif}`, nipWaliInput);
+
+      // 2. PERBARUI MEMORI GLOBAL
       infoSekolah = payload;
       updateHeaderTampilan();
       
-      // TRIGGER RE-RENDER SELURUH TAB
+      // 3. TRIGGER RE-RENDER SELURUH TAB BERDASARKAN KELAS BARU
       if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
       if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
       if (typeof renderTabelTP === "function") renderTabelTP();
       if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
       if (typeof renderTabCetakRapor === "function") renderTabCetakRapor();
       if (typeof renderDashboard === "function") renderDashboard();
+      if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
+
+      alert(`🎉 Pengaturan Identitas Sekolah & Wali Kelas ${kAktif} berhasil diperbarui!`);
     } else { alert("Gagal menyimpan: " + result.message); }
   } catch (err) { alert("Terjadi kesalahan koneksi!"); }
   finally { btn.disabled = false; btn.innerHTML = "💾 Simpan Pengaturan Identitas"; }
-  localStorage.setItem("kelasAktif_User", payload.kelas);
 }
