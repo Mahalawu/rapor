@@ -85,4 +85,5 @@ async function simpanPengaturanSekolah() {
     } else { alert("Gagal menyimpan: " + result.message); }
   } catch (err) { alert("Terjadi kesalahan koneksi!"); }
   finally { btn.disabled = false; btn.innerHTML = "💾 Simpan Pengaturan Identitas"; }
+  localStorage.setItem("kelasAktif_User", payload.kelas);
 }
