@@ -1,3 +1,331 @@
+/* ==========================================
+   ROOT VARIABLES - WARNA HIJAU
+   ========================================== */
+:root {
+  --hijau-primary: #14853D;
+  --hijau-dark: #0D6A2F;
+  --hijau-darker: #09521E;
+  --hijau-light: #E8F5EE;
+  --hijau-gradient: linear-gradient(135deg, #14853D 0%, #0D6A2F 50%, #09521E 100%);
+  --hijau-gradient-soft: linear-gradient(135deg, #14853D 0%, #0D6A2F 100%);
+  --shadow-sm: 0 2px 8px rgba(13, 106, 47, 0.08);
+  --shadow-md: 0 4px 16px rgba(13, 106, 47, 0.12);
+  --radius: 10px;
+}
+
+/* ==========================================
+   BASE & RESET
+   ========================================== */
+body {
+  background: #f5f7f6 !important;
+  font-size: 0.88rem;
+  color: #1a2a1f;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   TYPOGRAPHY COMPACT
+   ========================================== */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.01em;
+}
+
+h2 { font-size: 1.5rem; }
+h4 { font-size: 1.1rem; }
+h5 { font-size: 0.95rem; }
+h6 { font-size: 0.85rem; }
+
+/* ==========================================
+   BUTTONS - HIJAU THEME
+   ========================================== */
+.btn-primary {
+  background: var(--hijau-gradient-soft) !important;
+  border-color: var(--hijau-dark) !important;
+  color: #fff !important;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  background: var(--hijau-gradient) !important;
+  border-color: var(--hijau-darker) !important;
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-outline-primary {
+  color: var(--hijau-dark) !important;
+  border-color: var(--hijau-dark) !important;
+}
+.btn-outline-primary:hover {
+  background: var(--hijau-primary) !important;
+  color: #fff !important;
+  border-color: var(--hijau-primary) !important;
+}
+
+.btn-success {
+  background: var(--hijau-gradient-soft) !important;
+  border-color: var(--hijau-dark) !important;
+  font-weight: 600;
+}
+.btn-success:hover {
+  background: var(--hijau-gradient) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ==========================================
+   CARDS - COMPACT & HIJAU BORDER
+   ========================================== */
+.card {
+  border: none !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: box-shadow 0.2s ease;
+  margin-bottom: 0.75rem !important;
+}
+.card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.card-header {
+  background: #fff !important;
+  border-bottom: 1px solid rgba(20, 133, 61, 0.08) !important;
+  padding: 0.6rem 1rem !important;
+  border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+.card-header.bg-white {
+  background: #fff !important;
+}
+
+.card-body {
+  padding: 0.9rem 1rem !important;
+}
+
+/* Card dengan border kiri hijau */
+.card-hijau-border {
+  border-left: 4px solid var(--hijau-primary) !important;
+}
+
+/* ==========================================
+   HEADER SEKOLAH - GRADASI HIJAU
+   ========================================== */
+.header-sekolah {
+  background: var(--hijau-gradient) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.8rem 1.5rem !important;
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 0.75rem !important;
+}
+.header-sekolah h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.header-sekolah p {
+  font-size: 0.8rem;
+  opacity: 0.92;
+  margin-bottom: 0;
+}
+.header-sekolah .badge {
+  background: rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+}
+
+/* ==========================================
+   NAV TABS - COMPACT & HIJAU
+   ========================================== */
+.nav-pills .nav-link {
+  padding: 0.4rem 0.7rem !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  color: #3a4d3f !important;
+  transition: all 0.2s ease;
+  margin-right: 0.15rem !important;
+}
+.nav-pills .nav-link:hover {
+  background: var(--hijau-light) !important;
+  color: var(--hijau-dark) !important;
+  transform: translateY(-1px);
+}
+.nav-pills .nav-link.active {
+  background: var(--hijau-gradient-soft) !important;
+  color: #fff !important;
+  box-shadow: var(--shadow-sm);
+}
+.nav-pills .nav-link .me-2 {
+  margin-right: 0.25rem !important;
+}
+
+#pills-tab {
+  gap: 0.2rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+#pills-tab .nav-item {
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   TABEL - COMPACT & CLEAN
+   ========================================== */
+.table {
+  font-size: 0.82rem !important;
+  margin-bottom: 0 !important;
+}
+.table th {
+  background: #f0f4f1 !important;
+  color: #1a2a1f;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.5rem 0.6rem !important;
+  border-bottom: 2px solid var(--hijau-primary) !important;
+}
+.table td {
+  padding: 0.45rem 0.6rem !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid rgba(20, 133, 61, 0.06) !important;
+}
+.table-hover tbody tr:hover {
+  background: var(--hijau-light) !important;
+  transition: background 0.15s ease;
+}
+.table-bordered {
+  border-color: rgba(20, 133, 61, 0.12) !important;
+}
+.table-bordered th,
+.table-bordered td {
+  border-color: rgba(20, 133, 61, 0.12) !important;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background: rgba(20, 133, 61, 0.03);
+}
+
+/* ==========================================
+   BADGE & LABELS
+   ========================================== */
+.badge-success-custom {
+  background: var(--hijau-light) !important;
+  color: var(--hijau-dark) !important;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 50px;
+}
+.badge-primary-custom {
+  background: var(--hijau-gradient-soft) !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 50px;
+}
+
+/* ==========================================
+   FORM ELEMENTS - COMPACT
+   ========================================== */
+.form-control, .form-select {
+  font-size: 0.82rem !important;
+  padding: 0.35rem 0.6rem !important;
+  border-radius: 6px !important;
+  border-color: rgba(20, 133, 61, 0.2) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--hijau-primary) !important;
+  box-shadow: 0 0 0 3px rgba(20, 133, 61, 0.12) !important;
+}
+.form-label {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.2rem !important;
+  color: #2a3d2f;
+}
+.form-select-lg {
+  font-size: 0.85rem !important;
+  padding: 0.4rem 0.8rem !important;
+}
+
+/* ==========================================
+   DASHBOARD - COMPACT 4 COLUMN
+   ========================================== */
+.dash-stat-card {
+  padding: 0.7rem 0.9rem !important;
+  border-radius: var(--radius) !important;
+  background: #fff !important;
+  border-left: 4px solid var(--hijau-primary) !important;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+.dash-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.dash-stat-card small {
+  font-size: 0.65rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--hijau-dark);
+}
+.dash-stat-card h2 {
+  font-size: 1.6rem !important;
+  font-weight: 800 !important;
+  color: var(--hijau-primary);
+  margin: 0.1rem 0 0 0;
+}
+
+/* Progress Bar Hijau */
+.progress {
+  height: 22px !important;
+  border-radius: 50px !important;
+  background: #e8edea !important;
+  overflow: hidden;
+}
+.progress-bar {
+  background: var(--hijau-gradient-soft) !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em;
+  transition: width 0.6s ease;
+}
+
+/* Workflow Steps */
+.workflow-step {
+  padding: 0.5rem 0.3rem !important;
+  border-radius: var(--radius) !important;
+  background: #fff !important;
+  border: 1px solid rgba(20, 133, 61, 0.08) !important;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+}
+.workflow-step:hover {
+  border-color: var(--hijau-primary) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.workflow-step .fs-4 {
+  font-size: 1.4rem !important;
+}
+.workflow-step small {
+  font-size: 0.65rem !important;
+  font-weight: 700;
+  display: block;
+  color: #2a3d2f;
+}
+
+/* ==========================================
+   PRINT STYLES (PERTAHANKAN YANG ADA)
+   ========================================== */
 @media print {
   @page {
     size: A4 portrait;
@@ -72,102 +400,75 @@
   margin-top: 40px; 
 }
 
-/* Menyesuaikan ukuran Tab Navigasi agar sejajar 1 baris */
-#pills-tab .nav-link {
-  padding: 0.5rem 0.75rem; /* Mengurangi padding kiri-kanan */
-  font-size: 0.92rem; /* Sedikit memperkecil ukuran huruf */
-  margin-right: 0.25rem !important; /* Mengurangi jarak spasi antar tombol */
-}
-
-/* Memberikan jarak rapi jika dibuka di layar HP/Tablet yang sempit */
+/* ==========================================
+   RESPONSIVE - TABLET/HP
+   ========================================== */
 @media (max-width: 992px) {
   #pills-tab .nav-link {
-    margin-bottom: 0.5rem; 
+    font-size: 0.7rem !important;
+    padding: 0.3rem 0.5rem !important;
+  }
+  .header-sekolah h2 {
+    font-size: 1.1rem;
+  }
+  .dash-stat-card h2 {
+    font-size: 1.3rem !important;
+  }
+  .card-body {
+    padding: 0.7rem !important;
+  }
+  .workflow-step .fs-4 {
+    font-size: 1.1rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  body {
+    font-size: 0.8rem;
+  }
+  .header-sekolah {
+    padding: 0.6rem 0.8rem !important;
+  }
+  .header-sekolah h2 {
+    font-size: 0.95rem;
+  }
+  .table {
+    font-size: 0.7rem !important;
+  }
+  .table th, .table td {
+    padding: 0.3rem 0.4rem !important;
+  }
+  .dash-stat-card {
+    padding: 0.5rem 0.6rem !important;
+  }
+  .dash-stat-card h2 {
+    font-size: 1.1rem !important;
   }
 }
 
 /* ==========================================
-   CSS KHUSUS PREVIEW & CETAK RAPOR (PRINT A4)
+   MISC - UTILITY
    ========================================== */
+.text-hijau { color: var(--hijau-primary) !important; }
+.text-hijau-dark { color: var(--hijau-dark) !important; }
+.bg-hijau-light { background: var(--hijau-light) !important; }
+.border-hijau { border-color: var(--hijau-primary) !important; }
 
-@media print {
-  /* 1. Atur Ukuran Kertas & Margin Halaman */
-  @page {
-    size: A4 portrait;
-    margin: 1.2cm 1.5cm 1.2cm 1.5cm;
-  }
+.shadow-hijau-sm { box-shadow: var(--shadow-sm) !important; }
+.shadow-hijau-md { box-shadow: var(--shadow-md) !important; }
 
-  /* 2. Sembunyikan Semua Elemen Aplikasi Saat Cetak */
-  body * {
-    visibility: hidden;
-  }
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
 
-  /* 3. Hanya Tampilkan Area Dokumen Rapor */
-  #modalCetak,
-  #modalCetak .modal-content,
-  #areaCetakRapor,
-  #areaCetakRapor * {
-    visibility: visible !important;
-  }
-
-  /* 4. Reset Posisi Modal Supaya Pas di Atas Kertas Cetak */
-  #modalCetak {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-  }
-
-  .modal-dialog {
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-  }
-
-  .modal-content {
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  .modal-body {
-    padding: 0 !important;
-  }
-
-  /* 5. Rapikan Tabel Rapor & Teks Narasi */
-  #areaCetakRapor table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-  }
-
-  #areaCetakRapor th, 
-  #areaCetakRapor td {
-    padding: 5px 8px !important;
-    font-size: 10.5pt !important;
-    line-height: 1.35 !important;
-    color: #000 !important;
-  }
-
-  /* Kunci Lebar Kolom Tabel Nilai Utama */
-  #c_tabelNilai td:nth-child(1) { width: 35px !important; text-align: center; }
-  #c_tabelNilai td:nth-child(2) { width: 170px !important; }
-  #c_tabelNilai td:nth-child(3) { width: 65px !important; text-align: center; }
-  #c_tabelNilai td:nth-child(4) { text-align: justify; }
-
-  /* 6. Cegah Pemotongan Elemen Penting (Page Break Protection) */
-  .ttd-box, 
-  #sectionAkhirSemester,
-  #sectionKokurikulerRapor {
-    page-break-inside: avoid !important;
-  }
-
-  /* 7. Sembunyikan Elemen yang Berlabel no-print */
-  .no-print,
-  .btn-close,
-  .modal-header,
-  .modal-footer {
-    display: none !important;
-  }
+/* Scrollbar subtle untuk tab */
+#pills-tab::-webkit-scrollbar {
+  height: 3px;
+}
+#pills-tab::-webkit-scrollbar-track {
+  background: #e8edea;
+  border-radius: 10px;
+}
+#pills-tab::-webkit-scrollbar-thumb {
+  background: var(--hijau-primary);
+  border-radius: 10px;
 }
