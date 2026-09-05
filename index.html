@@ -33,9 +33,13 @@
       </div>      
       <!-- DROPDOWN + PENGATURAN - COMPACT ROW -->
 <div class="d-flex align-items-center gap-2">
+    <!-- Tombol Pengaturan -->
+  <button class="btn btn-outline-light btn-sm fw-bold px-3" onclick="document.getElementById('tab-pengaturan-tab').click()" style="font-size:0.75rem; padding: 0.2rem 0.8rem; border-width: 1px; opacity:0.9;">
+    ⚙️ Pengaturan
+  </button>
+</div>
   <!-- Dropdown Kelas -->
   <div class="d-flex align-items-center gap-2">
-  <span class="fw-bold text-white small opacity-75">Kelas:</span>
   <select id="selectKelasLokal" class="form-select form-select-sm bg-light border-0 fw-bold" style="width: 95px; padding: 0.2rem 1.8rem 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem;" onchange="gantiKelasLokal(this.value)">
     <option value="1">Kelas 1</option>
     <option value="2">Kelas 2</option>
@@ -45,13 +49,7 @@
     <option value="6">Kelas 6</option>
   </select>
 </div>
-  
-  <!-- Tombol Pengaturan -->
-  <button class="btn btn-outline-light btn-sm fw-bold px-3" onclick="document.getElementById('tab-pengaturan-tab').click()" style="font-size:0.75rem; padding: 0.2rem 0.8rem; border-width: 1px; opacity:0.9;">
-    ⚙️ Pengaturan
-  </button>
 </div>
-    </div>
 
     <!-- ============================================================ -->
     <!-- NAV TABS - COMPACT SCROLLABLE -->
