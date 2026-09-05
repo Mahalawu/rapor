@@ -110,3 +110,61 @@ function updateHeaderTampilan() {
   document.getElementById("semester").innerText = infoSekolah.semester || "-";
   document.getElementById("labelKelasFase").innerText = `Kelas ${infoSekolah.kelas || '5'} (Fase ${infoSekolah.fase || 'C'})`;
 }
+
+// 1. FUNGSI SINKRONISASI KELAS DARI LOCALSTORAGE / DATABASE PUSAT
+function getKelasAktifUser() {
+  let kSimpanan = localStorage.getItem("kelasAktif_User");
+  if (kSimpanan) {
+    return String(kSimpanan).trim();
+  }
+  // Jika belum pernah diset lokal, gunakan default dari database Google Sheets
+  return String(infoSekolah.kelas || "5").trim();
+}
+
+// 2. FUNGSI UNTUK MENGUBAH KELAS DARI DROPDOWN HEADER
+function gantiKelasLokal(kelasBaru) {
+  localStorage.setItem("kelasAktif_User", kelasBaru);
+  infoSekolah.kelas = kelasBaru; // Update variabel memori lokal
+  
+  // Auto Set Fase sesuai Kelas yang dipilih
+  if (kelasBaru === "1" || kelasBaru === "2") infoSekolah.fase = "A";
+  else if (kelasBaru === "3" || kelasBaru === "4") infoSekolah.fase = "B";
+  else infoSekolah.fase = "C";
+
+  updateHeaderTampilan();
+  
+  // Re-render seluruh tampilan aplikasi secara otomatis
+  if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
+  if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
+  if (typeof renderTabelTP === "function") renderTabelTP();
+  if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
+  if (typeof renderTabCetakRapor === "function") renderTabCetakRapor();
+  if (typeof renderDashboard === "function") renderDashboard();
+  if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
+  
+  alert(`🔄 Tampilan berhasil disesuaikan untuk Kelas ${kelasBaru} (Fase ${infoSekolah.fase})!`);
+}
+
+// 3. SESUAIKAN FUNGSI getSiswaKelasAktif()
+function getSiswaKelasAktif() {
+  let kAktif = getKelasAktifUser();
+  return listSiswaData.filter(s => {
+    let kSiswa = String(s.kelas || getKelasAktifUser()).trim();
+    return kSiswa === kAktif;
+  });
+}
+
+// 4. SESUAIKAN FUNGSI updateHeaderTampilan()
+function updateHeaderTampilan() {
+  let kAktif = getKelasAktifUser();
+  infoSekolah.kelas = kAktif; // Kunci konsistensi
+  
+  document.getElementById("namaSekolah").innerText = infoSekolah.nama_sekolah || "Nama Sekolah Belum Diatur";
+  document.getElementById("tahunAjaran").innerText = infoSekolah.tahun_ajaran || "-";
+  document.getElementById("semester").innerText = infoSekolah.semester || "-";
+  document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${infoSekolah.fase || 'C'})`;
+  
+  // Set posisi dropdown switcher sesuai kelas aktif
+  let elSelect = document.getElementById("selectKelasLokal");
+  if (elSelect) elSelect.value = kAktif;
+}
