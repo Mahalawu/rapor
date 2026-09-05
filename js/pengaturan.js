@@ -28,7 +28,6 @@ function loadFormPengaturan() {
   document.getElementById("cfg_nip_walikelas").value = nipWaliLokal || infoSekolah.nip_walikelas || "";
   autoSetFase();
 }
-}
 
 function autoSetFase() {
   let k = document.getElementById("cfg_kelas").value;
