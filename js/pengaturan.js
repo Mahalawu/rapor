@@ -29,6 +29,17 @@ function autoSetFase() {
 }
 
 async function simpanPengaturanSekolah() {
+  let bLM = parseFloat(document.getElementById("cfg_bobot_lm").value) || 0;
+  let bSTS = parseFloat(document.getElementById("cfg_bobot_sts").value) || 0;
+  let bSAS = parseFloat(document.getElementById("cfg_bobot_sas").value) || 0;
+
+  // 🛑 VALIDASI KUNCI: TOTAL BOBOT HARUS TEPAT 100%
+  let totalBobot = bLM + bSTS + bSAS;
+  if (totalBobot !== 100) {
+    alert(`⚠️ Pengaturan Bobot Ditolak!\n\nTotal bobot saat ini adalah ${totalBobot}%. Jumlah persentase ketiga komponen (LM + STS + SAS) WAJIB bernilai tepat 100%.\n\nContoh pembagian:\n- Murni TP: LM=100%, STS=0%, SAS=0%\n- Seimbang: LM=34%, STS=33%, SAS=33%`);
+    return; // Hentikan proses simpan
+  }
+
   let payload = {
     nama_sekolah: document.getElementById("cfg_nama_sekolah").value.trim(),
     npsn: document.getElementById("cfg_npsn").value.trim(),
@@ -42,9 +53,9 @@ async function simpanPengaturanSekolah() {
     nip_kepsek: document.getElementById("cfg_nip_kepsek").value.trim(),
     nama_walikelas: document.getElementById("cfg_nama_walikelas").value.trim(),
     nip_walikelas: document.getElementById("cfg_nip_walikelas").value.trim(),
-    bobot_lm: parseFloat(document.getElementById("cfg_bobot_lm").value) || 0,
-    bobot_sts: parseFloat(document.getElementById("cfg_bobot_sts").value) || 0,
-    bobot_sas: parseFloat(document.getElementById("cfg_bobot_sas").value) || 0
+    bobot_lm: bLM,
+    bobot_sts: bSTS,
+    bobot_sas: bSAS
   };
 
   if (!payload.nama_sekolah) { alert("Nama Sekolah wajib diisi!"); return; }
@@ -64,7 +75,7 @@ async function simpanPengaturanSekolah() {
       infoSekolah = payload;
       updateHeaderTampilan();
       
-      // TRIGGER RE-RENDER SELURUH TAB BERDASARKAN KELAS BARU:
+      // TRIGGER RE-RENDER SELURUH TAB
       if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
       if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
       if (typeof renderTabelTP === "function") renderTabelTP();
