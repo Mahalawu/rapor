@@ -26,13 +26,17 @@ function loadFormPengaturan() {
 
   document.getElementById("cfg_nama_walikelas").value = namaWaliLokal || infoSekolah.nama_walikelas || "";
   document.getElementById("cfg_nip_walikelas").value = nipWaliLokal || infoSekolah.nip_walikelas || "";
+  autoSetFase();
+}
 }
 
 function autoSetFase() {
   let k = document.getElementById("cfg_kelas").value;
-  if (k === "1" || k === "2") document.getElementById("cfg_fase").value = "A";
-  else if (k === "3" || k === "4") document.getElementById("cfg_fase").value = "B";
-  else document.getElementById("cfg_fase").value = "C";
+  let faseOto = "C";
+  if (k === "1" || k === "2") faseOto = "A";
+  else if (k === "3" || k === "4") faseOto = "B";
+  
+  document.getElementById("cfg_fase").value = faseOto;
 }
 
 async function simpanPengaturanSekolah() {
