@@ -47,7 +47,7 @@ async function simpanPengaturanSekolah() {
   let totalBobot = bLM + bSTS + bSAS;
   if (totalBobot !== 100) {
     alert(`⚠️ Pengaturan Bobot Ditolak!\n\nTotal bobot saat ini adalah ${totalBobot}%. Jumlah persentase ketiga komponen (LM + STS + SAS) WAJIB bernilai tepat 100%.\n\nContoh pembagian:\n- Murni TP: LM=100%, STS=0%, SAS=0%\n- Seimbang: LM=34%, STS=33%, SAS=33%`);
-    return; // Hentikan proses simpan
+    return;
   }
 
   let kAktif = document.getElementById("cfg_kelas").value;
@@ -85,16 +85,13 @@ async function simpanPengaturanSekolah() {
     });
     let result = await response.json();
     if (result.status === "success") {
-      // 1. SIMPAN STATUS KELAS & WALI KELAS LOKAL TERLEBIH DAHULU
       localStorage.setItem("kelasAktif_User", kAktif);
       localStorage.setItem(`wali_kelas_${kAktif}`, namaWaliInput);
       localStorage.setItem(`nip_wali_kelas_${kAktif}`, nipWaliInput);
 
-      // 2. PERBARUI MEMORI GLOBAL
       infoSekolah = payload;
       updateHeaderTampilan();
       
-      // 3. TRIGGER RE-RENDER SELURUH TAB BERDASARKAN KELAS BARU
       if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
       if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
       if (typeof renderTabelTP === "function") renderTabelTP();
