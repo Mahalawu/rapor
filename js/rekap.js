@@ -529,6 +529,9 @@ function renderLembarRapor() {
     }
     document.getElementById("c_tabelEkskul").innerHTML = htmlEkskul;
   }
+  // Di dalam renderLembarRapor():
+let faseSpesifik = getFaseKelasAktif();
+document.getElementById("c_fase").innerText = faseSpesifik;
 }
 
 // Helper Kalkulasi Nilai Akhir Berdasarkan Pembobotan
