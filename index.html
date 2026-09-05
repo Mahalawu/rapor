@@ -319,4 +319,543 @@
                 </div>
               </div>
 
-              <div class="tab-pane fade
+              <div class="tab-pane fade" id="abs-rapor">
+                <div class="alert alert-warning border-0 py-2 px-3 mb-3 d-flex align-items-center">
+                  <span class="fs-5 me-2">💡</span>
+                  <small class="text-secondary">Sakit/Izin/Alpa terisi otomatis dari jurnal harian. Bisa diubah manual.</small>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label">Pilih Siswa:</label>
+                  <select id="selectSiswaAbsensi" onchange="pilihSiswaAbsensi()" class="form-select form-select-sm">
+                    <option value="">-- Pilih Siswa --</option>
+                  </select>
+                </div>
+
+                <div id="formAbsensiBody" style="display: none;">
+                  <div class="row g-2 mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">Sakit (hari):</label>
+                      <input type="number" id="abs_sakit" class="form-control form-control-sm" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Izin (hari):</label>
+                      <input type="number" id="abs_izin" class="form-control form-control-sm" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Tanpa Keterangan:</label>
+                      <input type="number" id="abs_alpa" class="form-control form-control-sm" value="0" min="0">
+                    </div>
+                  </div>
+
+                  <div class="card bg-light border-0 p-2 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <h6 class="fw-bold text-dark mb-0">🏆 Ekstrakurikuler</h6>
+                      <button type="button" id="btnTambahEkskul" onclick="tambahRowEkskul()" class="btn btn-sm btn-outline-primary fw-bold">+ Tambah</button>
+                    </div>
+                    <div class="row g-1 align-items-center mb-1" id="box_ekskul_1">
+                      <div class="col-md-4"><input type="text" id="abs_ekskul1" class="form-control form-control-sm" placeholder="Ekskul 1" value="Pramuka"></div>
+                      <div class="col-md-3"><select id="abs_nilaiEkskul1" class="form-select form-select-sm"><option value="Sangat Baik">Sangat Baik</option><option value="Baik" selected>Baik</option><option value="Cukup">Cukup</option></select></div>
+                      <div class="col-md-5"><input type="text" id="abs_ketEkskul1" class="form-control form-control-sm" placeholder="Keterangan"></div>
+                    </div>
+                    <div class="row g-1 align-items-center mb-1" id="box_ekskul_2" style="display: none;">
+                      <div class="col-md-4"><input type="text" id="abs_ekskul2" class="form-control form-control-sm" placeholder="Ekskul 2"></div>
+                      <div class="col-md-3"><select id="abs_nilaiEkskul2" class="form-select form-select-sm"><option value="Sangat Baik">Sangat Baik</option><option value="Baik" selected>Baik</option><option value="Cukup">Cukup</option></select></div>
+                      <div class="col-md-4"><input type="text" id="abs_ketEkskul2" class="form-control form-control-sm" placeholder="Keterangan"></div>
+                      <div class="col-md-1 text-end"><button type="button" onclick="hapusRowEkskul(2)" class="btn btn-sm btn-outline-danger border-0">✖</button></div>
+                    </div>
+                    <div class="row g-1 align-items-center" id="box_ekskul_3" style="display: none;">
+                      <div class="col-md-4"><input type="text" id="abs_ekskul3" class="form-control form-control-sm" placeholder="Ekskul 3"></div>
+                      <div class="col-md-3"><select id="abs_nilaiEkskul3" class="form-select form-select-sm"><option value="Sangat Baik">Sangat Baik</option><option value="Baik" selected>Baik</option><option value="Cukup">Cukup</option></select></div>
+                      <div class="col-md-4"><input type="text" id="abs_ketEkskul3" class="form-control form-control-sm" placeholder="Keterangan"></div>
+                      <div class="col-md-1 text-end"><button type="button" onclick="hapusRowEkskul(3)" class="btn btn-sm btn-outline-danger border-0">✖</button></div>
+                    </div>
+                  </div>
+
+                  <div class="mb-2">
+                    <label class="form-label">Catatan Wali Kelas:</label>
+                    <textarea id="abs_catatan" class="form-control form-control-sm" rows="2" placeholder="Tulis motivasi..."></textarea>
+                  </div>
+
+                  <button id="btnSimpanAbsensi" onclick="simpanAbsensiSiswa()" class="btn btn-primary btn-sm fw-bold w-100">💾 Simpan Absensi & Catatan</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== TAB 3: KOKURIKULER ======== -->
+      <div class="tab-pane fade" id="tab-kokurikuler">
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white py-2">
+            <h5 class="card-title mb-0 fw-bold text-dark">🎨 Kokurikuler (8 Dimensi P5)</h5>
+          </div>
+          <div class="card-body p-3">
+            <div class="alert alert-info py-1 px-3 mb-3" style="font-size:0.8rem;">
+              💡 Pilih 1 wadah kokurikuler, beri penilaian <strong>Dimensi Tertinggi</strong> & <strong>Terendah</strong> per siswa.
+            </div>
+
+            <div class="row g-2 mb-3 p-2 bg-light rounded border">
+              <div class="col-md-4">
+                <label class="form-label">Wadah Kokurikuler:</label>
+                <select id="koku_wadah" class="form-select form-select-sm fw-bold text-hijau">
+                  <option value="7 KAIH">7 KAIH (7 Kebiasaan Anak Indonesia Hebat)</option>
+                  <option value="Lintas Disiplin Ilmu">Lintas Disiplin Ilmu</option>
+                  <option value="Kokurikuler Lainnya">Kokurikuler Lainnya</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Judul Tema:</label>
+                <input type="text" id="koku_judul" class="form-control form-control-sm" placeholder="Contoh: Sholat Dhuha Bersama">
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Pilih Siswa:</label>
+              <select id="selectSiswaKokurikuler" onchange="pilihSiswaKokurikuler()" class="form-select form-select-sm">
+                <option value="">-- Pilih Siswa --</option>
+              </select>
+            </div>
+
+            <div id="formKokurikulerBody" style="display: none;">
+              <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                  <div class="card border-success">
+                    <div class="card-header bg-success text-white fw-bold py-1">🌟 Tertinggi</div>
+                    <div class="card-body p-2">
+                      <select id="koku_dimensi_tertinggi" class="form-select form-select-sm" onchange="updateLivePreviewKoku()">
+                        <option value="Keimanan dan Ketakwaan terhadap Tuhan YME">1. Keimanan & Ketakwaan</option>
+                        <option value="Kewargaan">2. Kewargaan</option>
+                        <option value="Penalaran Kritis">3. Penalaran Kritis</option>
+                        <option value="Kreativitas">4. Kreativitas</option>
+                        <option value="Kolaborasi">5. Kolaborasi</option>
+                        <option value="Kemandirian">6. Kemandirian</option>
+                        <option value="Kesehatan">7. Kesehatan</option>
+                        <option value="Komunikasi">8. Komunikasi</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark fw-bold py-1">🎯 Terendah</div>
+                    <div class="card-body p-2">
+                      <select id="koku_dimensi_terendah" class="form-select form-select-sm" onchange="updateLivePreviewKoku()">
+                        <option value="Keimanan dan Ketakwaan terhadap Tuhan YME">1. Keimanan & Ketakwaan</option>
+                        <option value="Kewargaan">2. Kewargaan</option>
+                        <option value="Penalaran Kritis">3. Penalaran Kritis</option>
+                        <option value="Kreativitas">4. Kreativitas</option>
+                        <option value="Kolaborasi">5. Kolaborasi</option>
+                        <option value="Kemandirian" selected>6. Kemandirian</option>
+                        <option value="Kesehatan">7. Kesehatan</option>
+                        <option value="Komunikasi">8. Komunikasi</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card bg-light border p-2 mb-3">
+                <h6 class="fw-bold text-dark mb-1" style="font-size:0.8rem;">📄 Preview Deskripsi Kokurikuler:</h6>
+                <div class="mb-1"><small class="text-success fw-bold">Tertinggi:</small> <span id="prev_desc_tertinggi" class="text-dark">-</span></div>
+              </div>
+
+              <button id="btnSimpanKokurikuler" onclick="simpanKokurikulerSiswa()" class="btn btn-primary btn-sm fw-bold w-100">💾 Simpan Kokurikuler</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== TAB 4: SISWA ======== -->
+      <div class="tab-pane fade" id="tab-siswa">
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="card-title mb-0 fw-bold text-dark">👨‍🎓 Kelola Data Siswa</h5>
+            <ul class="nav nav-pills nav-sm" role="tablist">
+              <li class="nav-item"><button class="nav-link active py-1 px-2" data-bs-toggle="pill" data-bs-target="#siswa-single">➕ Manual</button></li>
+              <li class="nav-item"><button class="nav-link py-1 px-2" data-bs-toggle="pill" data-bs-target="#siswa-bulk">📋 Import</button></li>
+            </ul>
+          </div>
+          <div class="card-body p-3">
+            <div class="tab-content mb-3">
+              <div class="tab-pane fade show active" id="siswa-single">
+                <div class="row g-2">
+                  <div class="col-md-3"><label class="form-label">NIS:</label><input type="text" id="sis_nis" class="form-control form-control-sm" placeholder="2026001"></div>
+                  <div class="col-md-3"><label class="form-label">NISN:</label><input type="text" id="sis_nisn" class="form-control form-control-sm" placeholder="0123456789"></div>
+                  <div class="col-md-4"><label class="form-label">Nama Lengkap:</label><input type="text" id="sis_nama" class="form-control form-control-sm" placeholder="ABDUL ADNAN NASUHA"></div>
+                  <div class="col-md-2"><label class="form-label">L/P:</label><select id="sis_jk" class="form-select form-select-sm"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
+                </div>
+                <button onclick="simpanSiswaSingle()" class="btn btn-success btn-sm mt-2 fw-bold">💾 Tambah Siswa</button>
+              </div>
+
+              <div class="tab-pane fade" id="siswa-bulk">
+                <div class="alert alert-info py-1 px-3" style="font-size:0.8rem;">💡 Copy dari Excel: <code>[NIS] [NISN] [Nama] [L/P]</code></div>
+                <textarea id="sis_bulk_text" class="form-control font-monospace mb-2" rows="4" placeholder="Paste data dari Excel..."></textarea>
+                <button onclick="simpanSiswaBulk()" class="btn btn-primary btn-sm fw-bold">🚀 Import Semua</button>
+              </div>
+            </div>
+
+            <h6 class="fw-bold mb-2 border-top pt-2">Daftar Siswa</h6>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th style="width:40px;">No</th>
+                    <th style="width:140px;">NIS / NISN</th>
+                    <th>Nama Siswa</th>
+                    <th style="width:70px;" class="text-center">L/P</th>
+                    <th style="width:80px;" class="text-center">Kelas</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelListSiswaMaster">
+                  <tr><td colspan="5" class="text-center text-muted">Memuat data siswa...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== TAB 5: TP ======== -->
+      <div class="tab-pane fade" id="tab-tp">
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="card-title mb-0 fw-bold text-dark">🎯 Kelola Tujuan Pembelajaran</h5>
+            <ul class="nav nav-pills nav-sm" id="pills-tp-tab" role="tablist">
+              <li class="nav-item"><button class="nav-link active py-1 px-2" data-bs-toggle="pill" data-bs-target="#tp-single">➕ Manual</button></li>
+              <li class="nav-item"><button class="nav-link py-1 px-2" data-bs-toggle="pill" data-bs-target="#tp-bulk">📋 Import</button></li>
+            </ul>
+          </div>
+          <div class="card-body p-3">
+            <div class="tab-content mb-3">
+              <div class="tab-pane fade show active" id="tp-single">
+                <div class="row g-2">
+                  <div class="col-md-3"><label class="form-label">Mapel:</label><select id="tp_single_mapel" class="form-select form-select-sm"></select></div>
+                  <div class="col-md-3"><label class="form-label">Kode TP:</label><input type="text" id="tp_single_kode" class="form-control form-control-sm" placeholder="TP-01"></div>
+                  <div class="col-md-6"><label class="form-label">Narasi TP:</label><input type="text" id="tp_single_narasi" class="form-control form-control-sm" placeholder="membaca bilangan cacah..."></div>
+                </div>
+                <button onclick="simpanTPSingle()" class="btn btn-success btn-sm mt-2 fw-bold">💾 Tambah TP</button>
+              </div>
+
+              <div class="tab-pane fade" id="tp-bulk">
+                <div class="alert alert-info py-1 px-3" style="font-size:0.8rem;">💡 Pilih Mapel, copy 2 kolom: <code>[Kode TP] [Narasi]</code></div>
+                <select id="tp_bulk_mapel" class="form-select form-select-sm fw-bold border-primary mb-2" style="width:320px;"></select>
+                <textarea id="tp_bulk_text" class="form-control font-monospace mb-2" rows="4" placeholder="Paste 2 kolom dari Excel..."></textarea>
+                <button onclick="simpanTPBulk()" class="btn btn-primary btn-sm fw-bold">🚀 Import Semua TP</button>
+              </div>
+            </div>
+
+            <h6 class="fw-bold mb-2 border-top pt-2">Daftar TP</h6>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th style="width:40px;">No</th>
+                    <th style="width:100px;">Mapel</th>
+                    <th style="width:130px;">Kode TP</th>
+                    <th>Narasi TP</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelListTP">
+                  <tr><td colspan="4" class="text-center text-muted">Memuat data TP...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== TAB 6: REKAP ======== -->
+      <div class="tab-pane fade" id="tab-rekap">
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap gap-1">
+            <h5 class="card-title mb-0 fw-bold text-dark">📊 Rekapitulasi Nilai</h5>
+            <div class="d-flex align-items-center gap-1 flex-wrap">
+              <button onclick="exportLegerToExcel()" class="btn btn-success btn-sm fw-bold">📥 Export Excel</button>
+              <button id="btnModeDetail" onclick="gantiModeRekap('detail')" class="btn btn-primary btn-sm fw-bold active">📝 Detail</button>
+              <button id="btnModeLeger" onclick="gantiModeRekap('leger')" class="btn btn-outline-primary btn-sm fw-bold">📋 Leger</button>
+            </div>
+          </div>
+          <div class="card-body p-3">
+
+            <div class="row g-1 mb-2 align-items-center">
+              <div class="col-md-3">
+                <input type="text" id="rekapSearch" oninput="filterDanRenderRekap()" class="form-control form-control-sm" placeholder="🔍 Cari siswa...">
+              </div>
+              <div class="col-md-3">
+                <select id="rekapFilterMapel" onchange="filterDanRenderRekap()" class="form-select form-select-sm">
+                  <option value="">-- Semua Mapel --</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select id="rekapFilterAsesmen" onchange="filterDanRenderRekap()" class="form-select form-select-sm">
+                  <option value="">-- Semua Asesmen --</option>
+                  <option value="LM">Sumatif Materi</option>
+                  <option value="STS">Tengah Semester</option>
+                  <option value="SAS">Akhir Semester</option>
+                </select>
+              </div>
+              <div class="col-md-3 text-end">
+                <small class="text-muted fw-semibold" id="rekapInfoTotal">Total: 0 Data</small>
+              </div>
+            </div>
+
+            <div id="containerRekapDetail">
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="width:40px;">No</th>
+                      <th style="width:180px;">Nama Siswa</th>
+                      <th style="width:120px;">Mapel</th>
+                      <th class="text-center" style="width:100px;">Asesmen</th>
+                      <th class="text-center" style="width:80px;">Kode TP</th>
+                      <th class="text-center" style="width:60px;">Nilai</th>
+                      <th>Deskripsi Otomatis</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelRekap">
+                    <tr><td colspan="7" class="text-center text-muted py-3">Memuat rekap...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="text-muted" id="rekapPaginationInfo">Halaman 1 dari 1</small>
+                <nav><ul class="pagination pagination-sm mb-0" id="rekapPaginationNav"></ul></nav>
+              </div>
+            </div>
+
+            <div id="containerRekapLeger" style="display: none;">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                  <thead class="table-dark text-center" id="headerLegerMatriks"></thead>
+                  <tbody id="tabelLegerMatriks">
+                    <tr><td colspan="8" class="text-center text-muted py-3">Memuat Leger...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== TAB 7: CETAK ======== -->
+      <div class="tab-pane fade" id="tab-cetak">
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="card-title mb-0 fw-bold text-dark">🖨️ Pusat Cetak Rapor</h5>
+            <button onclick="cetakSemuaRaporSeKelas()" class="btn btn-primary btn-sm fw-bold">🖨️ Cetak Masal</button>
+          </div>
+          <div class="card-body p-3">
+            <div class="alert alert-info py-1 px-3 mb-3" style="font-size:0.8rem;">💡 Pilih siswa untuk preview & cetak individu, atau klik Cetak Masal untuk satu kelas.</div>
+
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-center" style="width:40px;">No</th>
+                    <th style="width:160px;">NIS / NISN</th>
+                    <th>Nama Siswa</th>
+                    <th class="text-center" style="width:70px;">L/P</th>
+                    <th class="text-center" style="width:120px;">Status Data</th>
+                    <th class="text-center" style="width:140px;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelDaftarCetakSiswa">
+                  <tr><td colspan="6" class="text-center text-muted py-3">Memuat daftar cetak...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== TAB 8: PENGATURAN ======== -->
+      <div class="tab-pane fade" id="tab-pengaturan">
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white py-2">
+            <h5 class="card-title mb-0 fw-bold text-dark">⚙️ Pengaturan Identitas Sekolah</h5>
+          </div>
+          <div class="card-body p-3">
+
+            <h6 class="fw-bold text-hijau mb-2">1. Identitas Satuan Pendidikan</h6>
+            <div class="row g-2 mb-3">
+              <div class="col-md-8"><label class="form-label">Nama Sekolah:</label><input type="text" id="cfg_nama_sekolah" class="form-control form-control-sm" placeholder="SDN Sine 1"></div>
+              <div class="col-md-4"><label class="form-label">NPSN:</label><input type="text" id="cfg_npsn" class="form-control form-control-sm" placeholder="20500000"></div>
+            </div>
+
+            <h6 class="fw-bold text-hijau mb-2">2. Identitas Kelas & Rapor</h6>
+            <div class="row g-2 mb-3">
+              <div class="col-md-3"><label class="form-label">Tingkat Kelas:</label><select id="cfg_kelas" class="form-select form-select-sm" onchange="autoSetFase()"><option value="1">Kelas 1</option><option value="2">Kelas 2</option><option value="3">Kelas 3</option><option value="4">Kelas 4</option><option value="5" selected>Kelas 5</option><option value="6">Kelas 6</option></select></div>
+              <div class="col-md-3"><label class="form-label">Fase:</label><select id="cfg_fase" class="form-select form-select-sm"><option value="A">Fase A</option><option value="B">Fase B</option><option value="C" selected>Fase C</option></select></div>
+              <div class="col-md-3"><label class="form-label">Tahun Ajaran:</label><input type="text" id="cfg_tahun_ajaran" class="form-control form-control-sm" placeholder="2025/2026"></div>
+              <div class="col-md-3"><label class="form-label">Semester:</label><select id="cfg_semester" class="form-select form-select-sm"><option value="1" selected>Semester 1</option><option value="2">Semester 2</option></select></div>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-md-6"><label class="form-label">Kecamatan Cetak:</label><input type="text" id="cfg_tempat_cetak" class="form-control form-control-sm" placeholder="Sine"></div>
+              <div class="col-md-6"><label class="form-label">Tanggal Rapor:</label><input type="date" id="cfg_tanggal_rapor" class="form-control form-control-sm"></div>
+            </div>
+
+            <h6 class="fw-bold text-hijau mb-2">3. Personalia</h6>
+            <div class="row g-2 mb-3">
+              <div class="col-md-6"><label class="form-label">Kepala Sekolah:</label><input type="text" id="cfg_nama_kepsek" class="form-control form-control-sm"></div>
+              <div class="col-md-6"><label class="form-label">NIP Kepsek:</label><input type="text" id="cfg_nip_kepsek" class="form-control form-control-sm"></div>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-md-6"><label class="form-label">Wali Kelas:</label><input type="text" id="cfg_nama_walikelas" class="form-control form-control-sm"></div>
+              <div class="col-md-6"><label class="form-label">NIP Wali Kelas:</label><input type="text" id="cfg_nip_walikelas" class="form-control form-control-sm"></div>
+            </div>
+
+            <h6 class="fw-bold text-hijau mb-2">4. Pembobotan Nilai Akhir (%)</h6>
+            <div class="alert alert-info py-1 px-3 mb-2" style="font-size:0.78rem;">💡 Setel persentase. Jika 100% murni LM, set LM=100%, STS=0%, SAS=0%.</div>
+            <div class="row g-2 mb-3">
+              <div class="col-md-4">
+                <label class="form-label">Bobot LM / TP:</label>
+                <div class="input-group input-group-sm"><input type="number" id="cfg_bobot_lm" class="form-control" value="100" min="0" max="100"><span class="input-group-text">%</span></div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Bobot STS:</label>
+                <div class="input-group input-group-sm"><input type="number" id="cfg_bobot_sts" class="form-control" value="0" min="0" max="100"><span class="input-group-text">%</span></div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Bobot SAS:</label>
+                <div class="input-group input-group-sm"><input type="number" id="cfg_bobot_sas" class="form-control" value="0" min="0" max="100"><span class="input-group-text">%</span></div>
+              </div>
+            </div>
+
+            <button id="btnSimpanPengaturan" onclick="simpanPengaturanSekolah()" class="btn btn-primary btn-sm fw-bold w-100">💾 Simpan Pengaturan</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end tab-content -->
+  </div><!-- end container -->
+
+
+  <!-- ============================================================ -->
+  <!-- MODAL PREVIEW RAPOR -->
+  <!-- ============================================================ -->
+  <div class="modal fade" id="modalCetak" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header no-print bg-light py-2">
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="modal-title fw-bold mb-0">📄 Preview Rapor</h6>
+            <select id="selectJenisRapor" onchange="gantiJenisRapor()" class="form-select form-select-sm fw-bold border-hijau" style="width:230px;">
+              <option value="STS">Tengah Semester (STS)</option>
+              <option value="SAS" selected>Akhir Semester (SAS)</option>
+            </select>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4" id="areaCetakRapor">
+          <!-- KONTEN RAPOR TETAP SAMA -->
+          <div class="text-center mb-3 border-bottom pb-2">
+            <h4 class="fw-bold text-uppercase mb-0" id="c_judulRapor">LAPORAN HASIL BELAJAR</h4>
+            <p class="mb-0 fw-semibold" style="font-size:0.9rem;">KURIKULUM MERDEKA</p>
+          </div>
+
+          <div class="row mb-2" style="font-size:0.9rem;">
+            <div class="col-6">
+              <table class="table table-borderless table-sm">
+                <tr><td style="width:130px;">Nama Siswa</td><td>: <strong id="c_namaSiswa">-</strong></td></tr>
+                <tr><td>NIS / NISN</td><td>: <span id="c_nisn">-</span></td></tr>
+                <tr><td>Sekolah</td><td>: <span id="c_sekolah">-</span></td></tr>
+              </table>
+            </div>
+            <div class="col-6">
+              <table class="table table-borderless table-sm">
+                <tr><td style="width:130px;">Kelas</td><td>: <span id="c_kelas">-</span></td></tr>
+                <tr><td>Fase</td><td>: <span id="c_fase">C</span></td></tr>
+                <tr><td>Tahun / Sem</td><td>: <span id="c_thnSem">-</span></td></tr>
+              </table>
+            </div>
+          </div>
+
+          <table class="table table-bordered border-dark align-middle mb-3" style="font-size:0.9rem;">
+            <thead class="table-light text-center border-dark">
+              <tr><th style="width:40px;">No</th><th style="width:200px;">Mata Pelajaran</th><th style="width:80px;">Nilai Akhir</th><th>Capaian Kompetensi</th></tr>
+            </thead>
+            <tbody id="c_tabelNilai"></tbody>
+          </table>
+
+          <div class="mb-3" id="sectionKokurikulerRapor" style="font-size:0.9rem;">
+            <table class="table table-bordered border-dark align-middle mb-0">
+              <thead class="table-secondary border-dark text-center"><tr><th class="py-1">Kokurikuler</th></tr></thead>
+              <tbody><tr><td id="c_koku_tertinggi" class="p-2 text-justify">-</td></tr></tbody>
+            </table>
+          </div>
+
+          <div id="sectionAkhirSemester">
+            <div class="row mb-2" style="font-size:0.9rem;">
+              <div class="col-7">
+                <p class="fw-bold mb-0">Ekstrakurikuler</p>
+                <table class="table table-bordered border-dark table-sm">
+                  <thead class="table-light border-dark text-center"><tr><th>No</th><th>Kegiatan</th><th>Keterangan</th></tr></thead>
+                  <tbody id="c_tabelEkskul"></tbody>
+                </table>
+              </div>
+              <div class="col-5">
+                <p class="fw-bold mb-0">Ketidakhadiran</p>
+                <table class="table table-bordered border-dark table-sm">
+                  <tr><td style="width:140px;">Sakit</td><td>: <span id="c_sakit">0</span> hari</td></tr>
+                  <tr><td>Izin</td><td>: <span id="c_izin">0</span> hari</td></tr>
+                  <tr><td>Tanpa Keterangan</td><td>: <span id="c_alpa">0</span> hari</td></tr>
+                </table>
+              </div>
+            </div>
+
+            <div class="mb-3" style="font-size:0.9rem;">
+              <p class="fw-bold mb-0">Catatan Wali Kelas</p>
+              <div class="border border-dark p-2 rounded" id="c_catatanWali" style="min-height:50px;">-</div>
+            </div>
+
+            <div id="boxKeputusanAkhir" class="mb-3" style="display:none;font-size:0.9rem;">
+              <div class="border border-dark p-2 text-dark fw-bold" style="background:#f8f9fa;">
+                <p class="mb-0" id="labelKeputusanHeader">Keputusan:</p>
+                <p class="mb-0 fs-6 fw-normal" id="textKeputusanDetail">-</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row ttd-box text-center" style="font-size:0.9rem;page-break-inside:avoid;">
+            <div class="col-4"><p class="mb-4">Mengetahui,<br>Orang Tua / Wali,</p><p class="fw-bold mt-4 mb-0">( .................................... )</p></div>
+            <div class="col-4"><p class="mb-4">Mengetahui,<br>Kepala Sekolah,</p><p class="fw-bold mt-4 mb-0" id="c_namaKepsek">-</p><small id="c_nipKepsek">-</small></div>
+            <div class="col-4"><p class="mb-0" id="c_tglRapor">-</p><p class="mb-4">Wali Kelas,</p><p class="fw-bold mt-4 mb-0" id="c_waliKelas">-</p><small id="c_nipWaliKelas">-</small></div>
+          </div>
+        </div>
+
+        <div class="modal-footer no-print py-2">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+          <button type="button" onclick="window.print()" class="btn btn-primary btn-sm fw-bold">🖨️ Cetak PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- SCRIPTS -->
+  <!-- ============================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/siswa.js"></script>
+  <script src="js/tp.js"></script>
+  <script src="js/nilai.js"></script>
+  <script src="js/absensi.js"></script>
+  <script src="js/kokurikuler.js"></script>
+  <script src="js/rekap.js"></script>
+  <script src="js/pengaturan.js"></script>
+
+  <script>
+    document.getElementById("selectMapel").addEventListener("change", updateDropdownTP);
+    muatDataAwal();
+  </script>
+
+</body>
+</html>
