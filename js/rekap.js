@@ -64,14 +64,11 @@ function filterDanRenderRekap() {
   let filterMapel = (document.getElementById("rekapFilterMapel")?.value || "").toUpperCase().trim();
   let filterAsesmen = (document.getElementById("rekapFilterAsesmen")?.value || "").toUpperCase().trim();
   
-  // Ambil daftar ID siswa yang berada di KELAS AKTIF
   let listSiswaKelasAktif = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
   let setIdsSiswaKelasAktif = new Set(listSiswaKelasAktif.map(s => String(s.id_siswa).trim()));
 
   filteredRekapData = listNilaiData.filter(n => {
     let idSiswaStr = String(n.id_siswa).trim();
-    
-    // Hanya proses nilai jika siswanya termasuk di kelas aktif
     if (!setIdsSiswaKelasAktif.has(idSiswaStr)) return false;
 
     let s = listSiswaKelasAktif.find(x => String(x.id_siswa).trim() === idSiswaStr);
@@ -369,9 +366,12 @@ function renderLembarRapor() {
   document.getElementById("c_nisn").innerText = `${siswa.nis} / ${siswa.nisn}`;
   document.getElementById("c_sekolah").innerText = infoSekolah.nama_sekolah || "SDN";
   document.getElementById("c_kelas").innerText = siswa.kelas || infoSekolah.kelas || "5";
-  document.getElementById("c_fase").innerText = infoSekolah.fase || "C";
-  document.getElementById("c_thnSem").innerText = `${infoSekolah.tahun_ajaran || "-"} / Semester ${infoSekolah.semester || "-"}`;
+  
+  // SET FASE OTOMATIS SESUAI KELAS SISWA
+  let faseSpesifik = typeof getFaseKelasAktif === "function" ? getFaseKelasAktif() : (infoSekolah.fase || "C");
+  document.getElementById("c_fase").innerText = faseSpesifik;
 
+  document.getElementById("c_thnSem").innerText = `${infoSekolah.tahun_ajaran || "-"} / Semester ${infoSekolah.semester || "-"}`;
   document.getElementById("c_namaKepsek").innerText = infoSekolah.nama_kepsek || "(....................)";
   document.getElementById("c_nipKepsek").innerText = infoSekolah.nip_kepsek ? `NIP. ${infoSekolah.nip_kepsek}` : "-";
 
@@ -529,9 +529,6 @@ function renderLembarRapor() {
     }
     document.getElementById("c_tabelEkskul").innerHTML = htmlEkskul;
   }
-  // Di dalam renderLembarRapor():
-let faseSpesifik = getFaseKelasAktif();
-document.getElementById("c_fase").innerText = faseSpesifik;
 }
 
 // Helper Kalkulasi Nilai Akhir Berdasarkan Pembobotan
@@ -554,12 +551,10 @@ function hitungNilaiAkhirMapel(listNilaiMapel) {
   let valSTS = itemSTS ? parseFloat(itemSTS.nilai_angka || 0) : 0;
   let valSAS = itemSAS ? parseFloat(itemSAS.nilai_angka || 0) : 0;
 
-  // Jika setelan 100% Murni LM (Default Kurikulum Merdeka)
   if (bLM === 100 && bSTS === 0 && bSAS === 0) {
     return listLM.length > 0 ? Math.round(rerataLM) : 0;
   }
 
-  // Kalkulasi Proporsional sesuai Bobot Persentase
   let totalBobotAktif = 0;
   let totalNilaiTerbobot = 0;
 
@@ -593,21 +588,17 @@ function exportLegerToExcel() {
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
   let thnSem = `${infoSekolah.tahun_ajaran || "2025-2026"}_Sem_${infoSekolah.semester || "1"}`;
   
-  // 1. Matriks Data Excel
   let excelData = [];
 
-  // Header Informasi Sekolah
   excelData.push([`LEGER NILAI RAPOR - ${nSekolah.toUpperCase()} (KELAS ${kAktif})`]);
   excelData.push([`Tahun Ajaran: ${infoSekolah.tahun_ajaran || "-"} | Semester: ${infoSekolah.semester || "-"}`]);
-  excelData.push([]); // Baris Kosong
+  excelData.push([]); 
 
-  // Header Kolom Tabel
   let headerRow = ["No", "NIS", "NISN", "Nama Lengkap Siswa", "L/P"];
   listMapelData.forEach(m => headerRow.push(m.nama_mapel));
   headerRow.push("Rata-Rata Akhir");
   excelData.push(headerRow);
 
-  // Isi Baris Siswa
   siswaAktifList.forEach((siswa, idx) => {
     let idS = String(siswa.id_siswa).trim();
     let row = [
@@ -644,16 +635,13 @@ function exportLegerToExcel() {
     excelData.push(row);
   });
 
-  // 2. Generate Workbook via SheetJS
   let wb = XLSX.utils.book_new();
   let ws = XLSX.utils.aoa_to_sheet(excelData);
 
-  // Set Auto Width Kolom Nama Siswa
   ws['!cols'] = [{ wch: 5 }, { wch: 12 }, { wch: 14 }, { wch: 30 }, { wch: 6 }];
 
   XLSX.utils.book_append_sheet(wb, ws, `Leger Kelas ${kAktif}`);
 
-  // 3. Download File Excel
   let fileName = `Leger_Nilai_Kelas_${kAktif}_${nSekolah.replace(/\s+/g, '_')}_${thnSem}.xlsx`;
   XLSX.writeFile(wb, fileName);
 }
