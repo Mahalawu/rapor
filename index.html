@@ -601,6 +601,49 @@
             </div>
 
             <h5 class="fw-bold mb-3 border-top pt-3">Daftar TP Tersimpan</h5>
+
+            <!-- BARIS FILTER & SEARCH TP -->
+            <div class="row g-2 mb-3 align-items-center border-top pt-3">
+              <div class="col-md-4">
+                <input type="text" id="tpSearch" oninput="renderTabelTP()" class="form-control form-control-sm" placeholder="🔍 Cari Kode / Narasi TP...">
+              </div>
+              <div class="col-md-4">
+                <select id="tpFilterMapel" onchange="renderTabelTP()" class="form-select form-select-sm">
+                  <option value="">-- Semua Mapel --</option>
+                </select>
+              </div>
+              <div class="col-md-4 text-end">
+                <small class="text-muted fw-semibold" id="tpPaginationInfo">Total: 0 Data</small>
+              </div>
+            </div>
+
+            <h5 class="fw-bold mb-3">Daftar TP Tersimpan</h5>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 50px;" class="text-center">No</th>
+                    <th style="width: 150px;">Mapel</th>
+                    <th style="width: 130px;">Kode TP</th>
+                    <th>Narasi TP</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelListTP">
+                  <tr><td colspan="4" class="text-center text-muted">Memuat data TP...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- NAVIGASI PAGINATION TP -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted"></small>
+              <nav>
+                <ul class="pagination pagination-sm mb-0" id="tpPaginationNav">
+                  <!-- Dynamic Pagination -->
+                </ul>
+              </nav>
+            </div>
+            
             <div class="table-responsive">
               <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
