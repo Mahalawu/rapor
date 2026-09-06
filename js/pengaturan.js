@@ -100,7 +100,7 @@ async function simpanPengaturanSekolah() {
       if (typeof renderDashboard === "function") renderDashboard();
       if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
 
-      alert(`🎉 Pengaturan Identitas Sekolah & Wali Kelas ${kAktif} berhasil diperbarui!`);
+      alert(`🎉 Pengaturan Identitas Sekolah & Guru Kelas ${kAktif} berhasil diperbarui!`);
     } else { alert("Gagal menyimpan: " + result.message); }
   } catch (err) { alert("Terjadi kesalahan koneksi!"); }
   finally { btn.disabled = false; btn.innerHTML = "💾 Simpan Pengaturan Identitas"; }
