@@ -20,12 +20,12 @@ function loadFormPengaturan() {
   document.getElementById("cfg_nama_kepsek").value = infoSekolah.nama_kepsek || "";
   document.getElementById("cfg_nip_kepsek").value = infoSekolah.nip_kepsek || "";
 
-  // BACA NAMA & NIP WALI KELAS BERDASARKAN KELAS AKTIF DARI LOCALSTORAGE
+  // 🎯 BACA KHUSUS UNTUK KELAS AKTIF (ISOLASI MANDIRI)
   let namaWaliLokal = localStorage.getItem(`wali_kelas_${kAktif}`);
   let nipWaliLokal = localStorage.getItem(`nip_wali_kelas_${kAktif}`);
 
-  document.getElementById("cfg_nama_walikelas").value = namaWaliLokal || infoSekolah.nama_walikelas || "";
-  document.getElementById("cfg_nip_walikelas").value = nipWaliLokal || infoSekolah.nip_walikelas || "";
+  document.getElementById("cfg_nama_walikelas").value = namaWaliLokal !== null ? namaWaliLokal : "";
+  document.getElementById("cfg_nip_walikelas").value = nipWaliLokal !== null ? nipWaliLokal : "";
   autoSetFase();
 }
 
@@ -85,6 +85,7 @@ async function simpanPengaturanSekolah() {
     });
     let result = await response.json();
     if (result.status === "success") {
+      // 1. KUNCI MANDIRI DI LOCALSTORAGE PER KELAS
       localStorage.setItem("kelasAktif_User", kAktif);
       localStorage.setItem(`wali_kelas_${kAktif}`, namaWaliInput);
       localStorage.setItem(`nip_wali_kelas_${kAktif}`, nipWaliInput);
@@ -92,6 +93,7 @@ async function simpanPengaturanSekolah() {
       infoSekolah = payload;
       updateHeaderTampilan();
       
+      // 2. TRIGGER RE-RENDER SELURUH TAB BERDASARKAN KELAS BARU
       if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
       if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
       if (typeof renderTabelTP === "function") renderTabelTP();
