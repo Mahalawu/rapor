@@ -83,6 +83,7 @@ function gantiKelasLokal(kelasBaru) {
   if (typeof renderTabCetakRapor === "function") renderTabCetakRapor();
   if (typeof renderDashboard === "function") renderDashboard();
   if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
+  if (typeof loadFormPengaturan === "function") loadFormPengaturan();
   
   alert(`🔄 Tampilan berhasil disesuaikan untuk Kelas ${kelasBaru} (Fase ${infoSekolah.fase})!`);
 }
