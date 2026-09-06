@@ -121,6 +121,7 @@ async function muatDataAwal() {
     let dataMapel = await resMapel.json();
     if (dataMapel.status === "success") {
       listMapelData = dataMapel.data;
+    if (typeof populateFilterMapelTP === "function") populateFilterMapelTP();
       
       let selectHtml = '<option value="">-- Pilih Mata Pelajaran --</option>';
       listMapelData.forEach(m => { selectHtml += `<option value="${m.id_mapel}">${m.nama_mapel}</option>`; });
