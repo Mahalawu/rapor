@@ -375,10 +375,10 @@ function renderLembarRapor() {
   document.getElementById("c_namaKepsek").innerText = infoSekolah.nama_kepsek || "(....................)";
   document.getElementById("c_nipKepsek").innerText = infoSekolah.nip_kepsek ? `NIP. ${infoSekolah.nip_kepsek}` : "-";
 
-  // 🎯 BACA KHUSUS NAMA GURU KELAS DARI LOCALSTORAGE PER KELAS AKTIF
+// BACA NAMA GURU KELAS (PRIORITAS LOCALSTORAGE, FALLBACK DATABASE PUSAT)
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (siswa.kelas || infoSekolah.kelas || "5");
-  let namaWaliSpesifik = localStorage.getItem(`wali_kelas_${kAktif}`) || "(....................)";
-  let nipWaliSpesifik = localStorage.getItem(`nip_wali_kelas_${kAktif}`) || "";
+  let namaWaliSpesifik = localStorage.getItem(`wali_kelas_${kAktif}`) || infoSekolah.nama_walikelas || "(....................)";
+  let nipWaliSpesifik = localStorage.getItem(`nip_wali_kelas_${kAktif}`) || infoSekolah.nip_walikelas || "";
 
   document.getElementById("c_waliKelas").innerText = namaWaliSpesifik;
   document.getElementById("c_nipWaliKelas").innerText = nipWaliSpesifik ? `NIP. ${nipWaliSpesifik}` : "-";
