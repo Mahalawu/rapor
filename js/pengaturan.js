@@ -20,12 +20,12 @@ function loadFormPengaturan() {
   document.getElementById("cfg_nama_kepsek").value = infoSekolah.nama_kepsek || "";
   document.getElementById("cfg_nip_kepsek").value = infoSekolah.nip_kepsek || "";
 
-  // 🎯 BACA KHUSUS UNTUK KELAS AKTIF (ISOLASI MANDIRI)
+  // 🎯 BACA LOKAL DULU, JIKA KOSONG GUNAKAN DATA PERMANEN DATABASE
   let namaWaliLokal = localStorage.getItem(`wali_kelas_${kAktif}`);
   let nipWaliLokal = localStorage.getItem(`nip_wali_kelas_${kAktif}`);
 
-  document.getElementById("cfg_nama_walikelas").value = namaWaliLokal !== null ? namaWaliLokal : "";
-  document.getElementById("cfg_nip_walikelas").value = nipWaliLokal !== null ? nipWaliLokal : "";
+  document.getElementById("cfg_nama_walikelas").value = namaWaliLokal !== null ? namaWaliLokal : (infoSekolah.nama_walikelas || "");
+  document.getElementById("cfg_nip_walikelas").value = nipWaliLokal !== null ? nipWaliLokal : (infoSekolah.nip_walikelas || "");
   autoSetFase();
 }
 
