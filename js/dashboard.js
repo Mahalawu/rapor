@@ -1,23 +1,25 @@
 function renderDashboard() {
   let semAktif = String(infoSekolah.semester || "1").trim();
-  let listTPFiltered = listTPData.filter(tp => String(tp.semester || "1").trim() === semAktif);
-  let totTP = listTPFiltered.length;
+  let kAktif = String(infoSekolah.kelas || 5).trim();
 
+  // 1. Hitung TP yang sesuai Semester & Kelas Aktif
+  let listTPFiltered = listTPData.filter(tp => {
+    let tpSem = String(tp.semester || "1").trim();
+    let tpKelas = String(tp.kelas || kAktif).trim();
+    return tpSem === semAktif && tpKelas === kAktif;
+  });
+  
   if (document.getElementById("dash_totTP")) {
-    document.getElementById("dash_totTP").innerText = totTP;
+    document.getElementById("dash_totTP").innerText = listTPFiltered.length;
   }
+
   let siswaAktifList = getSiswaKelasAktif();
   let totalSiswa = siswaAktifList.length || 0;
   
-  // 1. Update Stats Cards
+  // 2. Update Stats Cards
   document.getElementById("dash_totSiswa").innerText = totalSiswa;
   
-  // Hitung TP sesuai Kelas Aktif
-  let kAktif = String(infoSekolah.kelas || 5).trim();
-  let tpKelasAktif = listTPData.filter(tp => String(tp.kelas || 5).trim() === kAktif);
-  document.getElementById("dash_totTP").innerText = tpKelasAktif.length || 0;
-  
-  // Hitung siswa kokurikuler di semester aktif
+  // 3. Hitung siswa kokurikuler di semester aktif
   let setSiswaKoku = new Set();
   siswaAktifList.forEach(s => {
     let idS = String(s.id_siswa).trim();
@@ -30,7 +32,7 @@ function renderDashboard() {
   
   document.getElementById("dash_totKoku").innerText = `${setSiswaKoku.size} / ${totalSiswa}`;
 
-  // 2. Render Tabel Status & Progress Bar
+  // 4. Render Tabel Status & Progress Bar
   renderTabelStatusSiswa(semAktif);
 }
 
