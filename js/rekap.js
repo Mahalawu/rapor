@@ -62,6 +62,7 @@ function gantiModeRekap(mode) {
 function filterDanRenderRekap() {
   let search = (document.getElementById("rekapSearch")?.value || "").toLowerCase().trim();
   let filterMapel = (document.getElementById("rekapFilterMapel")?.value || "").toUpperCase().trim();
+  let filterTP = (document.getElementById("rekapFilterTP")?.value || "").toUpperCase().trim(); // 🎯 BACA FILTER KODE TP
   let filterAsesmen = (document.getElementById("rekapFilterAsesmen")?.value || "").toUpperCase().trim();
   
   let listSiswaKelasAktif = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
@@ -76,9 +77,10 @@ function filterDanRenderRekap() {
     
     let matchSearch = search === "" || namaSiswa.includes(search);
     let matchMapel = filterMapel === "" || String(n.id_mapel).trim().toUpperCase() === filterMapel;
+    let matchTP = filterTP === "" || String(n.id_tp || "").trim().toUpperCase() === filterTP; // 🎯 MATCH KODE TP
     let matchAsesmen = filterAsesmen === "" || String(n.jenis_asesmen || "LM").trim().toUpperCase() === filterAsesmen;
 
-    return matchSearch && matchMapel && matchAsesmen;
+    return matchSearch && matchMapel && matchTP && matchAsesmen;
   });
 
   let txtTotal = document.getElementById("rekapInfoTotal");
@@ -668,4 +670,27 @@ function exportLegerToExcel() {
 
   let fileName = `Leger_Nilai_Kelas_${kAktif}_${nSekolah.replace(/\s+/g, '_')}_${thnSem}.xlsx`;
   XLSX.writeFile(wb, fileName);
+}
+
+function populateFilterTPRekap() {
+  let selectTP = document.getElementById("rekapFilterTP");
+  if (!selectTP) return;
+
+  let mapelTerpilih = (document.getElementById("rekapFilterMapel")?.value || "").toUpperCase().trim();
+  let semAktif = String(infoSekolah.semester || "1").trim();
+
+  let html = '<option value="">-- Semua TP --</option>';
+  
+  // Filter TP berdasarkan semester dan mapel yang sedang dipilih
+  let tpFiltered = listTPData.filter(tp => {
+    let matchSem = String(tp.semester || "1").trim() === semAktif;
+    let matchMapel = mapelTerpilih === "" || String(tp.id_mapel || "").toUpperCase().trim() === mapelTerpilih;
+    return matchSem && matchMapel;
+  });
+
+  tpFiltered.forEach(tp => {
+    html += `<option value="${tp.id_tp}">${tp.id_tp}</option>`;
+  });
+
+  selectTP.innerHTML = html;
 }
