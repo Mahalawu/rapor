@@ -668,14 +668,14 @@
             </div>
           </div>
           <div class="card-body">
-            
-            <!-- BARIS FILTER & SEARCH -->
+                    
+            <!-- BARIS FILTER & SEARCH (TOTAL GRID = 12) -->
             <div class="row g-2 mb-3 align-items-center">
               <div class="col-md-3">
                 <input type="text" id="rekapSearch" oninput="filterDanRenderRekap()" class="form-control form-control-sm" placeholder="🔍 Cari Nama Siswa...">
               </div>
               <div class="col-md-3">
-                <select id="rekapFilterMapel" onchange="filterDanRenderRekap()" class="form-select form-select-sm">
+                <select id="rekapFilterMapel" onchange="populateFilterTPRekap(); filterDanRenderRekap();" class="form-select form-select-sm">
                   <option value="">-- Semua Mapel --</option>
                 </select>
               </div>
@@ -684,7 +684,7 @@
                   <option value="">-- Semua TP --</option>
                 </select>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <select id="rekapFilterAsesmen" onchange="filterDanRenderRekap()" class="form-select form-select-sm">
                   <option value="">-- Semua Jenis Asesmen --</option>
                   <option value="LM">Sumatif Materi (LM)</option>
@@ -692,7 +692,7 @@
                   <option value="SAS">Akhir Semester (SAS)</option>
                 </select>
               </div>
-              <div class="col-md-3 text-end">
+              <div class="col-md-2 text-end">
                 <small class="text-muted fw-semibold" id="rekapInfoTotal">Total: 0 Data</small>
               </div>
             </div>
