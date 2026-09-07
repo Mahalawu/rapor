@@ -131,7 +131,7 @@ function renderTabelDetail() {
       narasi = `Nilai Evaluasi Tes ${jenisLabel}`;
     }
 
-let deskripsi = "";
+    let deskripsi = "";
     if (n.nilai_angka >= 75) {
       deskripsi = `Menunjukkan penguasaan yang sangat baik dalam ${narasi}, namun perlu peningkatan pada pemahaman lanjutan.`;
     } else {
@@ -378,7 +378,7 @@ function renderLembarRapor() {
   document.getElementById("c_namaKepsek").innerText = infoSekolah.nama_kepsek || "(....................)";
   document.getElementById("c_nipKepsek").innerText = infoSekolah.nip_kepsek ? `NIP. ${infoSekolah.nip_kepsek}` : "-";
 
-// BACA NAMA GURU KELAS (PRIORITAS LOCALSTORAGE, FALLBACK DATABASE PUSAT)
+  // BACA NAMA GURU KELAS (PRIORITAS LOCALSTORAGE, FALLBACK DATABASE PUSAT)
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (siswa.kelas || infoSekolah.kelas || "5");
   let namaWaliSpesifik = localStorage.getItem(`wali_kelas_${kAktif}`) || infoSekolah.nama_walikelas || "(....................)";
   let nipWaliSpesifik = localStorage.getItem(`nip_wali_kelas_${kAktif}`) || infoSekolah.nip_walikelas || "";
@@ -427,16 +427,19 @@ function renderLembarRapor() {
 
         let kalimatTinggi = "";
         let kalimatRendah = "";
+        
         if (tpTinggi.length > 0) {
           let maxNilai = Math.max(...tpTinggi.map(o => parseFloat(o.nilai_angka || 0)));
           let tpMaksimal = tpTinggi.filter(o => parseFloat(o.nilai_angka || 0) === maxNilai);
-          let narasiArr = tpTinggi.map(item => {
+          
+          // 🎯 PERBAIKAN: Gunakan tpMaksimal (bukan tpTinggi) agar hanya membaca TP dengan nilai tertinggi saja
+          let narasiArr = tpMaksimal.map(item => {
             let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
             return tpObj ? tpObj.narasi_tp : item.id_tp;
           });
           kalimatTinggi = `Menunjukkan penguasaan yang sangat baik dalam ${narasiArr.join(", ")}.`;
         
-        if (tpRendah.length === 0 && listLM.length > 1) {
+          if (tpRendah.length === 0 && listLM.length > 1) {
             let minNilaiDiatas75 = Math.min(...tpTinggi.map(o => parseFloat(o.nilai_angka || 0)));
             
             // Hanya jadikan "perlu peningkatan" jika nilainya memang lebih rendah dari nilai maksimum
