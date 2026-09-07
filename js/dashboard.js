@@ -1,5 +1,11 @@
 function renderDashboard() {
   let semAktif = String(infoSekolah.semester || "1").trim();
+  let listTPFiltered = listTPData.filter(tp => String(tp.semester || "1").trim() === semAktif);
+  let totTP = listTPFiltered.length;
+
+  if (document.getElementById("dash_totTP")) {
+    document.getElementById("dash_totTP").innerText = totTP;
+  }
   let siswaAktifList = getSiswaKelasAktif();
   let totalSiswa = siswaAktifList.length || 0;
   
