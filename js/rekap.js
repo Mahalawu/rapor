@@ -19,6 +19,7 @@ async function muatRekapNilai() {
       });
       
       populateFilterMapel();
+      populateFilterTPRekap();
       filterDanRenderRekap();
     } else {
       if (tabelEl) tabelEl.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">Belum ada data nilai tersimpan.</td></tr>';
