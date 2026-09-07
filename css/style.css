@@ -171,3 +171,43 @@
     display: none !important;
   }
 }
+
+/* ===================================================
+   TAMPILAN COMPACT KHUSUS LAYAR HP (MOBILE OPTIMIZATION)
+   =================================================== */
+@media (max-width: 768px) {
+  /* Mengurangi padding luar container & card */
+  body {
+    padding: 0.5rem !important;
+  }
+  
+  .card-body {
+    padding: 0.75rem !important;
+  }
+
+  /* Font tabel lebih ringkas */
+  .table {
+    font-size: 0.82rem !important;
+  }
+  
+  .table th, .table td {
+    padding: 0.35rem 0.4rem !important;
+  }
+
+  /* Mengecilkan judul & ukuran tombol navigasi tab */
+  h2, .h2 { font-size: 1.25rem !important; }
+  h4, .h4 { font-size: 1.05rem !important; }
+  h5, .h5 { font-size: 0.95rem !important; }
+
+  .nav-pills .nav-link {
+    padding: 0.35rem 0.6rem !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 0.25rem;
+  }
+
+  /* Menjadikan form input & select lebih ringkas di layar sempit */
+  .form-control, .form-select {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.85rem !important;
+  }
+}
