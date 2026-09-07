@@ -63,7 +63,7 @@ function gantiModeRekap(mode) {
 function filterDanRenderRekap() {
   let search = (document.getElementById("rekapSearch")?.value || "").toLowerCase().trim();
   let filterMapel = (document.getElementById("rekapFilterMapel")?.value || "").toUpperCase().trim();
-  let filterTP = (document.getElementById("rekapFilterTP")?.value || "").toUpperCase().trim(); // 🎯 BACA FILTER KODE TP
+  let filterTP = (document.getElementById("rekapFilterTP")?.value || "").toUpperCase().trim();
   let filterAsesmen = (document.getElementById("rekapFilterAsesmen")?.value || "").toUpperCase().trim();
   
   let listSiswaKelasAktif = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
@@ -78,7 +78,7 @@ function filterDanRenderRekap() {
     
     let matchSearch = search === "" || namaSiswa.includes(search);
     let matchMapel = filterMapel === "" || String(n.id_mapel).trim().toUpperCase() === filterMapel;
-    let matchTP = filterTP === "" || String(n.id_tp || "").trim().toUpperCase() === filterTP; // 🎯 MATCH KODE TP
+    let matchTP = filterTP === "" || String(n.id_tp || "").trim().toUpperCase() === filterTP;
     let matchAsesmen = filterAsesmen === "" || String(n.jenis_asesmen || "LM").trim().toUpperCase() === filterAsesmen;
 
     return matchSearch && matchMapel && matchTP && matchAsesmen;
@@ -201,7 +201,7 @@ function renderTabelLeger() {
 
   let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
 
-  // 🎯 URAPKAN MAPEL BERDASARKAN NO_URUT (URUTAN REGULASI)
+  // 🎯 URUTKAN MAPEL BERDASARKAN KOLOM 'urutan'
   let sortedMapel = [...listMapelData].sort((a, b) => {
     let urutA = parseInt(a.urutan || a.id_mapel || 99);
     let urutB = parseInt(b.urutan || b.id_mapel || 99);
@@ -380,7 +380,6 @@ function renderLembarRapor() {
   document.getElementById("c_sekolah").innerText = infoSekolah.nama_sekolah || "SDN";
   document.getElementById("c_kelas").innerText = siswa.kelas || infoSekolah.kelas || "5";
   
-  // SET FASE OTOMATIS SESUAI KELAS SISWA
   let faseSpesifik = typeof getFaseKelasAktif === "function" ? getFaseKelasAktif() : (infoSekolah.fase || "C");
   document.getElementById("c_fase").innerText = faseSpesifik;
 
@@ -388,7 +387,6 @@ function renderLembarRapor() {
   document.getElementById("c_namaKepsek").innerText = infoSekolah.nama_kepsek || "(....................)";
   document.getElementById("c_nipKepsek").innerText = infoSekolah.nip_kepsek ? `NIP. ${infoSekolah.nip_kepsek}` : "-";
 
-  // BACA NAMA GURU KELAS (PRIORITAS LOCALSTORAGE, FALLBACK DATABASE PUSAT)
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (siswa.kelas || infoSekolah.kelas || "5");
   let namaWaliSpesifik = localStorage.getItem(`wali_kelas_${kAktif}`) || infoSekolah.nama_walikelas || "(....................)";
   let nipWaliSpesifik = localStorage.getItem(`nip_wali_kelas_${kAktif}`) || infoSekolah.nip_walikelas || "";
@@ -404,28 +402,27 @@ function renderLembarRapor() {
   }
   document.getElementById("c_tglRapor").innerText = `${tempat}, ${tglIndo}`;
 
-  // RENDER TABEL NILAI MAPEL
+  // 🎯 RENDER TABEL NILAI MAPEL (URUTAN DARI MASTER SHEET BERBASIS 'urutan')
   let nilaiSiswaIni = listNilaiData.filter(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
   let sortedMapelList = [...listMapelData].sort((a, b) => {
-    let urutA = parseInt(a.no_urut || a.id_mapel || 99);
-    let urutB = parseInt(b.no_urut || b.id_mapel || 99);
+    let urutA = parseInt(a.urutan || a.id_mapel || 99);
+    let urutB = parseInt(b.urutan || b.id_mapel || 99);
     return urutA - urutB;
   });
 
   let htmlRows = "";
-  let mapelKeys = Object.keys(mapelGrouped);
+  let countMapelRendered = 0;
 
-  if (mapelKeys.length === 0) {
-    htmlRows = '<tr><td colspan="4" class="text-center text-muted py-3">Belum ada nilai terinput.</td></tr>';
-  } else {
-    mapelKeys.forEach((mKey, index) => {
-      let listNilaiMapel = mapelGrouped[mKey];
+  sortedMapelList.forEach((m) => {
+    let mKey = String(m.id_mapel).trim().toUpperCase();
+    let listNilaiMapel = nilaiSiswaIni.filter(n => String(n.id_mapel).trim().toUpperCase() === mKey);
+
+    if (listNilaiMapel.length > 0) {
+      countMapelRendered++;
       let totalNilai = 0;
       listNilaiMapel.forEach(item => totalNilai += parseFloat(item.nilai_angka || 0));
       let nilaiRataRata = Math.round(totalNilai / listNilaiMapel.length);
-
-      let m = listMapelData.find(x => String(x.id_mapel).trim().toUpperCase() === mKey);
-      let namaMapel = m ? m.nama_mapel : mKey;
+      let namaMapel = m.nama_mapel || mKey;
 
       let listLM = listNilaiMapel.filter(x => (x.jenis_asesmen || "LM") === "LM");
       let deskripsiHasil = "";
@@ -441,7 +438,6 @@ function renderLembarRapor() {
           let maxNilai = Math.max(...tpTinggi.map(o => parseFloat(o.nilai_angka || 0)));
           let tpMaksimal = tpTinggi.filter(o => parseFloat(o.nilai_angka || 0) === maxNilai);
           
-          // 🎯 PERBAIKAN: Gunakan tpMaksimal (bukan tpTinggi) agar hanya membaca TP dengan nilai tertinggi saja
           let narasiArr = tpMaksimal.map(item => {
             let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
             return tpObj ? tpObj.narasi_tp : item.id_tp;
@@ -451,7 +447,6 @@ function renderLembarRapor() {
           if (tpRendah.length === 0 && listLM.length > 1) {
             let minNilaiDiatas75 = Math.min(...tpTinggi.map(o => parseFloat(o.nilai_angka || 0)));
             
-            // Hanya jadikan "perlu peningkatan" jika nilainya memang lebih rendah dari nilai maksimum
             if (minNilaiDiatas75 < maxNilai) {
               let tpMinDiatas75 = tpTinggi.filter(o => parseFloat(o.nilai_angka || 0) === minNilaiDiatas75);
               let narasiMinArr = tpMinDiatas75.map(item => {
@@ -463,7 +458,6 @@ function renderLembarRapor() {
           }
         }
 
-        // 🎯 JIKA ADA TP < 75: Gunakan narasi "PERLU BIMBINGAN LEBIH LANJUT"
         if (tpRendah.length > 0) {
           let narasiRendahArr = tpRendah.map(item => {
             let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
@@ -479,14 +473,19 @@ function renderLembarRapor() {
 
       htmlRows += `
         <tr>
-          <td class="text-center">${index + 1}</td>
+          <td class="text-center">${countMapelRendered}</td>
           <td><strong>${namaMapel}</strong></td>
           <td class="text-center fw-bold fs-6">${nilaiRataRata}</td>
           <td style="font-size: 0.95rem;">${deskripsiHasil}</td>
         </tr>
       `;
-    });
+    }
+  });
+
+  if (countMapelRendered === 0) {
+    htmlRows = '<tr><td colspan="4" class="text-center text-muted py-3">Belum ada nilai terinput.</td></tr>';
   }
+
   document.getElementById("c_tabelNilai").innerHTML = htmlRows;
 
   // RENDER KOKURIKULER
@@ -628,7 +627,15 @@ function exportLegerToExcel() {
   excelData.push([]); 
 
   let headerRow = ["No", "NIS", "NISN", "Nama Lengkap Siswa", "L/P"];
-  listMapelData.forEach(m => headerRow.push(m.nama_mapel));
+  
+  // Urutkan Mapel untuk Ekspor Excel
+  let sortedMapel = [...listMapelData].sort((a, b) => {
+    let urutA = parseInt(a.urutan || a.id_mapel || 99);
+    let urutB = parseInt(b.urutan || b.id_mapel || 99);
+    return urutA - urutB;
+  });
+
+  sortedMapel.forEach(m => headerRow.push(m.nama_mapel));
   headerRow.push("Rata-Rata Akhir");
   excelData.push(headerRow);
 
@@ -645,7 +652,7 @@ function exportLegerToExcel() {
     let totalNilaiSemuaMapel = 0;
     let countMapelAdaNilai = 0;
 
-    listMapelData.forEach(m => {
+    sortedMapel.forEach(m => {
       let mKey = String(m.id_mapel).trim().toUpperCase();
       let nilaiSiswaMapel = listNilaiData.filter(n => 
         String(n.id_siswa).trim() === idS && 
@@ -688,7 +695,6 @@ function populateFilterTPRekap() {
 
   let html = '<option value="">-- Semua TP --</option>';
   
-  // Filter TP berdasarkan semester dan mapel yang sedang dipilih
   let tpFiltered = listTPData.filter(tp => {
     let matchSem = String(tp.semester || "1").trim() === semAktif;
     let matchMapel = mapelTerpilih === "" || String(tp.id_mapel || "").toUpperCase().trim() === mapelTerpilih;
