@@ -131,9 +131,12 @@ function renderTabelDetail() {
       narasi = `Nilai Evaluasi Tes ${jenisLabel}`;
     }
 
-    let deskripsi = n.nilai_angka >= 75 
-      ? `Menunjukkan penguasaan yang sangat baik dalam ${narasi}.`
-      : `Perlu bimbingan lebih lanjut dalam ${narasi}.`;
+let deskripsi = "";
+    if (n.nilai_angka >= 75) {
+      deskripsi = `Menunjukkan penguasaan yang sangat baik dalam ${narasi}, namun perlu peningkatan pada pemahaman lanjutan.`;
+    } else {
+      deskripsi = `Perlu bimbingan lebih lanjut dalam ${narasi}.`;
+    }
 
     html += `
       <tr>
@@ -423,22 +426,40 @@ function renderLembarRapor() {
         let tpRendah = listLM.filter(x => x.nilai_angka < 75);
 
         let kalimatTinggi = "";
+        let kalimatRendah = "";
         if (tpTinggi.length > 0) {
+          let maxNilai = Math.max(...tpTinggi.map(o => parseFloat(o.nilai_angka || 0)));
+          let tpMaksimal = tpTinggi.filter(o => parseFloat(o.nilai_angka || 0) === maxNilai);
           let narasiArr = tpTinggi.map(item => {
             let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
             return tpObj ? tpObj.narasi_tp : item.id_tp;
           });
           kalimatTinggi = `Menunjukkan penguasaan yang sangat baik dalam ${narasiArr.join(", ")}.`;
+        
+        if (tpRendah.length === 0 && listLM.length > 1) {
+            let minNilaiDiatas75 = Math.min(...tpTinggi.map(o => parseFloat(o.nilai_angka || 0)));
+            
+            // Hanya jadikan "perlu peningkatan" jika nilainya memang lebih rendah dari nilai maksimum
+            if (minNilaiDiatas75 < maxNilai) {
+              let tpMinDiatas75 = tpTinggi.filter(o => parseFloat(o.nilai_angka || 0) === minNilaiDiatas75);
+              let narasiMinArr = tpMinDiatas75.map(item => {
+                let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
+                return tpObj ? tpObj.narasi_tp : item.id_tp;
+              });
+              kalimatRendah = `Perlu peningkatan dalam ${narasiMinArr.join(", ")}.`;
+            }
+          }
         }
 
-        let kalimatRendah = "";
+        // 🎯 JIKA ADA TP < 75: Gunakan narasi "PERLU BIMBINGAN LEBIH LANJUT"
         if (tpRendah.length > 0) {
-          let narasiArr = tpRendah.map(item => {
+          let narasiRendahArr = tpRendah.map(item => {
             let tpObj = listTPData.find(x => String(x.id_tp).trim().toUpperCase() === String(item.id_tp).trim().toUpperCase() && String(x.id_mapel).trim().toUpperCase() === mKey);
             return tpObj ? tpObj.narasi_tp : item.id_tp;
           });
-          kalimatRendah = `Perlu bimbingan lebih lanjut dalam ${narasiArr.join(", ")}.`;
+          kalimatRendah = `Perlu bimbingan lebih lanjut dalam ${narasiRendahArr.join(", ")}.`;
         }
+
         deskripsiHasil = [kalimatTinggi, kalimatRendah].filter(Boolean).join(" ");
       } else {
         deskripsiHasil = "Menunjukkan penguasaan materi sesuai capaian pembelajaran.";
