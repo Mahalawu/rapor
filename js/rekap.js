@@ -201,7 +201,14 @@ function renderTabelLeger() {
 
   let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
 
-  if (siswaAktifList.length === 0 || listMapelData.length === 0) {
+  // 🎯 URAPKAN MAPEL BERDASARKAN NO_URUT (URUTAN REGULASI)
+  let sortedMapel = [...listMapelData].sort((a, b) => {
+    let urutA = parseInt(a.urutan || a.id_mapel || 99);
+    let urutB = parseInt(b.urutan || b.id_mapel || 99);
+    return urutA - urutB;
+  });
+
+  if (siswaAktifList.length === 0 || sortedMapel.length === 0) {
     bodyContainer.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Data siswa / mapel belum tersedia untuk Kelas ${infoSekolah.kelas || 5}.</td></tr>`;
     return;
   }
@@ -211,7 +218,7 @@ function renderTabelLeger() {
       <th style="width: 40px;">No</th>
       <th style="width: 220px;">Nama Siswa</th>`;
     
-    listMapelData.forEach(m => {
+    sortedMapel.forEach(m => {
       headerHtml += `<th>${m.nama_mapel}</th>`;
     });
 
@@ -237,7 +244,7 @@ function renderTabelLeger() {
       <td class="text-center">${idx + 1}</td>
       <td><strong>${siswa.nama_lengkap}</strong></td>`;
 
-    listMapelData.forEach(m => {
+    sortedMapel.forEach(m => {
       let mKey = String(m.id_mapel).trim().toUpperCase();
       let nilaiSiswaMapel = listNilaiData.filter(n => 
         String(n.id_siswa).trim() === idS && 
@@ -399,11 +406,10 @@ function renderLembarRapor() {
 
   // RENDER TABEL NILAI MAPEL
   let nilaiSiswaIni = listNilaiData.filter(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
-  let mapelGrouped = {};
-  nilaiSiswaIni.forEach(n => {
-    let mKey = String(n.id_mapel).trim().toUpperCase();
-    if (!mapelGrouped[mKey]) mapelGrouped[mKey] = [];
-    mapelGrouped[mKey].push(n);
+  let sortedMapelList = [...listMapelData].sort((a, b) => {
+    let urutA = parseInt(a.no_urut || a.id_mapel || 99);
+    let urutB = parseInt(b.no_urut || b.id_mapel || 99);
+    return urutA - urutB;
   });
 
   let htmlRows = "";
