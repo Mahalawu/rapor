@@ -6,6 +6,7 @@ function gantiModeAsesmen() {
   } else {
     boxTP.style.display = "none";
   }
+  muatNilaiTerisiKeInput(); // 🎯 Cek ulang nilai saat ganti jenis asesmen
 }
 
 // 1. RENDER TABEL INPUT NILAI (FILTER BY KELAS AKTIF)
@@ -36,6 +37,7 @@ function renderTabelSiswaInput() {
     `;
   });
   document.getElementById("tabelSiswaInput").innerHTML = html;
+  muatNilaiTerisiKeInput(); // 🎯 Ambil nilai eksis jika ada
 }
 
 // 2. UPDATE DROPDOWN TP (FILTER BY MAPEL, SEMESTER, DAN KELAS AKTIF)
@@ -67,6 +69,42 @@ function updateDropdownTP() {
     html += `<option value="${tp.id_tp}">${tp.id_tp} - ${tp.narasi_tp}</option>`;
   });
   selectTP.innerHTML = html;
+  selectTP.onchange = muatNilaiTerisiKeInput;
+  muatNilaiTerisiKeInput();
+}
+
+// 🎯 FUNGSI BARU: BACA NILAI YANG SUDAH TERTERA DI DATABASE UNTUK AUTO-FILL
+function muatNilaiTerisiKeInput() {
+  let jenis = document.getElementById("selectJenisAsesmen").value;
+  let mapel = (document.getElementById("selectMapel").value || "").trim().toUpperCase();
+  let tp = (document.getElementById("selectTPInput").value || "").trim().toUpperCase();
+  let semAktif = String(infoSekolah.semester || "1").trim();
+
+  let inputElements = document.querySelectorAll(".input-nilai-siswa");
+  if (inputElements.length === 0) return;
+
+  // Reset nilai input terlebih dahulu
+  inputElements.forEach(i => i.value = "");
+
+  if (!mapel || (jenis === "LM" && !tp)) return;
+
+  // Filter memori listNilaiData yang cocok
+  let dataEksis = listNilaiData.filter(n => 
+    String(n.id_mapel).trim().toUpperCase() === mapel &&
+    String(n.jenis_asesmen || "LM").trim().toUpperCase() === jenis &&
+    (jenis !== "LM" || String(n.id_tp || "-").trim().toUpperCase() === tp) &&
+    String(n.semester || "1").trim() === semAktif
+  );
+
+  if (dataEksis.length > 0) {
+    inputElements.forEach(input => {
+      let idSiswa = String(input.getAttribute("data-idsiswa")).trim();
+      let match = dataEksis.find(x => String(x.id_siswa).trim() === idSiswa);
+      if (match) {
+        input.value = match.nilai_angka;
+      }
+    });
+  }
 }
 
 async function simpanSemuaNilai() {
@@ -107,10 +145,28 @@ async function simpanSemuaNilai() {
     });
     let result = await response.json();
     if (result.status === "success") {
-      alert(`🎉 Berhasil menyimpan ${payloadNilai.length} data nilai ${jenis}!`);
-      payloadNilai.forEach(p => listRiwayatSesiIni.unshift(p));
+      alert(`🎉 Berhasil menyimpan/memperbarui data nilai ${jenis}!`);
+      
+      // Update memori lokal listNilaiData agar langsung tersinkronisasi
+      payloadNilai.forEach(p => {
+        let idxEksis = listNilaiData.findIndex(x => 
+          String(x.id_siswa).trim() === String(p.id_siswa).trim() &&
+          String(x.id_mapel).trim().toUpperCase() === String(p.id_mapel).trim().toUpperCase() &&
+          String(x.jenis_asesmen || "LM").trim().toUpperCase() === String(p.jenis_asesmen).trim().toUpperCase() &&
+          String(x.id_tp || "-").trim().toUpperCase() === String(p.id_tp).trim().toUpperCase() &&
+          String(x.semester || "1").trim() === String(p.semester).trim()
+        );
+
+        if (idxEksis >= 0) {
+          listNilaiData[idxEksis].nilai_angka = p.nilai_angka;
+        } else {
+          listNilaiData.push(p);
+        }
+
+        listRiwayatSesiIni.unshift(p);
+      });
+
       renderTabelRiwayatInput();
-      inputElements.forEach(i => i.value = "");
     } else { alert("Gagal: " + result.message); }
   } catch (error) { alert("Kesalahan koneksi!"); } 
   finally { btn.disabled = false; btn.innerHTML = "💾 Simpan Data Nilai"; }
