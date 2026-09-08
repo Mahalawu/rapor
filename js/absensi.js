@@ -24,15 +24,13 @@ function gantiModePresensi(mode) {
 
 // 🎯 1. RENDER TABEL PRESENSI HARIAN (TERKUNCI KELAS AKTIF)
 function renderTabelPresensiHarian() {
-  // Cek ID elemen tabel (toleransi variasi nama ID di index.html)
-  let container = document.getElementById("tabelPresensiHarian") || 
-                  document.getElementById("tabelAbsensiHarian") || 
-                  document.getElementById("tabelListPresensi");
+  // SAMAKAN DENGAN ID DI INDEX.HTML BARIS 309
+  let container = document.getElementById("tabelPresensiHarianBody") || document.getElementById("tabelPresensiHarian");
   if (!container) return;
 
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
   
-  // 🎯 FILTER SISWA HANYA KELAS AKTIF
+  // FILTER SISWA HANYA KELAS AKTIF
   let siswaAktifList = listSiswaData.filter(s => String(s.kelas || "5").trim() === kAktif);
 
   if (siswaAktifList.length === 0) {
