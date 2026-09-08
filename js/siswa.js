@@ -22,8 +22,8 @@ function renderTabelSiswaMaster() {
         <td class="text-center">${siswa.jenis_kelamin || 'L'}</td>
         <td class="text-center"><span class="badge bg-info text-dark">Kelas ${siswa.kelas || 5}</span></td>
         <td class="text-center">
-          <button onclick="bukaModalEditSiswa('${idS}')" class="btn btn-sm btn-outline-warning me-1" title="Edit Siswa">✏️ Edit</button>
-          <button onclick="hapusSiswa('${idS}', '${siswa.nama_lengkap}')" class="btn btn-sm btn-outline-danger" title="Hapus Siswa">🗑️ Hapus</button>
+          <button onclick="bukaModalEditSiswa('${idS}')" class="btn btn-sm btn-outline-warning me-1" title="Edit Siswa">✏️</button>
+          <button onclick="hapusSiswa('${idS}', '${siswa.nama_lengkap}')" class="btn btn-sm btn-outline-danger" title="Hapus Siswa">🗑️</button>
         </td>
       </tr>
     `;
