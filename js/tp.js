@@ -61,8 +61,8 @@ function renderTabelTPRows() {
         <td><span class="badge bg-info text-dark font-monospace px-2 py-1">${tp.id_tp}</span></td>
         <td>${tp.narasi_tp}</td>
         <td class="text-center">
-          <button onclick="bukaModalEditTP('${idTpEsc}', '${idMapelEsc}')" class="btn btn-sm btn-outline-warning me-1" title="Edit TP">✏️ Edit</button>
-          <button onclick="hapusTP('${idTpEsc}', '${idMapelEsc}')" class="btn btn-sm btn-outline-danger" title="Hapus TP">🗑️ Hapus</button>
+          <button onclick="bukaModalEditTP('${idTpEsc}', '${idMapelEsc}')" class="btn btn-sm btn-outline-warning me-1" title="Edit TP">✏️</button>
+          <button onclick="hapusTP('${idTpEsc}', '${idMapelEsc}')" class="btn btn-sm btn-outline-danger" title="Hapus TP">🗑️</button>
         </td>
       </tr>
     `;
