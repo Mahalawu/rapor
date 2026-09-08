@@ -1039,5 +1039,55 @@
     document.getElementById("selectMapel").addEventListener("change", updateDropdownTP);
     muatDataAwal();
   </script>
+  <!-- MODAL EDIT SISWA -->
+  <div class="modal fade" id="modalEditSiswa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold">✏️ Edit Data Siswa</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit_sis_id">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">NIS:</label>
+            <input type="text" id="edit_sis_nis" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">NISN:</label>
+            <input type="text" id="edit_sis_nisn" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nama Lengkap Siswa:</label>
+            <input type="text" id="edit_sis_nama" class="form-control">
+          </div>
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Jenis Kelamin:</label>
+              <select id="edit_sis_jk" class="form-select">
+                <option value="L">Laki-laki (L)</option>
+                <option value="P">Perempuan (P)</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Kelas:</label>
+              <select id="edit_sis_kelas" class="form-select">
+                <option value="1">Kelas 1</option>
+                <option value="2">Kelas 2</option>
+                <option value="3">Kelas 3</option>
+                <option value="4">Kelas 4</option>
+                <option value="5">Kelas 5</option>
+                <option value="6">Kelas 6</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" onclick="simpanEditSiswa()" id="btnSimpanEditSiswa" class="btn btn-primary fw-bold">💾 Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
