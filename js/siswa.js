@@ -18,7 +18,10 @@ function renderTabelSiswaMaster() {
       <tr>
         <td class="text-center">${idx + 1}</td>
         <td><small class="text-muted font-monospace">${siswa.nis || '-'} / ${siswa.nisn || '-'}</small></td>
-        <td><strong>${siswa.nama_lengkap}</strong></td>
+        <td>
+          <strong>${siswa.nama_lengkap}</strong>
+          ${siswa.tempat_lahir ? `<br><small class="text-muted">TTL: ${siswa.tempat_lahir}, ${siswa.tanggal_lahir || '-'}</small>` : ''}
+        </td>
         <td class="text-center">${siswa.jenis_kelamin || 'L'}</td>
         <td class="text-center"><span class="badge bg-info text-dark">Kelas ${siswa.kelas || 5}</span></td>
         <td class="text-center">
@@ -41,7 +44,17 @@ function bukaModalEditSiswa(idSiswa) {
   document.getElementById("edit_sis_nisn").value = siswa.nisn || "";
   document.getElementById("edit_sis_nama").value = siswa.nama_lengkap || "";
   document.getElementById("edit_sis_jk").value = siswa.jenis_kelamin || "L";
-  document.getElementById("edit_sis_kelas").value = siswa.kelas || infoSekolah.kelas || "5";
+  document.getElementById("edit_sis_kelas").value = siswa.kelas || (typeof getKelasAktifUser === "function" ? getKelasAktifUser() : infoSekolah.kelas || "5");
+  
+  // Data Identitas Rapor Tambahan
+  document.getElementById("edit_sis_tempat_lahir").value = siswa.tempat_lahir || "";
+  document.getElementById("edit_sis_tanggal_lahir").value = siswa.tanggal_lahir || "";
+  document.getElementById("edit_sis_agama").value = siswa.agama || "Islam";
+  document.getElementById("edit_sis_alamat").value = siswa.alamat || "";
+  document.getElementById("edit_sis_nama_ayah").value = siswa.nama_ayah || "";
+  document.getElementById("edit_sis_nama_ibu").value = siswa.nama_ibu || "";
+  document.getElementById("edit_sis_pekerjaan_ortu").value = siswa.pekerjaan_ortu || "";
+  document.getElementById("edit_sis_nama_wali").value = siswa.nama_wali || "";
 
   let modal = new bootstrap.Modal(document.getElementById('modalEditSiswa'));
   modal.show();
@@ -63,7 +76,15 @@ async function simpanEditSiswa() {
     nisn: nisn,
     nama_lengkap: nama,
     jenis_kelamin: jk,
-    kelas: kelas
+    kelas: kelas,
+    tempat_lahir: document.getElementById("edit_sis_tempat_lahir")?.value.trim() || "",
+    tanggal_lahir: document.getElementById("edit_sis_tanggal_lahir")?.value || "",
+    agama: document.getElementById("edit_sis_agama")?.value || "Islam",
+    alamat: document.getElementById("edit_sis_alamat")?.value.trim() || "",
+    nama_ayah: document.getElementById("edit_sis_nama_ayah")?.value.trim() || "",
+    nama_ibu: document.getElementById("edit_sis_nama_ibu")?.value.trim() || "",
+    pekerjaan_ortu: document.getElementById("edit_sis_pekerjaan_ortu")?.value.trim() || "",
+    nama_wali: document.getElementById("edit_sis_nama_wali")?.value.trim() || ""
   };
 
   let btn = document.getElementById("btnSimpanEditSiswa");
@@ -80,10 +101,9 @@ async function simpanEditSiswa() {
     if (result.status === "success") {
       alert("🎉 " + result.message);
       
-      // Update memori lokal
       let idx = listSiswaData.findIndex(x => String(x.id_siswa).trim() === String(idSiswa).trim());
       if (idx >= 0) {
-        listSiswaData[idx] = payload;
+        listSiswaData[idx] = { ...listSiswaData[idx], ...payload };
       }
 
       renderTabelSiswaMaster();
@@ -116,8 +136,6 @@ async function hapusSiswa(idSiswa, namaSiswa) {
 
     if (result.status === "success") {
       alert("🗑️ " + result.message);
-      
-      // Hapus dari memori lokal
       listSiswaData = listSiswaData.filter(x => String(x.id_siswa).trim() !== String(idSiswa).trim());
       renderTabelSiswaMaster();
     } else {
@@ -133,31 +151,57 @@ async function simpanSiswaSingle() {
   let nisn = document.getElementById("sis_nisn").value.trim();
   let nama = document.getElementById("sis_nama").value.trim();
   let jk = document.getElementById("sis_jk").value;
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
 
   if (!nama) { alert("Nama lengkap siswa wajib diisi!"); return; }
 
-  let payload = [{ nis: nis, nisn: nisn, nama_lengkap: nama, jenis_kelamin: jk, kelas: infoSekolah.kelas || 5 }];
+  let payload = [{
+    nis: nis,
+    nisn: nisn,
+    nama_lengkap: nama,
+    jenis_kelamin: jk,
+    kelas: kAktif,
+    tempat_lahir: document.getElementById("sis_tempat_lahir")?.value.trim() || "",
+    tanggal_lahir: document.getElementById("sis_tanggal_lahir")?.value || "",
+    agama: document.getElementById("sis_agama")?.value || "Islam",
+    alamat: document.getElementById("sis_alamat")?.value.trim() || "",
+    nama_ayah: document.getElementById("sis_nama_ayah")?.value.trim() || "",
+    nama_ibu: document.getElementById("sis_nama_ibu")?.value.trim() || "",
+    pekerjaan_ortu: document.getElementById("sis_pekerjaan_ortu")?.value.trim() || "",
+    nama_wali: document.getElementById("sis_nama_wali")?.value.trim() || ""
+  }];
+
   await kirimDataSiswa(payload);
   
+  // Clear input
   document.getElementById("sis_nis").value = "";
   document.getElementById("sis_nisn").value = "";
   document.getElementById("sis_nama").value = "";
+  if(document.getElementById("sis_tempat_lahir")) document.getElementById("sis_tempat_lahir").value = "";
+  if(document.getElementById("sis_tanggal_lahir")) document.getElementById("sis_tanggal_lahir").value = "";
+  if(document.getElementById("sis_alamat")) document.getElementById("sis_alamat").value = "";
+  if(document.getElementById("sis_nama_ayah")) document.getElementById("sis_nama_ayah").value = "";
+  if(document.getElementById("sis_nama_ibu")) document.getElementById("sis_nama_ibu").value = "";
+  if(document.getElementById("sis_pekerjaan_ortu")) document.getElementById("sis_pekerjaan_ortu").value = "";
+  if(document.getElementById("sis_nama_wali")) document.getElementById("sis_nama_wali").value = "";
 }
 
+// 🎯 IMPORT EXCEL MENDUKUNG HINGGA 14 KOLOM URUT SPREADSHEET
 async function simpanSiswaBulk() {
   let textRaw = document.getElementById("sis_bulk_text").value.trim();
   if (!textRaw) { alert("Tempelkan data siswa dari Excel terlebih dahulu!"); return; }
 
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
   let lines = textRaw.split("\n");
   let payload = [];
 
   lines.forEach(line => {
     let cols = line.split("\t");
     if (cols.length >= 2) {
-      let nis = cols[0].trim();
-      let rawNisn = cols.length >= 3 ? cols[1].trim() : "-";
-      let nama = cols.length >= 3 ? cols[2].trim() : cols[1].trim();
-      let jk = cols.length >= 4 ? cols[3].trim().toUpperCase() : "L";
+      let nis = cols[0] ? cols[0].trim() : "";
+      let rawNisn = cols.length >= 2 ? cols[1].trim() : "-";
+      let nama = cols.length >= 3 ? cols[2].trim() : cols[0].trim();
+      let jk = cols.length >= 4 && cols[3].trim() ? cols[3].trim().toUpperCase() : "L";
 
       let nisn = rawNisn;
       if (rawNisn !== "-" && !isNaN(rawNisn)) {
@@ -165,7 +209,21 @@ async function simpanSiswaBulk() {
       }
 
       if (nama) {
-        payload.push({ nis: nis, nisn: nisn, nama_lengkap: nama, jenis_kelamin: jk, kelas: infoSekolah.kelas || 5 });
+        payload.push({
+          nis: nis,
+          nisn: nisn,
+          nama_lengkap: nama,
+          jenis_kelamin: jk,
+          kelas: kAktif,
+          tempat_lahir: cols[4] ? cols[4].trim() : "",
+          tanggal_lahir: cols[5] ? cols[5].trim() : "",
+          agama: cols[6] ? cols[6].trim() : "Islam",
+          alamat: cols[7] ? cols[7].trim() : "",
+          nama_ayah: cols[8] ? cols[8].trim() : "",
+          nama_ibu: cols[9] ? cols[9].trim() : "",
+          pekerjaan_ortu: cols[10] ? cols[10].trim() : "",
+          nama_wali: cols[11] ? cols[11].trim() : ""
+        });
       }
     }
   });
