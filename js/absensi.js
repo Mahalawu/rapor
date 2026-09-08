@@ -24,7 +24,10 @@ function gantiModePresensi(mode) {
 
 // 🎯 1. RENDER TABEL PRESENSI HARIAN (TERKUNCI KELAS AKTIF)
 function renderTabelPresensiHarian() {
-  let container = document.getElementById("tabelPresensiHarian");
+  // Cek ID elemen tabel (toleransi variasi nama ID di index.html)
+  let container = document.getElementById("tabelPresensiHarian") || 
+                  document.getElementById("tabelAbsensiHarian") || 
+                  document.getElementById("tabelListPresensi");
   if (!container) return;
 
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
@@ -37,19 +40,20 @@ function renderTabelPresensiHarian() {
     return;
   }
 
-  let tglInput = document.getElementById("inputTanggalPresensi")?.value || new Date().toISOString().split("T")[0];
+  let tglEl = document.getElementById("inputTanggalPresensi") || document.getElementById("tglPresensiHarian");
+  let tglInput = tglEl?.value || new Date().toISOString().split("T")[0];
 
   let html = "";
   siswaAktifList.forEach((siswa, idx) => {
     let idS = String(siswa.id_siswa).trim();
     
     // Cari log presensi untuk siswa dan tanggal ini
-    let logEksis = listPresensiHarianData.find(x => 
+    let logEksis = listPresensiHarianData.filter(x => 
       String(x.id_siswa).trim() === idS && 
       String(x.tanggal).split("T")[0] === tglInput
     );
 
-    let st = logEksis ? logEksis.status_kehadiran : "H"; // Default Hadir (H)
+    let st = logEksis.length > 0 ? logEksis[0].status_kehadiran : "H"; // Default Hadir (H)
 
     html += `
       <tr>
