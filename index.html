@@ -627,6 +627,7 @@
                     <th style="width: 150px;">Mapel</th>
                     <th style="width: 130px;">Kode TP</th>
                     <th>Narasi TP</th>
+                    <th style="width: 140px;" class="text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="tabelListTP">
@@ -1085,6 +1086,50 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
           <button type="button" onclick="simpanEditSiswa()" id="btnSimpanEditSiswa" class="btn btn-primary fw-bold">💾 Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDIT TP -->
+  <div class="modal fade" id="modalEditTP" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold">✏️ Edit Tujuan Pembelajaran (TP)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit_tp_mapel_old">
+          <input type="hidden" id="edit_tp_kode_old">
+          
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Mata Pelajaran:</label>
+              <select id="edit_tp_mapel" class="form-select" disabled></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Kode TP:</label>
+              <input type="text" id="edit_tp_kode" class="form-control fw-bold" readonly>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-semibold">Kelas:</label>
+              <input type="text" id="edit_tp_kelas" class="form-control" readonly>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-semibold">Semester:</label>
+              <input type="text" id="edit_tp_semester" class="form-control" readonly>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Narasi TP:</label>
+            <textarea id="edit_tp_narasi" class="form-control" rows="3" placeholder="Tuliskan narasi TP..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" onclick="simpanEditTP()" id="btnSimpanEditTP" class="btn btn-primary fw-bold">💾 Simpan Perubahan</button>
         </div>
       </div>
     </div>
