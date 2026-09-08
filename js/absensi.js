@@ -1,5 +1,14 @@
 let currentPresensiMode = "harian";
 
+// 🎯 FUNGSI UTAMA YANG DIPANGGIL SAAT TAB DIKLIK DARI INDEX.HTML
+function renderPresensiHarianForm() {
+  renderTabelPresensiHarian();
+}
+
+function muatPresensiHarianTanggal() {
+  renderTabelPresensiHarian();
+}
+
 function gantiModePresensi(mode) {
   currentPresensiMode = mode;
   let btnHarian = document.getElementById("btnModeHarian");
@@ -24,7 +33,6 @@ function gantiModePresensi(mode) {
 
 // 🎯 1. RENDER TABEL PRESENSI HARIAN (TERKUNCI KELAS AKTIF)
 function renderTabelPresensiHarian() {
-  // SAMAKAN DENGAN ID DI INDEX.HTML BARIS 309
   let container = document.getElementById("tabelPresensiHarianBody") || document.getElementById("tabelPresensiHarian");
   if (!container) return;
 
@@ -38,7 +46,10 @@ function renderTabelPresensiHarian() {
     return;
   }
 
-  let tglEl = document.getElementById("inputTanggalPresensi") || document.getElementById("tglPresensiHarian");
+  let tglEl = document.getElementById("tglPresensiHarian") || document.getElementById("inputTanggalPresensi");
+  if (tglEl && !tglEl.value) {
+    tglEl.value = new Date().toISOString().split("T")[0];
+  }
   let tglInput = tglEl?.value || new Date().toISOString().split("T")[0];
 
   let html = "";
@@ -86,7 +97,6 @@ function renderTabelAkumulasiRapor() {
 
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
   
-  // 🎯 FILTER SISWA HANYA KELAS AKTIF
   let siswaAktifList = listSiswaData.filter(s => String(s.kelas || "5").trim() === kAktif);
 
   if (siswaAktifList.length === 0) {
@@ -99,7 +109,6 @@ function renderTabelAkumulasiRapor() {
     let idS = String(siswa.id_siswa).trim();
     let abs = listAbsensiData.find(x => String(x.id_siswa).trim() === idS);
 
-    // Hitung otomatis dari jurnal presensi harian
     let logsSiswa = listPresensiHarianData.filter(x => String(x.id_siswa).trim() === idS);
     let autoSakit = logsSiswa.filter(x => x.status_kehadiran === "S").length;
     let autoIzin = logsSiswa.filter(x => x.status_kehadiran === "I").length;
@@ -130,7 +139,8 @@ function renderTabelAkumulasiRapor() {
 
 // 💾 SIMPAN PRESENSI HARIAN
 async function simpanPresensiHarian() {
-  let tglInput = document.getElementById("inputTanggalPresensi").value;
+  let tglEl = document.getElementById("tglPresensiHarian") || document.getElementById("inputTanggalPresensi");
+  let tglInput = tglEl?.value;
   if (!tglInput) { alert("Pilih tanggal presensi!"); return; }
 
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
@@ -148,7 +158,7 @@ async function simpanPresensiHarian() {
     });
   });
 
-  let btn = document.getElementById("btnSimpanPresensi");
+  let btn = document.getElementById("btnSimpanHarian") || document.getElementById("btnSimpanPresensi");
   if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Menyimpan..."; }
 
   try {
@@ -166,7 +176,6 @@ async function simpanPresensiHarian() {
     if (result.status === "success") {
       alert("🎉 " + result.message);
       
-      // Update memori lokal
       listPresensiHarianData = listPresensiHarianData.filter(x => String(x.tanggal).split("T")[0] !== tglInput);
       payloadPresensi.forEach(p => {
         if (p.status_kehadiran !== "H") {
@@ -184,7 +193,7 @@ async function simpanPresensiHarian() {
   } catch (err) {
     alert("Kesalahan koneksi!");
   } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = "💾 Simpan Presensi Harian"; }
+    if (btn) { btn.disabled = false; btn.innerHTML = "💾 Simpan Presensi Tanggal Ini"; }
   }
 }
 
@@ -217,7 +226,6 @@ async function simpanCatatanSiswaBiji(idSiswa) {
     if (result.status === "success") {
       alert("🎉 Catatan siswa berhasil disimpan!");
       
-      // Update memori lokal
       let idx = listAbsensiData.findIndex(x => String(x.id_siswa).trim() === String(idSiswa).trim());
       if (idx >= 0) {
         listAbsensiData[idx] = { ...listAbsensiData[idx], ...payload };
