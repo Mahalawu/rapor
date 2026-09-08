@@ -1,33 +1,131 @@
 function renderTabelSiswaMaster() {
-  let kAktif = String(infoSekolah.kelas || 5).trim();
+  let container = document.getElementById("tabelListSiswaMaster");
+  if (!container) return;
+
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
   
-  // FILTER SISWA SESUAI KELAS AKTIF
-  let listSiswaAktif = listSiswaData.filter(item => {
-    let kSiswa = String(item.kelas || (infoSekolah.kelas || 5)).trim();
-    return kSiswa === kAktif;
-  });
+  let listSiswaAktif = listSiswaData.filter(s => String(s.kelas || "5").trim() === kAktif);
 
   if (listSiswaAktif.length === 0) {
-    document.getElementById("tabelListSiswaMaster").innerHTML = 
-      `<tr><td colspan="5" class="text-center text-muted">Belum ada data siswa untuk Kelas ${kAktif}.</td></tr>`;
+    container.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa tersimpan untuk Kelas ${kAktif}.</td></tr>`;
     return;
   }
 
   let html = "";
-  listSiswaAktif.forEach((item, idx) => {
-    let jk = item.jenis_kelamin || 'L';
-    let kelas = item.kelas || (infoSekolah.kelas || 5);
+  listSiswaAktif.forEach((siswa, idx) => {
+    let idS = String(siswa.id_siswa).trim();
     html += `
       <tr>
-        <td>${idx + 1}</td>
-        <td><small class="text-muted">${item.nis || '-'} / ${item.nisn || '-'}</small></td>
-        <td><strong>${item.nama_lengkap}</strong></td>
-        <td class="text-center"><span class="badge bg-secondary">${jk}</span></td>
-        <td class="text-center"><span class="badge bg-primary">Kelas ${kelas}</span></td>
+        <td class="text-center">${idx + 1}</td>
+        <td><small class="text-muted font-monospace">${siswa.nis || '-'} / ${siswa.nisn || '-'}</small></td>
+        <td><strong>${siswa.nama_lengkap}</strong></td>
+        <td class="text-center">${siswa.jenis_kelamin || 'L'}</td>
+        <td class="text-center"><span class="badge bg-info text-dark">Kelas ${siswa.kelas || 5}</span></td>
+        <td class="text-center">
+          <button onclick="bukaModalEditSiswa('${idS}')" class="btn btn-sm btn-outline-warning me-1" title="Edit Siswa">✏️ Edit</button>
+          <button onclick="hapusSiswa('${idS}', '${siswa.nama_lengkap}')" class="btn btn-sm btn-outline-danger" title="Hapus Siswa">🗑️ Hapus</button>
+        </td>
       </tr>
     `;
   });
-  document.getElementById("tabelListSiswaMaster").innerHTML = html;
+
+  container.innerHTML = html;
+}
+
+function bukaModalEditSiswa(idSiswa) {
+  let siswa = listSiswaData.find(x => String(x.id_siswa).trim() === String(idSiswa).trim());
+  if (!siswa) return;
+
+  document.getElementById("edit_sis_id").value = siswa.id_siswa;
+  document.getElementById("edit_sis_nis").value = siswa.nis || "";
+  document.getElementById("edit_sis_nisn").value = siswa.nisn || "";
+  document.getElementById("edit_sis_nama").value = siswa.nama_lengkap || "";
+  document.getElementById("edit_sis_jk").value = siswa.jenis_kelamin || "L";
+  document.getElementById("edit_sis_kelas").value = siswa.kelas || infoSekolah.kelas || "5";
+
+  let modal = new bootstrap.Modal(document.getElementById('modalEditSiswa'));
+  modal.show();
+}
+
+async function simpanEditSiswa() {
+  let idSiswa = document.getElementById("edit_sis_id").value;
+  let nis = document.getElementById("edit_sis_nis").value.trim();
+  let nisn = document.getElementById("edit_sis_nisn").value.trim();
+  let nama = document.getElementById("edit_sis_nama").value.trim();
+  let jk = document.getElementById("edit_sis_jk").value;
+  let kelas = document.getElementById("edit_sis_kelas").value;
+
+  if (!nama) { alert("Nama Siswa tidak boleh kosong!"); return; }
+
+  let payload = {
+    id_siswa: idSiswa,
+    nis: nis,
+    nisn: nisn,
+    nama_lengkap: nama,
+    jenis_kelamin: jk,
+    kelas: kelas
+  };
+
+  let btn = document.getElementById("btnSimpanEditSiswa");
+  btn.disabled = true; btn.innerHTML = "⏳ Menyimpan...";
+
+  try {
+    let res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "editSiswa", data: payload })
+    });
+    let result = await res.json();
+
+    if (result.status === "success") {
+      alert("🎉 " + result.message);
+      
+      // Update memori lokal
+      let idx = listSiswaData.findIndex(x => String(x.id_siswa).trim() === String(idSiswa).trim());
+      if (idx >= 0) {
+        listSiswaData[idx] = payload;
+      }
+
+      renderTabelSiswaMaster();
+      
+      let modalEl = document.getElementById('modalEditSiswa');
+      let modalObj = bootstrap.Modal.getInstance(modalEl);
+      if (modalObj) modalObj.hide();
+    } else {
+      alert("Gagal: " + result.message);
+    }
+  } catch (err) {
+    alert("Kesalahan koneksi!");
+  } finally {
+    btn.disabled = false; btn.innerHTML = "💾 Simpan Perubahan";
+  }
+}
+
+async function hapusSiswa(idSiswa, namaSiswa) {
+  if (!confirm(`Apakah Anda yakin ingin menghapus siswa "${namaSiswa}"?\n\nSemua data nilai dan presensi siswa ini juga perlu diperhatikan.`)) {
+    return;
+  }
+
+  try {
+    let res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "hapusSiswa", id_siswa: idSiswa })
+    });
+    let result = await res.json();
+
+    if (result.status === "success") {
+      alert("🗑️ " + result.message);
+      
+      // Hapus dari memori lokal
+      listSiswaData = listSiswaData.filter(x => String(x.id_siswa).trim() !== String(idSiswa).trim());
+      renderTabelSiswaMaster();
+    } else {
+      alert("Gagal: " + result.message);
+    }
+  } catch (err) {
+    alert("Kesalahan koneksi!");
+  }
 }
 
 async function simpanSiswaSingle() {
