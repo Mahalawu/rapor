@@ -204,8 +204,28 @@ async function simpanEditTP() {
   }
 }
 
-// 🎯 FUNGSI BARU: HAPUS TP
+// 🎯 FUNGSI HAPUS TP DENGAN PROTEKSI INTEGRITAS DATA NILAI
 async function hapusTP(idTp, idMapel) {
+  let idTpClean = String(idTp).trim().toUpperCase();
+  let idMapelClean = String(idMapel).trim().toUpperCase();
+
+  // 1. CEK RELASI: Apakah TP ini sudah pernah dipakai di data nilai sumatif?
+  let nilaiTerhubung = listNilaiData.filter(n => 
+    String(n.id_tp || "").trim().toUpperCase() === idTpClean &&
+    String(n.id_mapel || "").trim().toUpperCase() === idMapelClean
+  );
+
+  // 2. JIKA ADA NILAI TERHUBUNG -> BLOKIR PENGHAPUSAN
+  if (nilaiTerhubung.length > 0) {
+    alert(
+      `⚠️ TIDAK BISA DIHAPUS!\n\n` +
+      `Tujuan Pembelajaran (Kode: ${idTp}) tidak dapat dihapus karena sudah terhubung dengan ${nilaiTerhubung.length} data nilai siswa.\n\n` +
+      `Hapus terlebih dahulu nilai siswa terkait di tab "Input Nilai" atau "Rekap Nilai" jika Anda benar-benar ingin menghapus TP ini.`
+    );
+    return;
+  }
+
+  // 3. JIKA BERSIH -> KONFIRMASI DAN EKSEKUSI HAPUS
   if (!confirm(`Apakah Anda yakin ingin menghapus TP (${idTp})?`)) {
     return;
   }
@@ -221,10 +241,10 @@ async function hapusTP(idTp, idMapel) {
     if (result.status === "success") {
       alert("🗑️ " + result.message);
       
-      // Hapus dari memori lokal
+      // Hapus dari memori lokal listTPData
       listTPData = listTPData.filter(x => !(
-        String(x.id_tp).trim().toUpperCase() === idTp.toUpperCase() &&
-        String(x.id_mapel).trim().toUpperCase() === idMapel.toUpperCase()
+        String(x.id_tp).trim().toUpperCase() === idTpClean &&
+        String(x.id_mapel).trim().toUpperCase() === idMapelClean
       ));
 
       renderTabelTP();
