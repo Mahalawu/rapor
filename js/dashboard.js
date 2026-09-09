@@ -1,6 +1,6 @@
 function renderDashboard() {
   let semAktif = String(infoSekolah.semester || "1").trim();
-  let kAktif = String(infoSekolah.kelas || 5).trim();
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
 
   // 1. Hitung TP yang sesuai Semester & Kelas Aktif
   let listTPFiltered = listTPData.filter(tp => {
@@ -13,11 +13,13 @@ function renderDashboard() {
     document.getElementById("dash_totTP").innerText = listTPFiltered.length;
   }
 
-  let siswaAktifList = getSiswaKelasAktif();
+  let siswaAktifList = listSiswaData.filter(s => String(s.kelas || "5").trim() === kAktif);
   let totalSiswa = siswaAktifList.length || 0;
   
   // 2. Update Stats Cards
-  document.getElementById("dash_totSiswa").innerText = totalSiswa;
+  if (document.getElementById("dash_totSiswa")) {
+    document.getElementById("dash_totSiswa").innerText = totalSiswa;
+  }
   
   // 3. Hitung siswa kokurikuler di semester aktif
   let setSiswaKoku = new Set();
@@ -30,20 +32,29 @@ function renderDashboard() {
     if (adaKoku) setSiswaKoku.add(idS);
   });
   
-  document.getElementById("dash_totKoku").innerText = `${setSiswaKoku.size} / ${totalSiswa}`;
+  if (document.getElementById("dash_totKoku")) {
+    document.getElementById("dash_totKoku").innerText = `${setSiswaKoku.size} / ${totalSiswa}`;
+  }
 
   // 4. Render Tabel Status & Progress Bar
-  renderTabelStatusSiswa(semAktif);
+  renderTabelStatusSiswa(semAktif, kAktif, siswaAktifList);
 }
 
-function renderTabelStatusSiswa(semAktif) {
+function renderTabelStatusSiswa(semAktif, kAktif, siswaAktifList) {
   let container = document.getElementById("dash_tabelStatusSiswa");
-  if (!container) return;
+  let barProgress = document.getElementById("dash_overallProgressBar");
 
-  let siswaAktifList = getSiswaKelasAktif();
-
-  if (siswaAktifList.length === 0) {
-    container.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa untuk Kelas ${infoSekolah.kelas || 5}.</td></tr>`;
+  // 🎯 PENANGANAN JIKA KELAS TIDAK MEMILIKI SISWA (0 SISWA)
+  if (!siswaAktifList || siswaAktifList.length === 0) {
+    if (container) {
+      container.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Belum ada data siswa untuk Kelas ${kAktif}.</td></tr>`;
+    }
+    if (barProgress) {
+      barProgress.style.width = "0%";
+      barProgress.classList.remove("bg-success");
+      barProgress.classList.add("bg-secondary");
+      barProgress.innerText = "0% Selesai (0 Siswa)";
+    }
     return;
   }
 
@@ -90,11 +101,10 @@ function renderTabelStatusSiswa(semAktif) {
     `;
   });
 
-  container.innerHTML = html;
+  if (container) container.innerHTML = html;
 
   let totalSiswaCount = siswaAktifList.length;
   let overallPct = totalSiswaCount > 0 ? Math.round((totalLengkap / totalSiswaCount) * 100) : 0;
-  let barProgress = document.getElementById("dash_overallProgressBar");
   
   if (barProgress) {
     barProgress.style.width = `${overallPct}%`;
