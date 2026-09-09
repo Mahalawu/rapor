@@ -397,6 +397,69 @@ function renderLembarRapor() {
   let jenis = document.getElementById("selectJenisRapor").value;
   let siswa = listSiswaData.find(x => String(x.id_siswa).trim() === String(siswaAktifId).trim());
   if (!siswa) return;
+// ===================================================
+  // 🎯 1. INJEKSI DATA KE COVER RAPOR
+  // ===================================================
+  if (document.getElementById("cover_namaSiswa")) {
+    document.getElementById("cover_namaSiswa").innerText = siswa.nama_lengkap || "-";
+  }
+  if (document.getElementById("cover_nisn")) {
+    document.getElementById("cover_nisn").innerText = `${siswa.nisn || "-"} / ${siswa.nis || "-"}`;
+  }
+  if (document.getElementById("cover_namaSekolah")) {
+    document.getElementById("cover_namaSekolah").innerText = (infoSekolah.nama_sekolah || "SDN SINE 1").toUpperCase();
+  }
+
+  // ===================================================
+  // 🎯 2. INJEKSI DATA KE LEMBAR IDENTITAS SISWA (14 KOLOM DAPODIK)
+  // ===================================================
+  if (document.getElementById("id_namaSiswa")) {
+    document.getElementById("id_namaSiswa").innerText = siswa.nama_lengkap || "-";
+  }
+  if (document.getElementById("id_nisn")) {
+    document.getElementById("id_nisn").innerText = `${siswa.nis || "-"} / ${siswa.nisn || "-"}`;
+  }
+  
+  // Format Tempat & Tanggal Lahir
+  let ttlStr = "-";
+  if (siswa.tempat_lahir || siswa.tanggal_lahir) {
+    let tglLahirFormatted = siswa.tanggal_lahir || "-";
+    if (siswa.tanggal_lahir && !isNaN(new Date(siswa.tanggal_lahir).getTime())) {
+      let d = new Date(siswa.tanggal_lahir);
+      let bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+      tglLahirFormatted = `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+    }
+    ttlStr = `${siswa.tempat_lahir || "-"}, ${tglLahirFormatted}`;
+  }
+  if (document.getElementById("id_ttl")) document.getElementById("id_ttl").innerText = ttlStr;
+
+  if (document.getElementById("id_jk")) {
+    document.getElementById("id_jk").innerText = (siswa.jenis_kelamin === "P" || siswa.jenis_kelamin === "Perempuan") ? "Perempuan" : "Laki-laki";
+  }
+  if (document.getElementById("id_agama")) document.getElementById("id_agama").innerText = siswa.agama || "Islam";
+  if (document.getElementById("id_alamat")) document.getElementById("id_alamat").innerText = siswa.alamat || "-";
+  if (document.getElementById("id_namaAyah")) document.getElementById("id_namaAyah").innerText = siswa.nama_ayah || "-";
+  if (document.getElementById("id_namaIbu")) document.getElementById("id_namaIbu").innerText = siswa.nama_ibu || "-";
+  if (document.getElementById("id_pekerjaanOrtu")) document.getElementById("id_pekerjaanOrtu").innerText = siswa.pekerjaan_ortu || "-";
+  if (document.getElementById("id_namaWali")) document.getElementById("id_namaWali").innerText = siswa.nama_wali || "-";
+
+  // Tanggal & Pejabat Cetak Lembar Identitas
+  let tglCetakFormat = infoSekolah.tanggal_rapor || "-";
+  if (infoSekolah.tanggal_rapor && !isNaN(new Date(infoSekolah.tanggal_rapor).getTime())) {
+    let dt = new Date(infoSekolah.tanggal_rapor);
+    let bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    tglCetakFormat = `${dt.getDate()} ${bulan[dt.getMonth()]} ${dt.getFullYear()}`;
+  }
+
+  if (document.getElementById("id_tempatTglCetak")) {
+    document.getElementById("id_tempatTglCetak").innerText = `${infoSekolah.tempat_cetak || "Sine"}, ${tglCetakFormat}`;
+  }
+  if (document.getElementById("id_namaKepsek")) {
+    document.getElementById("id_namaKepsek").innerText = infoSekolah.nama_kepsek || "-";
+  }
+  if (document.getElementById("id_nipKepsek")) {
+    document.getElementById("id_nipKepsek").innerText = infoSekolah.nip_kepsek ? `NIP. ${infoSekolah.nip_kepsek}` : "-";
+  }
 
   document.getElementById("c_judulRapor").innerText = jenis === "STS" 
     ? "LAPORAN HASIL BELAJAR TENGAH SEMESTER" 
