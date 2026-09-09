@@ -1,5 +1,6 @@
+// 🎯 LOAD FORM PENGATURAN (ISOLASI 100% GURU KELAS PER TINGKATAN)
 function loadFormPengaturan() {
-  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : (infoSekolah.kelas || "5");
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
 
   if (document.getElementById("cfg_nama_sekolah")) document.getElementById("cfg_nama_sekolah").value = infoSekolah.nama_sekolah || "";
   if (document.getElementById("cfg_npsn")) document.getElementById("cfg_npsn").value = infoSekolah.npsn || "";
@@ -12,7 +13,7 @@ function loadFormPengaturan() {
   if (document.getElementById("cfg_bobot_sts")) document.getElementById("cfg_bobot_sts").value = infoSekolah.bobot_sts !== undefined ? infoSekolah.bobot_sts : 0;
   if (document.getElementById("cfg_bobot_sas")) document.getElementById("cfg_bobot_sas").value = infoSekolah.bobot_sas !== undefined ? infoSekolah.bobot_sas : 0;
   
-  // 🎯 PROTEKSI CONVERT TANGGAL (PENCEGAHAN ERROR INVALID DATE)
+  // Format Tanggal Rapor
   if (infoSekolah.tanggal_rapor && document.getElementById("cfg_tanggal_rapor")) {
     try {
       let tglRaw = new Date(infoSekolah.tanggal_rapor);
@@ -29,16 +30,12 @@ function loadFormPengaturan() {
   if (document.getElementById("cfg_nama_kepsek")) document.getElementById("cfg_nama_kepsek").value = infoSekolah.nama_kepsek || "";
   if (document.getElementById("cfg_nip_kepsek")) document.getElementById("cfg_nip_kepsek").value = infoSekolah.nip_kepsek || "";
 
-  // 🎯 BACA KUNCI LOCALSTORAGE DENGAN TOLERANSI KEDUA NAMA KEY (PERMANEN AMAN)
-  let namaWaliLokal = localStorage.getItem(`wali_kelas_${kAktif}`);
-  let nipWaliLokal = localStorage.getItem(`nip_wali_${kAktif}`) || localStorage.getItem(`nip_wali_kelas_${kAktif}`);
+  // 🎯 BACA UTAMA DARI KOLOM ISOLASI DATABASE KELAS (`walikelas_1` s.d `walikelas_6`)
+  let waliKelasDb = infoSekolah[`walikelas_${kAktif}`] || localStorage.getItem(`wali_kelas_${kAktif}`) || infoSekolah.nama_walikelas || "";
+  let nipWaliDb = infoSekolah[`nip_wali_${kAktif}`] || localStorage.getItem(`nip_wali_${kAktif}`) || infoSekolah.nip_walikelas || "";
 
-  if (document.getElementById("cfg_nama_walikelas")) {
-    document.getElementById("cfg_nama_walikelas").value = namaWaliLokal !== null ? namaWaliLokal : (infoSekolah[`nama_walikelas_k${kAktif}`] || infoSekolah.nama_walikelas || "");
-  }
-  if (document.getElementById("cfg_nip_walikelas")) {
-    document.getElementById("cfg_nip_walikelas").value = nipWaliLokal !== null ? nipWaliLokal : (infoSekolah[`nip_walikelas_k${kAktif}`] || infoSekolah.nip_walikelas || "");
-  }
+  if (document.getElementById("cfg_nama_walikelas")) document.getElementById("cfg_nama_walikelas").value = waliKelasDb;
+  if (document.getElementById("cfg_nip_walikelas")) document.getElementById("cfg_nip_walikelas").value = nipWaliDb;
 
   autoSetFase();
 }
@@ -61,10 +58,9 @@ async function simpanPengaturanSekolah() {
   let bSTS = parseFloat(document.getElementById("cfg_bobot_sts")?.value) || 0;
   let bSAS = parseFloat(document.getElementById("cfg_bobot_sas")?.value) || 0;
 
-  // 🛑 VALIDASI KUNCI: TOTAL BOBOT HARUS TEPAT 100%
   let totalBobot = bLM + bSTS + bSAS;
   if (totalBobot !== 100) {
-    alert(`⚠️ Pengaturan Bobot Ditolak!\n\nTotal bobot saat ini adalah ${totalBobot}%. Jumlah persentase ketiga komponen (LM + STS + SAS) WAJIB bernilai tepat 100%.\n\nContoh pembagian:\n- Murni TP: LM=100%, STS=0%, SAS=0%\n- Seimbang: LM=34%, STS=33%, SAS=33%`);
+    alert(`⚠️ Pengaturan Bobot Ditolak!\n\nTotal bobot saat ini adalah ${totalBobot}%. Jumlah persentase ketiga komponen (LM + STS + SAS) WAJIB bernilai tepat 100%.`);
     return;
   }
 
@@ -90,6 +86,10 @@ async function simpanPengaturanSekolah() {
     bobot_sas: bSAS
   };
 
+  // Injeksikan kunci isolasi per kelas langsung ke payload
+  payload[`walikelas_${kAktif}`] = namaWaliInput;
+  payload[`nip_wali_${kAktif}`] = nipWaliInput;
+
   if (!payload.nama_sekolah) { alert("Nama Sekolah wajib diisi!"); return; }
 
   let btn = document.getElementById("btnSimpanPengaturan");
@@ -103,19 +103,17 @@ async function simpanPengaturanSekolah() {
     });
     let result = await response.json();
     if (result.status === "success") {
-      // 🎯 1. KUNCI UNIK LOKAL DENGAN SIMPAN DUA FORMAT KEY (SANGAT AMAN)
+      // Simpan cadangan ke localStorage
       localStorage.setItem("kelasAktif_User", kAktif);
       localStorage.setItem(`wali_kelas_${kAktif}`, namaWaliInput);
       localStorage.setItem(`nip_wali_${kAktif}`, nipWaliInput);
-      localStorage.setItem(`nip_wali_kelas_${kAktif}`, nipWaliInput); // Kunci ganda untuk kompatibilitas
 
-      infoSekolah = payload;
-      infoSekolah[`nama_walikelas_k${kAktif}`] = namaWaliInput;
-      infoSekolah[`nip_walikelas_k${kAktif}`] = nipWaliInput;
+      // Update memori global
+      infoSekolah = { ...infoSekolah, ...payload };
 
       if (typeof updateHeaderTampilan === "function") updateHeaderTampilan();
       
-      // 🎯 2. TRIGGER RE-RENDER SELURUH TAB BERDASARKAN KELAS BARU
+      // Trigger re-render seluruh tab
       if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
       if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
       if (typeof renderTabelTP === "function") renderTabelTP();
@@ -124,7 +122,7 @@ async function simpanPengaturanSekolah() {
       if (typeof renderDashboard === "function") renderDashboard();
       if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
 
-      alert(`🎉 Pengaturan Identitas Sekolah & Guru Kelas ${kAktif} berhasil diperbarui!`);
+      alert(`🎉 Pengaturan Guru Kelas ${kAktif} berhasil terkunci di Database!`);
     } else { alert("Gagal menyimpan: " + result.message); }
   } catch (err) { alert("Terjadi kesalahan koneksi!"); }
   finally { 
