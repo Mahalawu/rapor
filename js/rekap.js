@@ -362,8 +362,35 @@ function bukaPreviewRapor(idSiswa) {
   myModal.show();
 }
 
-function gantiJenisRapor() { 
-  if (siswaAktifId) renderLembarRapor(); 
+function gantiJenisRapor() {
+  let jenis = document.getElementById("selectJenisRapor")?.value || "SAS";
+
+  let elCover = document.getElementById("tampilanCoverRapor");
+  let elIdentitas = document.getElementById("tampilanIdentitasRapor");
+  let elAkademik = document.getElementById("tampilanAkademikRapor");
+
+  // Sembunyikan semua tampilan dulu
+  if (elCover) elCover.style.display = "none";
+  if (elIdentitas) elIdentitas.style.display = "none";
+  if (elAkademik) elAkademik.style.display = "none";
+
+  // Tampilkan sesuai pilihan dropdown
+  if (jenis === "COVER") {
+    if (elCover) elCover.style.display = "block";
+  } else if (jenis === "IDENTITAS") {
+    if (elIdentitas) elIdentitas.style.display = "block";
+  } else {
+    // Untuk STS dan SAS, tampilkan Rapor Akademik
+    if (elAkademik) elAkademik.style.display = "block";
+    
+    // Sesuaikan judul jika STS / SAS
+    let elJudul = document.getElementById("c_judulRapor");
+    if (elJudul) {
+      elJudul.innerText = jenis === "STS" 
+        ? "LAPORAN UTAMA MID SEMESTER (STS)" 
+        : "LAPORAN HASIL BELAJAR (RAPOR)";
+    }
+  }
 }
 
 function renderLembarRapor() {
