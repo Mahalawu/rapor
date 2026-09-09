@@ -929,182 +929,179 @@
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body p-4" id="areaCetakRapor">
+<div class="modal-body p-4" id="areaCetakRapor">
 
           <!-- ========================================== -->
-<!-- 1. TAMPILAN SAMPUL / COVER RAPOR -->
-<!-- ========================================== -->
-<div id="tampilanCoverRapor" style="display: none;" class="text-center py-4 page-break">
-  <div style="border: 4px double #000; padding: 40px 20px; min-height: 90vh;" class="d-flex flex-column justify-content-between align-items-center">
-    
-    <div>
-      <h2 class="fw-bold text-uppercase mb-2" style="font-size: 1.8rem; letter-spacing: 2px;">RAPOR</h2>
-      <h4 class="fw-bold text-uppercase mb-1" style="font-size: 1.3rem;">KURIKULUM MERDEKA</h4>
-      <p class="fs-6 text-muted">SEKOLAH DASAR (SD)</p>
-    </div>
+          <!-- 1. TAMPILAN SAMPUL / COVER RAPOR -->
+          <!-- ========================================== -->
+          <div id="tampilanCoverRapor" style="display: none;" class="text-center py-4 page-break">
+            <div style="border: 4px double #000; padding: 40px 20px; min-height: 90vh;" class="d-flex flex-column justify-content-between align-items-center">
+              <div>
+                <h2 class="fw-bold text-uppercase mb-2" style="font-size: 1.8rem; letter-spacing: 2px;">RAPOR</h2>
+                <h4 class="fw-bold text-uppercase mb-1" style="font-size: 1.3rem;">KURIKULUM MERDEKA</h4>
+                <p class="fs-6 text-muted">SEKOLAH DASAR (SD)</p>
+              </div>
 
-    <!-- LOGO TUT WURI HANDAYANI / LOGO SEKOLAH -->
-    <div class="my-5">
-      <img src="https://mahalawu.github.io/rapor/logo.png" alt="Logo Sekolah" style="width: 160px; height: auto;" class="mb-3">
-    </div>
+              <!-- LOGO TUT WURI HANDAYANI / LOGO SEKOLAH -->
+              <div class="my-5">
+                <img src="https://mahalawu.github.io/rapor/logo.png" alt="Logo Sekolah" style="width: 160px; height: auto;" class="mb-3">
+              </div>
 
-    <div>
-      <p class="mb-1 fs-6">Nama Peserta Didik:</p>
-      <div class="border border-2 border-dark p-2 px-4 mb-4 fw-bold fs-5 text-uppercase d-inline-block" id="cover_namaSiswa" style="min-width: 300px;">
-        -
-      </div>
+              <div>
+                <p class="mb-1 fs-6">Nama Peserta Didik:</p>
+                <div class="border border-2 border-dark p-2 px-4 mb-4 fw-bold fs-5 text-uppercase d-inline-block" id="cover_namaSiswa" style="min-width: 300px;">
+                  -
+                </div>
 
-      <p class="mb-1 fs-6">NISN / NIS:</p>
-      <div class="fw-bold fs-6 font-monospace mb-5" id="cover_nisn">
-        - / -
-      </div>
-    </div>
+                <p class="mb-1 fs-6">NISN / NIS:</p>
+                <div class="fw-bold fs-6 font-monospace mb-5" id="cover_nisn">
+                  - / -
+                </div>
+              </div>
 
-    <div class="mt-4">
-      <h5 class="fw-bold text-uppercase mb-1" id="cover_namaSekolah">SDN SINE 1</h5>
-      <p class="mb-0 fs-6">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</p>
-      <p class="mb-0 fs-6">REPUBLIK INDONESIA</p>
-    </div>
+              <div class="mt-4">
+                <h5 class="fw-bold text-uppercase mb-1" id="cover_namaSekolah">SDN SINE 1</h5>
+                <p class="mb-0 fs-6">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</p>
+                <p class="mb-0 fs-6">REPUBLIK INDONESIA</p>
+              </div>
 
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- 2. TAMPILAN LEMBAR IDENTITAS SISWA -->
-<!-- ========================================== -->
-<div id="tampilanIdentitasRapor" style="display: none;" class="p-3 page-break fs-6">
-  <div class="text-center mb-4 border-bottom border-2 border-dark pb-2">
-    <h4 class="fw-bold text-uppercase mb-1">IDENTITAS PESERTA DIDIK</h4>
-  </div>
-
-  <table class="table table-borderless align-middle mb-4" style="line-height: 2;">
-    <tbody>
-      <tr><td style="width: 30px;">1.</td><td style="width: 200px;">Nama Lengkap Siswa</td><td style="width: 15px;">:</td><td><strong id="id_namaSiswa">-</strong></td></tr>
-      <tr><td>2.</td><td>NIS / NISN</td><td>:</td><td><span id="id_nisn">-</span></td></tr>
-      <tr><td>3.</td><td>Tempat, Tanggal Lahir</td><td>:</td><td><span id="id_ttl">-</span></td></tr>
-      <tr><td>4.</td><td>Jenis Kelamin</td><td>:</td><td><span id="id_jk">-</span></td></tr>
-      <tr><td>5.</td><td>Agama</td><td>:</td><td><span id="id_agama">-</span></td></tr>
-      <tr><td>6.</td><td>Alamat Peserta Didik</td><td>:</td><td><span id="id_alamat">-</span></td></tr>
-      <tr><td>7.</td><td>Nama Orang Tua</td><td></td><td></td></tr>
-      <tr><td></td><td>a. Ayah Kandung</td><td>:</td><td><span id="id_namaAyah">-</span></td></tr>
-      <tr><td></td><td>b. Ibu Kandung</td><td>:</td><td><span id="id_namaIbu">-</span></td></tr>
-      <tr><td>8.</td><td>Pekerjaan Orang Tua</td><td>:</td><td><span id="id_pekerjaanOrtu">-</span></td></tr>
-      <tr><td>9.</td><td>Wali Peserta Didik</td><td></td><td></td></tr>
-      <tr><td></td><td>a. Nama Wali</td><td>:</td><td><span id="id_namaWali">-</span></td></tr>
-    </tbody>
-  </table>
-
-  <!-- KOTAK PAS FOTO & TTD KEPSEK -->
-  <div class="row align-items-center mt-5 pt-3">
-    <div class="col-6 text-center">
-      <div class="border border-dark d-inline-block d-flex align-items-center justify-content-center text-muted" style="width: 3cm; height: 4cm; margin: 0 auto; background: #f8f9fa;">
-        Pas Foto<br>3 x 4
-      </div>
-    </div>
-    <div class="col-6 text-center">
-      <p class="mb-0" id="id_tempatTglCetak">Sine, -</p>
-      <p class="mb-5">Kepala Sekolah,</p>
-      <p class="fw-bold mt-5 mb-0" id="id_namaKepsek">-</p>
-      <small id="id_nipKepsek">-</small>
-    </div>
-  </div>
-</div>
-
-          <div id="tampilanAkademikRapor">
-    <div class="text-center mb-4 border-bottom pb-3">
-      <h3 class="fw-bold text-uppercase mb-1" id="c_judulRapor">LAPORAN HASIL BELAJAR (RAPOR)</h3>
-      <p class="mb-0 fw-semibold">KURIKULUM MERDEKA</p>
-    </div>
-            
-          <div class="text-center mb-4 border-bottom pb-3">
-            <h3 class="fw-bold text-uppercase mb-1" id="c_judulRapor">LAPORAN HASIL BELAJAR (RAPOR)</h3>
-            <p class="mb-0 fw-semibold">KURIKULUM MERDEKA</p>
-          </div>
-
-          <div class="row mb-3 fs-6">
-            <div class="col-6">
-              <table class="table table-borderless table-sm">
-                <tr><td style="width: 130px;">Nama Siswa</td><td>: <strong id="c_namaSiswa">-</strong></td></tr>
-                <tr><td>NIS / NISN</td><td>: <span id="c_nisn">-</span></td></tr>
-                <tr><td>Sekolah</td><td>: <span id="c_sekolah">-</span></td></tr>
-              </table>
-            </div>
-            <div class="col-6">
-              <table class="table table-borderless table-sm">
-                <tr><td style="width: 130px;">Kelas</td><td>: <span id="c_kelas">-</span></td></tr>
-                <tr><td>Fase</td><td>: <span id="c_fase">C</span></td></tr>
-                <tr><td>Tahun / Sem</td><td>: <span id="c_thnSem">-</span></td></tr>
-              </table>
             </div>
           </div>
 
-          <table class="table table-bordered border-dark align-middle mb-4 fs-6">
-            <thead class="table-light text-center border-dark">
-              <tr>
-                <th style="width: 40px;">No</th>
-                <th style="width: 200px;">Mata Pelajaran</th>
-                <th style="width: 80px;">Nilai Akhir</th>
-                <th>Capaian Kompetensi</th>
-              </tr>
-            </thead>
-            <tbody id="c_tabelNilai"></tbody>
-          </table>
+          <!-- ========================================== -->
+          <!-- 2. TAMPILAN LEMBAR IDENTITAS SISWA -->
+          <!-- ========================================== -->
+          <div id="tampilanIdentitasRapor" style="display: none;" class="p-3 page-break fs-6">
+            <div class="text-center mb-4 border-bottom border-2 border-dark pb-2">
+              <h4 class="fw-bold text-uppercase mb-1">IDENTITAS PESERTA DIDIK</h4>
+            </div>
 
-          <!-- BAGIAN KOKURIKULER SINGLE BOX -->
-          <div class="mb-4 fs-6" id="sectionKokurikulerRapor">
-            <table class="table table-bordered border-dark align-middle mb-0">
-              <thead class="table-secondary border-dark text-center">
-                <tr>
-                  <th class="py-1">Kokurikuler</th>
-                </tr>
-              </thead>
+            <table class="table table-borderless align-middle mb-4" style="line-height: 2;">
               <tbody>
-                <tr>
-                  <td id="c_koku_tertinggi" class="p-2 text-justify" style="font-size: 0.95rem; line-height: 1.5;">
-                    -
-                  </td>
-                </tr>
+                <tr><td style="width: 30px;">1.</td><td style="width: 200px;">Nama Lengkap Siswa</td><td style="width: 15px;">:</td><td><strong id="id_namaSiswa">-</strong></td></tr>
+                <tr><td>2.</td><td>NIS / NISN</td><td>:</td><td><span id="id_nisn">-</span></td></tr>
+                <tr><td>3.</td><td>Tempat, Tanggal Lahir</td><td>:</td><td><span id="id_ttl">-</span></td></tr>
+                <tr><td>4.</td><td>Jenis Kelamin</td><td>:</td><td><span id="id_jk">-</span></td></tr>
+                <tr><td>5.</td><td>Agama</td><td>:</td><td><span id="id_agama">-</span></td></tr>
+                <tr><td>6.</td><td>Alamat Peserta Didik</td><td>:</td><td><span id="id_alamat">-</span></td></tr>
+                <tr><td>7.</td><td>Nama Orang Tua</td><td></td><td></td></tr>
+                <tr><td></td><td>a. Ayah Kandung</td><td>:</td><td><span id="id_namaAyah">-</span></td></tr>
+                <tr><td></td><td>b. Ibu Kandung</td><td>:</td><td><span id="id_namaIbu">-</span></td></tr>
+                <tr><td>8.</td><td>Pekerjaan Orang Tua</td><td>:</td><td><span id="id_pekerjaanOrtu">-</span></td></tr>
+                <tr><td>9.</td><td>Wali Peserta Didik</td><td></td><td></td></tr>
+                <tr><td></td><td>a. Nama Wali</td><td>:</td><td><span id="id_namaWali">-</span></td></tr>
               </tbody>
             </table>
+
+            <!-- KOTAK PAS FOTO & TTD KEPSEK -->
+            <div class="row align-items-center mt-5 pt-3">
+              <div class="col-6 text-center">
+                <div class="border border-dark d-inline-block d-flex align-items-center justify-content-center text-muted" style="width: 3cm; height: 4cm; margin: 0 auto; background: #f8f9fa;">
+                  Pas Foto<br>3 x 4
+                </div>
+              </div>
+              <div class="col-6 text-center">
+                <p class="mb-0" id="id_tempatTglCetak">Sine, -</p>
+                <p class="mb-5">Kepala Sekolah,</p>
+                <p class="fw-bold mt-5 mb-0" id="id_namaKepsek">-</p>
+                <small id="id_nipKepsek">-</small>
+              </div>
+            </div>
           </div>
 
-          <div id="sectionAkhirSemester">
+          <!-- ========================================== -->
+          <!-- 3. TAMPILAN RAPOR AKADEMIK (DIAMANKAN DALAM WADAH ID) -->
+          <!-- ========================================== -->
+          <div id="tampilanAkademikRapor">
+            <div class="text-center mb-4 border-bottom pb-3">
+              <h3 class="fw-bold text-uppercase mb-1" id="c_judulRapor">LAPORAN HASIL BELAJAR (RAPOR)</h3>
+              <p class="mb-0 fw-semibold">KURIKULUM MERDEKA</p>
+            </div>
+
             <div class="row mb-3 fs-6">
-              <div class="col-7">
-                <p class="fw-bold mb-1">Ekstrakurikuler</p>
-                <table class="table table-bordered border-dark table-sm">
-                  <thead class="table-light border-dark text-center">
-                    <tr><th>No</th><th>Kegiatan Ekstrakurikuler</th><th>Keterangan</th></tr>
-                  </thead>
-                  <tbody id="c_tabelEkskul"></tbody>
+              <div class="col-6">
+                <table class="table table-borderless table-sm">
+                  <tr><td style="width: 130px;">Nama Siswa</td><td>: <strong id="c_namaSiswa">-</strong></td></tr>
+                  <tr><td>NIS / NISN</td><td>: <span id="c_nisn">-</span></td></tr>
+                  <tr><td>Sekolah</td><td>: <span id="c_sekolah">-</span></td></tr>
                 </table>
               </div>
-              <div class="col-5">
-                <p class="fw-bold mb-1">Ketidakhadiran</p>
-                <table class="table table-bordered border-dark table-sm">
-                  <tr><td style="width: 140px;">Sakit</td><td>: <span id="c_sakit">0</span> hari</td></tr>
-                  <tr><td>Izin</td><td>: <span id="c_izin">0</span> hari</td></tr>
-                  <tr><td>Tanpa Keterangan</td><td>: <span id="c_alpa">0</span> hari</td></tr>
+              <div class="col-6">
+                <table class="table table-borderless table-sm">
+                  <tr><td style="width: 130px;">Kelas</td><td>: <span id="c_kelas">-</span></td></tr>
+                  <tr><td>Fase</td><td>: <span id="c_fase">C</span></td></tr>
+                  <tr><td>Tahun / Sem</td><td>: <span id="c_thnSem">-</span></td></tr>
                 </table>
               </div>
             </div>
 
-            <div class="mb-4 fs-6">
-              <p class="fw-bold mb-1">Catatan Guru Kelas</p>
-              <div class="border border-dark p-2 rounded" id="c_catatanWali" style="min-height: 60px;">-</div>
+            <table class="table table-bordered border-dark align-middle mb-4 fs-6">
+              <thead class="table-light text-center border-dark">
+                <tr>
+                  <th style="width: 40px;">No</th>
+                  <th style="width: 200px;">Mata Pelajaran</th>
+                  <th style="width: 80px;">Nilai Akhir</th>
+                  <th>Capaian Kompetensi</th>
+                </tr>
+              </thead>
+              <tbody id="c_tabelNilai"></tbody>
+            </table>
+
+            <!-- BAGIAN KOKURIKULER SINGLE BOX -->
+            <div class="mb-4 fs-6" id="sectionKokurikulerRapor">
+              <table class="table table-bordered border-dark align-middle mb-0">
+                <thead class="table-secondary border-dark text-center">
+                  <tr>
+                    <th class="py-1">Kokurikuler</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td id="c_koku_tertinggi" class="p-2 text-justify" style="font-size: 0.95rem; line-height: 1.5;">
+                      -
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            <!-- KEPUTUSAN KENAIKAN KELAS / KELULUSAN -->
-            <div id="boxKeputusanAkhir" class="mb-4 fs-6" style="display: none;">
-              <div class="border border-dark p-3 text-dark fw-bold" style="background-color: #f8f9fa;">
-                <p class="mb-1" id="labelKeputusanHeader">Keputusan:</p>
-                <p class="mb-0 fs-6 fw-normal" id="textKeputusanDetail">-</p>
+            <div id="sectionAkhirSemester">
+              <div class="row mb-3 fs-6">
+                <div class="col-7">
+                  <p class="fw-bold mb-1">Ekstrakurikuler</p>
+                  <table class="table table-bordered border-dark table-sm">
+                    <thead class="table-light border-dark text-center">
+                      <tr><th>No</th><th>Kegiatan Ekstrakurikuler</th><th>Keterangan</th></tr>
+                    </thead>
+                    <tbody id="c_tabelEkskul"></tbody>
+                  </table>
+                </div>
+                <div class="col-5">
+                  <p class="fw-bold mb-1">Ketidakhadiran</p>
+                  <table class="table table-bordered border-dark table-sm">
+                    <tr><td style="width: 140px;">Sakit</td><td>: <span id="c_sakit">0</span> hari</td></tr>
+                    <tr><td>Izin</td><td>: <span id="c_izin">0</span> hari</td></tr>
+                    <tr><td>Tanpa Keterangan</td><td>: <span id="c_alpa">0</span> hari</td></tr>
+                  </table>
+                </div>
               </div>
+
+              <div class="mb-4 fs-6">
+                <p class="fw-bold mb-1">Catatan Guru Kelas</p>
+                <div class="border border-dark p-2 rounded" id="c_catatanWali" style="min-height: 60px;">-</div>
+              </div>
+
+              <!-- KEPUTUSAN KENAIKAN KELAS / KELULUSAN -->
+              <div id="boxKeputusanAkhir" class="mb-4 fs-6" style="display: none;">
+                <div class="border border-dark p-3 text-dark fw-bold" style="background-color: #f8f9fa;">
+                  <p class="mb-1" id="labelKeputusanHeader">Keputusan:</p>
+                  <p class="mb-0 fs-6 fw-normal" id="textKeputusanDetail">-</p>
+                </div>
+              </div>
+
             </div>
 
-          </div>
-
-          <!-- KOTAK CATATAN / TANGGAPAN ORANG TUA / WALI -->
+            <!-- KOTAK CATATAN / TANGGAPAN ORANG TUA / WALI -->
             <div class="mb-4 fs-6">
               <p class="fw-bold mb-1">Catatan / Tanggapan Orang Tua / Wali murid</p>
               <div class="border border-dark p-2 rounded" style="min-height: 70px;">
@@ -1112,24 +1109,26 @@
               </div>
             </div>
 
-          <div class="row ttd-box text-center fs-6" style="page-break-inside: avoid;">
-            <div class="col-4">
-              <p class="mb-5">Mengetahui,<br>Orang Tua / Wali,</p>
-              <p class="fw-bold mt-4 mb-0">( .................................... )</p>
+            <div class="row ttd-box text-center fs-6" style="page-break-inside: avoid;">
+              <div class="col-4">
+                <p class="mb-5">Mengetahui,<br>Orang Tua / Wali,</p>
+                <p class="fw-bold mt-4 mb-0">( .................................... )</p>
+              </div>
+              <div class="col-4">
+                <p class="mb-5">Mengetahui,<br>Kepala Sekolah,</p>
+                <p class="fw-bold mt-4 mb-0" id="c_namaKepsek">-</p>
+                <small id="c_nipKepsek">-</small>
+              </div>
+              <div class="col-4">
+                <p class="mb-0" id="c_tglRapor">-</p>
+                <p class="mb-5">Guru Kelas,</p>
+                <p class="fw-bold mt-4 mb-0" id="c_waliKelas">-</p>
+                <small id="c_nipWaliKelas">-</small>
+              </div>
             </div>
-            <div class="col-4">
-              <p class="mb-5">Mengetahui,<br>Kepala Sekolah,</p>
-              <p class="fw-bold mt-4 mb-0" id="c_namaKepsek">-</p>
-              <small id="c_nipKepsek">-</small>
-            </div>
-            <div class="col-4">
-              <p class="mb-0" id="c_tglRapor">-</p>
-              <p class="mb-5">Guru Kelas,</p>
-              <p class="fw-bold mt-4 mb-0" id="c_waliKelas">-</p>
-              <small id="c_nipWaliKelas">-</small>
-            </div>
-          </div>
-        </div>
+          </div> <!-- PENUTUP ID tampilanAkademikRapor -->
+
+        </div> <!-- PENUTUP ID areaCetakRapor -->
 
         <div class="modal-footer no-print">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
