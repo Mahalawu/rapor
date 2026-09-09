@@ -391,6 +391,9 @@ function gantiJenisRapor() {
         : "LAPORAN HASIL BELAJAR (RAPOR)";
     }
   }
+  if (typeof siswaAktifId !== "undefined" && siswaAktifId) {
+    renderLembarRapor();
+  }
 }
 
 function renderLembarRapor() {
