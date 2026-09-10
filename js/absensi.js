@@ -225,7 +225,10 @@ async function simpanPresensiHarian() {
             status_kehadiran: p.status_kehadiran
           });
         }
-      });
+      });    
+      if (typeof filterDanRenderPresensiHistori === "function") {
+        filterDanRenderPresensiHistori();
+      }
     } else {
       alert("Gagal: " + result.message);
     }
