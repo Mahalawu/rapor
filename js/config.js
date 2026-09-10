@@ -50,7 +50,7 @@ function updateHeaderTampilan() {
   let faseAktif = getFaseKelasAktif();
   
   infoSekolah.kelas = kAktif; 
-  infoSekolah.fase = faseAktif; // Kunci konsistensi memori lokal
+  infoSekolah.fase = faseAktif;
 
   if (document.getElementById("namaSekolah")) {
     document.getElementById("namaSekolah").innerText = infoSekolah.nama_sekolah || "Nama Sekolah Belum Diatur";
@@ -69,10 +69,21 @@ function updateHeaderTampilan() {
   if (elSelect) elSelect.value = kAktif;
 }
 
-// 5. Ubah Kelas dari Dropdown Switcher Header
-function gantiKelasLokal(kelasBaru) {
+// 5. Ubah Kelas dari Dropdown Switcher Header (ISOLASI DATA 100%)
+async function gantiKelasLokal(kelasBaru) {
   localStorage.setItem("kelasAktif_User", kelasBaru);
   
+  // Ambil ulang pengaturan spesifik kelas baru dari server
+  try {
+    let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&kelas=${kelasBaru}`);
+    let dataPengaturan = await resPengaturan.json();
+    if (dataPengaturan.status === "success" && dataPengaturan.data) {
+      infoSekolah = dataPengaturan.data;
+    }
+  } catch (err) {
+    console.error("Gagal memuat pengaturan kelas baru:", err);
+  }
+
   updateHeaderTampilan();
   
   // Re-render seluruh tampilan aplikasi secara otomatis
@@ -110,10 +121,13 @@ function populateDropdownSiswaGlobal() {
 
 async function muatDataAwal() {
   try {
-    let resPengaturan = await fetch(`${API_URL}?action=getPengaturan`);
+    let kAktifAwal = getKelasAktifUser();
+
+    // 🎯 AMBIL PENGATURAN SPESIFIK KELAS AKTIF (PREVENT BERANTAKAN DI FIRST LOAD)
+    let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&kelas=${kAktifAwal}`);
     let dataPengaturan = await resPengaturan.json();
-    if (dataPengaturan.status === "success" && dataPengaturan.data.length > 0) {
-      infoSekolah = dataPengaturan.data[0];
+    if (dataPengaturan.status === "success" && dataPengaturan.data) {
+      infoSekolah = dataPengaturan.data;
       updateHeaderTampilan();
     }
 
@@ -121,7 +135,7 @@ async function muatDataAwal() {
     let dataMapel = await resMapel.json();
     if (dataMapel.status === "success") {
       listMapelData = dataMapel.data;
-    if (typeof populateFilterMapelTP === "function") populateFilterMapelTP();
+      if (typeof populateFilterMapelTP === "function") populateFilterMapelTP();
       
       let selectHtml = '<option value="">-- Pilih Mata Pelajaran --</option>';
       listMapelData.forEach(m => { selectHtml += `<option value="${m.id_mapel}">${m.nama_mapel}</option>`; });
