@@ -317,6 +317,58 @@
                 </div>
               </div>
 
+              <!-- TABEL REKAP & HISTORI PRESENSI HARIAN -->
+                <div class="border-top pt-4 mt-4">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0">📋 Riwayat & Rekap Catatan Presensi Non-Hadir</h5>
+                    <span class="badge bg-info text-dark" id="txtTotalLogPresensi">Total: 0 Log</span>
+                  </div>
+
+                  <!-- BARIS FILTER & SEARCH -->
+                  <div class="row g-2 mb-3 align-items-center">
+                    <div class="col-md-4">
+                      <input type="text" id="presensiSearch" oninput="filterDanRenderPresensiHistori()" class="form-control form-control-sm" placeholder="🔍 Cari Nama Siswa...">
+                    </div>
+                    <div class="col-md-3">
+                      <input type="date" id="presensiFilterTgl" onchange="filterDanRenderPresensiHistori()" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-3">
+                      <select id="presensiFilterStatus" onchange="filterDanRenderPresensiHistori()" class="form-select form-select-sm">
+                        <option value="">-- Semua Status --</option>
+                        <option value="S">Sakit (S)</option>
+                        <option value="I">Izin (I)</option>
+                        <option value="A">Alpa (A)</option>
+                      </select>
+                    </div>
+                    <div class="col-md-2 text-end">
+                      <button onclick="muatPresensiHarianDariServer()" class="btn btn-sm btn-outline-secondary w-100 fw-bold">🔄 Refresh Data</button>
+                    </div>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle mb-0">
+                      <thead class="table-secondary">
+                        <tr>
+                          <th style="width: 50px;" class="text-center">No</th>
+                          <th style="width: 130px;" class="text-center">Tanggal</th>
+                          <th>Nama Lengkap Siswa</th>
+                          <th style="width: 120px;" class="text-center">Status</th>
+                          <th style="width: 100px;" class="text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tabelRiwayatPresensiBody">
+                        <tr><td colspan="5" class="text-center text-muted py-3">Belum ada histori catatan ketidakhadiran.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- PAGINATION HISTORI PRESENSI -->
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted" id="presensiPaginationInfo">Halaman 1 dari 1</small>
+                    <nav><ul class="pagination pagination-sm mb-0" id="presensiPaginationNav"></ul></nav>
+                  </div>
+                </div>
+
               <div class="tab-pane fade" id="abs-rapor">
                 <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4 py-3 px-3">
                   <div class="fs-3 me-3">💡</div>
