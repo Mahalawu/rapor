@@ -290,3 +290,147 @@ async function simpanAbsensiSiswa() {
     if (btn) { btn.disabled = false; btn.innerHTML = "💾 Simpan Data Absensi & Catatan Rapor"; }
   }
 }
+
+let currentPresensiPage = 1;
+const presensiRowsPerPage = 10;
+let filteredPresensiData = [];
+
+// Fungsi memuat ulang data presensi harian dari server
+async function muatPresensiHarianDariServer() {
+  try {
+    let res = await fetch(`${API_URL}?action=getPresensiHarian`);
+    let result = await res.json();
+    if (result.status === "success") {
+      listPresensiHarianData = result.data || [];
+      filterDanRenderPresensiHistori();
+    }
+  } catch (err) {
+    console.error("Gagal memuat histori presensi:", err);
+  }
+}
+
+// Fungsi filter dan pagination histori presensi
+function filterDanRenderPresensiHistori() {
+  let search = (document.getElementById("presensiSearch")?.value || "").toLowerCase().trim();
+  let filterTgl = document.getElementById("presensiFilterTgl")?.value || "";
+  let filterStatus = (document.getElementById("presensiFilterStatus")?.value || "").toUpperCase().trim();
+
+  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
+  let setIdsSiswaKelas = new Set(siswaAktifList.map(s => String(s.id_siswa).trim()));
+
+  filteredPresensiData = listPresensiHarianData.filter(p => {
+    let idS = String(p.id_siswa).trim();
+    if (!setIdsSiswaKelas.has(idS)) return false;
+
+    let s = siswaAktifList.find(x => String(x.id_siswa).trim() === idS);
+    let nama = s ? s.nama_lengkap.toLowerCase() : "";
+
+    let tglLog = String(p.tanggal || "").split("T")[0].trim();
+
+    let matchSearch = search === "" || nama.includes(search);
+    let matchTgl = filterTgl === "" || tglLog === filterTgl;
+    let matchStatus = filterStatus === "" || String(p.status_kehadiran).toUpperCase() === filterStatus;
+
+    return matchSearch && matchTgl && matchStatus;
+  });
+
+  let txtTotal = document.getElementById("txtTotalLogPresensi");
+  if (txtTotal) txtTotal.innerText = `Total: ${filteredPresensiData.length} Log`;
+
+  renderTabelHistoriPresensi();
+}
+
+function renderTabelHistoriPresensi() {
+  let totalRows = filteredPresensiData.length;
+  let totalPages = Math.ceil(totalRows / presensiRowsPerPage) || 1;
+  if (currentPresensiPage > totalPages) currentPresensiPage = totalPages;
+
+  let startIndex = (currentPresensiPage - 1) * presensiRowsPerPage;
+  let pageData = filteredPresensiData.slice(startIndex, startIndex + presensiRowsPerPage);
+
+  let container = document.getElementById("tabelRiwayatPresensiBody");
+  if (!container) return;
+
+  if (pageData.length === 0) {
+    container.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Tidak ada data histori ketidakhadiran yang cocok.</td></tr>';
+    renderPaginationPresensiNav(0, 1);
+    return;
+  }
+
+  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
+  let html = "";
+
+  pageData.forEach((p, idx) => {
+    let s = siswaAktifList.find(x => String(x.id_siswa).trim() === String(p.id_siswa).trim());
+    let nama = s ? s.nama_lengkap : `ID: ${p.id_siswa}`;
+    let tglFormatted = String(p.tanggal || "").split("T")[0];
+
+    let st = String(p.status_kehadiran).toUpperCase();
+    let badgeSt = st === "S" ? '<span class="badge bg-warning text-dark">Sakit (S)</span>'
+      : (st === "I" ? '<span class="badge bg-info text-dark">Izin (I)</span>' 
+      : '<span class="badge bg-danger">Alpa (A)</span>');
+
+    html += `
+      <tr>
+        <td class="text-center">${startIndex + idx + 1}</td>
+        <td class="text-center font-monospace">${tglFormatted}</td>
+        <td><strong>${nama}</strong></td>
+        <td class="text-center">${badgeSt}</td>
+        <td class="text-center">
+          <button onclick="pilihTanggalPresensiForm('${tglFormatted}')" class="btn btn-sm btn-outline-primary fw-bold" title="Edit Presensi Tanggal Ini">
+            ✏️ Edit
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  container.innerHTML = html;
+  renderPaginationPresensiNav(totalRows, totalPages);
+}
+
+function renderPaginationPresensiNav(totalRows, totalPages) {
+  let infoEl = document.getElementById("presensiPaginationInfo");
+  let navEl = document.getElementById("presensiPaginationNav");
+
+  if (infoEl) {
+    infoEl.innerText = totalRows > 0 
+      ? `Halaman ${currentPresensiPage} dari ${totalPages} (${totalRows} Log)`
+      : "Halaman 1 dari 1 (0 Log)";
+  }
+
+  if (!navEl) return;
+  let html = "";
+
+  html += `<li class="page-item ${currentPresensiPage <= 1 ? 'disabled' : ''}">
+            <button class="page-link" onclick="gantiHalamanPresensi(${currentPresensiPage - 1})">Previous</button>
+           </li>`;
+
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<li class="page-item ${i === currentPresensiPage ? 'active' : ''}">
+              <button class="page-link" onclick="gantiHalamanPresensi(${i})">${i}</button>
+             </li>`;
+  }
+
+  html += `<li class="page-item ${currentPresensiPage >= totalPages ? 'disabled' : ''}">
+            <button class="page-link" onclick="gantiHalamanPresensi(${currentPresensiPage + 1})">Next</button>
+           </li>`;
+
+  navEl.innerHTML = html;
+}
+
+function gantiHalamanPresensi(page) {
+  if (page < 1) return;
+  currentPresensiPage = page;
+  renderTabelHistoriPresensi();
+}
+
+// Buka form input presensi untuk tanggal spesifik saat tombol Edit diklik
+function pilihTanggalPresensiForm(tglStr) {
+  let inputTgl = document.getElementById("tglPresensiHarian");
+  if (inputTgl) {
+    inputTgl.value = tglStr;
+    muatPresensiHarianTanggal();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
