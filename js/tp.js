@@ -110,15 +110,136 @@ function gantiHalamanTP(page) {
 
 function populateFilterMapelTP() {
   let select = document.getElementById("tpFilterMapel");
-  if (!select) return;
+  let selectSingle = document.getElementById("tp_single_mapel");
+  let selectBulk = document.getElementById("tp_bulk_mapel");
+
   let html = '<option value="">-- Semua Mapel --</option>';
+  let htmlSelect = '<option value="">-- Pilih Mapel --</option>';
+
   listMapelData.forEach(m => {
     html += `<option value="${m.id_mapel}">${m.nama_mapel}</option>`;
+    htmlSelect += `<option value="${m.id_mapel}">${m.nama_mapel}</option>`;
   });
-  select.innerHTML = html;
+
+  if (select) select.innerHTML = html;
+  if (selectSingle) selectSingle.innerHTML = htmlSelect;
+  if (selectBulk) selectBulk.innerHTML = htmlSelect;
 }
 
-// 🎯 FUNGSI BARU: BUKAJAN MODAL EDIT TP
+// 🎯 FUNGSI UTAMA 1: SIMPAN TP SINGLE / MANUAL
+async function simpanTPSingle() {
+  let idMapel = document.getElementById("tp_single_mapel")?.value;
+  let kodeTP = document.getElementById("tp_single_kode")?.value?.trim().toUpperCase();
+  let narasiTP = document.getElementById("tp_single_narasi")?.value?.trim();
+
+  if (!idMapel) { alert("⚠️ Silakan pilih Mata Pelajaran terlebih dahulu!"); return; }
+  if (!kodeTP) { alert("⚠️ Kode TP tidak boleh kosong! (Contoh: TP-01)"); return; }
+  if (!narasiTP) { alert("⚠️ Narasi TP tidak boleh kosong!"); return; }
+
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
+  let semAktif = String(infoSekolah.semester || "1").trim();
+
+  let payload = [{
+    id_tp: kodeTP,
+    id_mapel: idMapel,
+    kelas: kAktif,
+    semester: semAktif,
+    narasi_tp: narasiTP
+  }];
+
+  let btn = document.querySelector("#tp-single button");
+  if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Menyimpan..."; }
+
+  try {
+    let response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "simpanTP", data: payload })
+    });
+
+    let result = await response.json();
+    if (result.status === "success") {
+      alert("🎉 " + result.message);
+      
+      document.getElementById("tp_single_kode").value = "";
+      document.getElementById("tp_single_narasi").value = "";
+
+      listTPData.push(payload[0]);
+      renderTabelTP();
+    } else {
+      alert("❌ Gagal: " + result.message);
+    }
+  } catch (err) {
+    alert("❌ Kesalahan koneksi!");
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = "💾 Tambahkan TP"; }
+  }
+}
+
+// 🎯 FUNGSI UTAMA 2: SIMPAN TP BULK / IMPORT BANYAK
+async function simpanTPBulk() {
+  let idMapel = document.getElementById("tp_bulk_mapel")?.value;
+  let bulkText = document.getElementById("tp_bulk_text")?.value?.trim();
+
+  if (!idMapel) { alert("⚠️ Pilih Mata Pelajaran terlebih dahulu!"); return; }
+  if (!bulkText) { alert("⚠️ Teks paste dari Excel tidak boleh kosong!"); return; }
+
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
+  let semAktif = String(infoSekolah.semester || "1").trim();
+
+  let lines = bulkText.split("\n");
+  let payloadList = [];
+
+  lines.forEach(line => {
+    let row = line.split("\t");
+    if (row.length >= 2) {
+      let kKode = row[0].trim().toUpperCase();
+      let kNarasi = row[1].trim();
+      if (kKode && kNarasi) {
+        payloadList.push({
+          id_tp: kKode,
+          id_mapel: idMapel,
+          kelas: kAktif,
+          semester: semAktif,
+          narasi_tp: kNarasi
+        });
+      }
+    }
+  });
+
+  if (payloadList.length === 0) {
+    alert("⚠️ Format Excel tidak sesuai! Pastikan minimal 2 kolom: [Kode TP] [Narasi TP]");
+    return;
+  }
+
+  let btn = document.querySelector("#tp-bulk button");
+  if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Memproses Import..."; }
+
+  try {
+    let response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "simpanTP", data: payloadList })
+    });
+
+    let result = await response.json();
+    if (result.status === "success") {
+      alert(`🎉 Berhasil mengimpor ${payloadList.length} TP!`);
+      document.getElementById("tp_bulk_text").value = "";
+      
+      payloadList.forEach(item => listTPData.push(item));
+      renderTabelTP();
+    } else {
+      alert("❌ Gagal: " + result.message);
+    }
+  } catch (err) {
+    alert("❌ Kesalahan koneksi!");
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = "🚀 Import Semua TP"; }
+  }
+}
+
+// 🎯 FUNGSI EDIT MODAL TP
 function bukaModalEditTP(idTp, idMapel) {
   let tpObj = listTPData.find(x => 
     String(x.id_tp).trim().toUpperCase() === String(idTp).trim().toUpperCase() &&
@@ -135,7 +256,6 @@ function bukaModalEditTP(idTp, idMapel) {
   document.getElementById("edit_tp_kelas").value = tpObj.kelas || infoSekolah.kelas || "5";
   document.getElementById("edit_tp_semester").value = tpObj.semester || infoSekolah.semester || "1";
 
-  // Populate Select Mapel
   let selectMapel = document.getElementById("edit_tp_mapel");
   let htmlM = "";
   listMapelData.forEach(m => {
@@ -148,7 +268,7 @@ function bukaModalEditTP(idTp, idMapel) {
   modal.show();
 }
 
-// 🎯 FUNGSI BARU: SIMPAN PERUBAHAN EDIT TP
+// 🎯 FUNGSI SIMPAN EDIT TP
 async function simpanEditTP() {
   let idTp = document.getElementById("edit_tp_kode").value.trim();
   let idMapel = document.getElementById("edit_tp_mapel").value.trim();
@@ -180,7 +300,6 @@ async function simpanEditTP() {
     if (result.status === "success") {
       alert("🎉 " + result.message);
       
-      // Update memori lokal
       let idx = listTPData.findIndex(x => 
         String(x.id_tp).trim().toUpperCase() === idTp.toUpperCase() &&
         String(x.id_mapel).trim().toUpperCase() === idMapel.toUpperCase()
@@ -209,13 +328,11 @@ async function hapusTP(idTp, idMapel) {
   let idTpClean = String(idTp).trim().toUpperCase();
   let idMapelClean = String(idMapel).trim().toUpperCase();
 
-  // 1. CEK RELASI: Apakah TP ini sudah pernah dipakai di data nilai sumatif?
   let nilaiTerhubung = listNilaiData.filter(n => 
     String(n.id_tp || "").trim().toUpperCase() === idTpClean &&
     String(n.id_mapel || "").trim().toUpperCase() === idMapelClean
   );
 
-  // 2. JIKA ADA NILAI TERHUBUNG -> BLOKIR PENGHAPUSAN
   if (nilaiTerhubung.length > 0) {
     alert(
       `⚠️ TIDAK BISA DIHAPUS!\n\n` +
@@ -225,7 +342,6 @@ async function hapusTP(idTp, idMapel) {
     return;
   }
 
-  // 3. JIKA BERSIH -> KONFIRMASI DAN EKSEKUSI HAPUS
   if (!confirm(`Apakah Anda yakin ingin menghapus TP (${idTp})?`)) {
     return;
   }
@@ -241,7 +357,6 @@ async function hapusTP(idTp, idMapel) {
     if (result.status === "success") {
       alert("🗑️ " + result.message);
       
-      // Hapus dari memori lokal listTPData
       listTPData = listTPData.filter(x => !(
         String(x.id_tp).trim().toUpperCase() === idTpClean &&
         String(x.id_mapel).trim().toUpperCase() === idMapelClean
