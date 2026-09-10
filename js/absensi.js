@@ -366,7 +366,17 @@ function renderTabelHistoriPresensi() {
   pageData.forEach((p, idx) => {
     let s = siswaAktifList.find(x => String(x.id_siswa).trim() === String(p.id_siswa).trim());
     let nama = s ? s.nama_lengkap : `ID: ${p.id_siswa}`;
-    let tglFormatted = String(p.tanggal || "").split("T")[0];
+    
+    // 🎯 FIX FORMAT TANGGAL INDONESIA (DD/MM/YYYY)
+    let tglRaw = String(p.tanggal || "").split("T")[0]; // "2026-09-10"
+    let tglFormatted = tglRaw;
+    
+    if (tglRaw && tglRaw.includes("-")) {
+      let parts = tglRaw.split("-"); // [2026, 09, 10]
+      if (parts.length === 3) {
+        tglFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`; // Hasil: "10/09/2026"
+      }
+    }
 
     let st = String(p.status_kehadiran).toUpperCase();
     let badgeSt = st === "S" ? '<span class="badge bg-warning text-dark">Sakit (S)</span>'
@@ -376,11 +386,12 @@ function renderTabelHistoriPresensi() {
     html += `
       <tr>
         <td class="text-center">${startIndex + idx + 1}</td>
+        <!-- panggil tglRaw di fungsi edit, tapi tampilkan tglFormatted ke user -->
         <td class="text-center font-monospace">${tglFormatted}</td>
         <td><strong>${nama}</strong></td>
         <td class="text-center">${badgeSt}</td>
         <td class="text-center">
-          <button onclick="pilihTanggalPresensiForm('${tglFormatted}')" class="btn btn-sm btn-outline-primary fw-bold" title="Edit Presensi Tanggal Ini">
+          <button onclick="pilihTanggalPresensiForm('${tglRaw}')" class="btn btn-sm btn-outline-primary fw-bold" title="Edit Presensi Tanggal Ini">
             ✏️ Edit
           </button>
         </td>
