@@ -313,6 +313,29 @@ async function muatPresensiHarianDariServer() {
 }
 
 // Fungsi filter dan pagination histori presensi
+// Helper konversi tanggal ke YYYY-MM-DD
+function formatKeYYYYMMDD(tglInput) {
+  if (!tglInput) return "";
+  if (tglInput instanceof Date) {
+    let y = tglInput.getFullYear();
+    let m = String(tglInput.getMonth() + 1).padStart(2, '0');
+    let d = String(tglInput.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  let str = String(tglInput).trim();
+  if (str.includes("T")) str = str.split("T")[0];
+  
+  // Jika formatnya "Mon Aug 31 2026..."
+  let parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) {
+    let y = parsed.getFullYear();
+    let m = String(parsed.getMonth() + 1).padStart(2, '0');
+    let d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return str;
+}
+
 function filterDanRenderPresensiHistori() {
   let search = (document.getElementById("presensiSearch")?.value || "").toLowerCase().trim();
   let filterTgl = document.getElementById("presensiFilterTgl")?.value || "";
@@ -328,7 +351,7 @@ function filterDanRenderPresensiHistori() {
     let s = siswaAktifList.find(x => String(x.id_siswa).trim() === idS);
     let nama = s ? s.nama_lengkap.toLowerCase() : "";
 
-    let tglLog = String(p.tanggal || "").split("T")[0].trim();
+    let tglLog = formatKeYYYYMMDD(p.tanggal);
 
     let matchSearch = search === "" || nama.includes(search);
     let matchTgl = filterTgl === "" || tglLog === filterTgl;
@@ -367,14 +390,13 @@ function renderTabelHistoriPresensi() {
     let s = siswaAktifList.find(x => String(x.id_siswa).trim() === String(p.id_siswa).trim());
     let nama = s ? s.nama_lengkap : `ID: ${p.id_siswa}`;
     
-    // 🎯 FIX FORMAT TANGGAL INDONESIA (DD/MM/YYYY)
-    let tglRaw = String(p.tanggal || "").split("T")[0]; // "2026-09-10"
+    let tglRaw = formatKeYYYYMMDD(p.tanggal); // "2026-08-31"
     let tglFormatted = tglRaw;
     
     if (tglRaw && tglRaw.includes("-")) {
-      let parts = tglRaw.split("-"); // [2026, 09, 10]
+      let parts = tglRaw.split("-");
       if (parts.length === 3) {
-        tglFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`; // Hasil: "10/09/2026"
+        tglFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`; // "31/08/2026"
       }
     }
 
@@ -386,8 +408,7 @@ function renderTabelHistoriPresensi() {
     html += `
       <tr>
         <td class="text-center">${startIndex + idx + 1}</td>
-        <!-- panggil tglRaw di fungsi edit, tapi tampilkan tglFormatted ke user -->
-        <td class="text-center font-monospace">${tglFormatted}</td>
+        <td class="text-center font-monospace">${tglFormatted || '-'}</td>
         <td><strong>${nama}</strong></td>
         <td class="text-center">${badgeSt}</td>
         <td class="text-center">
