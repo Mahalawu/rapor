@@ -175,7 +175,6 @@ function renderTabelPresensiHarian() {
 
   container.innerHTML = html;
   }
-}
 
 // 💾 SIMPAN PRESENSI HARIAN
 async function simpanPresensiHarian() {
@@ -397,7 +396,6 @@ function filterDanRenderPresensiHistori() {
   container.innerHTML = html;
 }
   renderTabelHistoriPresensi();
-}
 
 function renderTabelHistoriPresensi() {
   let totalRows = filteredPresensiData.length;
