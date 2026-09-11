@@ -76,12 +76,13 @@ function updateHeaderTampilan() {
 
 // 5. Ubah Kelas dari Dropdown Switcher Header (ISOLASI DATA 100%)
 async function gantiKelasLokal(kelasBaru) {
+  if (!kelasBaru) return; // Mencegah fungsi berjalan jika "-- Pilih Kelas --" diklik ulang
+  
   localStorage.setItem("kelasAktif_User", kelasBaru);
   
   let userSession = typeof getUserSession === "function" ? getUserSession() : null;
   let reqSekolah = userSession ? (userSession.id_sekolah || "SCH-SINE1") : "SCH-SINE1";
 
-  // Ambil ulang pengaturan spesifik kelas baru dari server
   try {
     let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&id_sekolah=${reqSekolah}&kelas=${kelasBaru}`);
     let dataPengaturan = await resPengaturan.json();
@@ -93,8 +94,6 @@ async function gantiKelasLokal(kelasBaru) {
   }
 
   updateHeaderTampilan();
-  
-  // Re-render seluruh data aplikasi sesuai kelas baru
   await muatDataAwal();
   
   alert(`🔄 Tampilan berhasil disesuaikan untuk Kelas ${kelasBaru} (Fase ${infoSekolah.fase})!`);
