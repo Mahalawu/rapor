@@ -46,7 +46,6 @@ function bukaModalEditSiswa(idSiswa) {
   document.getElementById("edit_sis_jk").value = siswa.jenis_kelamin || "L";
   document.getElementById("edit_sis_kelas").value = siswa.kelas || (typeof getKelasAktifUser === "function" ? getKelasAktifUser() : infoSekolah.kelas || "5");
   
-  // Data Identitas Rapor Tambahan
   document.getElementById("edit_sis_tempat_lahir").value = siswa.tempat_lahir || "";
   document.getElementById("edit_sis_tanggal_lahir").value = siswa.tanggal_lahir || "";
   document.getElementById("edit_sis_agama").value = siswa.agama || "Islam";
@@ -91,12 +90,7 @@ async function simpanEditSiswa() {
   btn.disabled = true; btn.innerHTML = "⏳ Menyimpan...";
 
   try {
-    let res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "editSiswa", data: payload })
-    });
-    let result = await res.json();
+    let result = await kirimDataKeServer("editSiswa", payload);
 
     if (result.status === "success") {
       alert("🎉 " + result.message);
@@ -127,12 +121,15 @@ async function hapusSiswa(idSiswa, namaSiswa) {
   }
 
   try {
-    let res = await fetch(API_URL, {
+    let userSession = typeof getUserSession === "function" ? getUserSession() : null;
+    let reqSekolah = userSession ? (userSession.id_sekolah || "SCH-SINE1") : "SCH-SINE1";
+
+    let response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "hapusSiswa", id_siswa: idSiswa })
+      body: JSON.stringify({ action: "hapusSiswa", id_siswa: idSiswa, id_sekolah: reqSekolah })
     });
-    let result = await res.json();
+    let result = await response.json();
 
     if (result.status === "success") {
       alert("🗑️ " + result.message);
@@ -173,7 +170,6 @@ async function simpanSiswaSingle() {
 
   await kirimDataSiswa(payload);
   
-  // Clear input
   document.getElementById("sis_nis").value = "";
   document.getElementById("sis_nisn").value = "";
   document.getElementById("sis_nama").value = "";
@@ -186,7 +182,6 @@ async function simpanSiswaSingle() {
   if(document.getElementById("sis_nama_wali")) document.getElementById("sis_nama_wali").value = "";
 }
 
-// 🎯 IMPORT EXCEL MENDUKUNG HINGGA 14 KOLOM URUT SPREADSHEET
 async function simpanSiswaBulk() {
   let textRaw = document.getElementById("sis_bulk_text").value.trim();
   if (!textRaw) { alert("Tempelkan data siswa dari Excel terlebih dahulu!"); return; }
@@ -236,21 +231,21 @@ async function simpanSiswaBulk() {
 
 async function kirimDataSiswa(payload) {
   try {
-    let response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "simpanSiswa", data: payload })
-    });
-    let result = await response.json();
+    let result = await kirimDataKeServer("simpanSiswa", payload);
     if (result.status === "success") {
       alert("🎉 Berhasil menyimpan Data Siswa ke Google Sheets!");
-      let resSiswa = await fetch(`${API_URL}?action=getSiswa`);
+      
+      let userSession = typeof getUserSession === "function" ? getUserSession() : null;
+      let reqSekolah = userSession ? (userSession.id_sekolah || "SCH-SINE1") : "SCH-SINE1";
+      let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : "5";
+
+      let resSiswa = await fetch(`${API_URL}?action=getSiswa&id_sekolah=${reqSekolah}&kelas=${kAktif}`);
       let dataSiswa = await resSiswa.json();
       if (dataSiswa.status === "success") {
         listSiswaData = dataSiswa.data;
         renderTabelSiswaMaster();
-        renderTabelSiswaInput();
-        renderDashboard();
+        if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
+        if (typeof renderDashboard === "function") renderDashboard();
       }
     } else { alert("Gagal menyimpan: " + result.message); }
   } catch (err) { alert("Terjadi kesalahan koneksi!"); }
