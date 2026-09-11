@@ -178,62 +178,56 @@ function renderTabelPresensiHarian() {
 
 // 💾 SIMPAN PRESENSI HARIAN
 async function simpanPresensiHarian() {
-  let tglEl = document.getElementById("tglPresensiHarian") || document.getElementById("inputTanggalPresensi");
-  let tglInput = tglEl?.value;
-  if (!tglInput) { alert("Pilih tanggal presensi!"); return; }
+  let tglInput = document.getElementById("tglPresensiHarian")?.value;
+  if (!tglInput) {
+    alert("⚠️ Pilih tanggal presensi terlebih dahulu!");
+    return;
+  }
 
-  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
-  let siswaAktifList = listSiswaData.filter(s => String(s.kelas || "5").trim() === kAktif);
+  let siswaAktif = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
+  let payload = [];
 
-  let payloadPresensi = [];
-  siswaAktifList.forEach(siswa => {
-    let idS = String(siswa.id_siswa).trim();
-    let selectedRadio = document.querySelector(`input[name="pres_${idS}"]:checked`);
-    let valSt = selectedRadio ? selectedRadio.value : "H";
+  siswaAktif.forEach(s => {
+    // Cari status dari radio/button toggle per siswa
+    let elStatus = document.querySelector(`input[name="pres_status_${s.id_siswa}"]:checked`) ||
+                   document.querySelector(`.btn-presensi-status[data-idsiswa="${s.id_siswa}"].active`);
+    
+    let status = elStatus ? elStatus.value : "H"; // Default Hadir (H)
 
-    payloadPresensi.push({
-      id_siswa: idS,
-      status_kehadiran: valSt
+    payload.push({
+      tanggal: tglInput,
+      id_siswa: s.id_siswa,
+      status: status
     });
   });
 
-  let btn = document.getElementById("btnSimpanHarian") || document.getElementById("btnSimpanPresensi");
+  let btn = document.getElementById("btnSimpanHarian");
   if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Menyimpan..."; }
 
   try {
-    let response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        action: "simpanPresensiHarian",
-        tanggal: tglInput,
-        data: payloadPresensi
-      })
-    });
-
-    let result = await response.json();
+    let result = await kirimDataKeServer("simpanPresensiHarian", payload);
     if (result.status === "success") {
-      alert("🎉 " + result.message);
+      alert("🎉 Presensi tanggal " + tglInput + " berhasil disimpan!");
       
-      listPresensiHarianData = listPresensiHarianData.filter(x => String(x.tanggal).split("T")[0] !== tglInput);
-      payloadPresensi.forEach(p => {
-        if (p.status_kehadiran !== "H") {
-          listPresensiHarianData.push({
-            id_presensi: "PRES-TEMP",
-            tanggal: tglInput,
-            id_siswa: p.id_siswa,
-            status_kehadiran: p.status_kehadiran
-          });
+      // Update memori lokal listPresensiHarianData
+      payload.forEach(p => {
+        let idx = listPresensiHarianData.findIndex(x => 
+          String(x.tanggal || x.tgl_presensi) === String(p.tanggal) && 
+          String(x.id_siswa) === String(p.id_siswa)
+        );
+        if (idx >= 0) {
+          listPresensiHarianData[idx].status = p.status;
+        } else {
+          listPresensiHarianData.push(p);
         }
-      });    
-      if (typeof filterDanRenderPresensiHistori === "function") {
-        filterDanRenderPresensiHistori();
-      }
+      });
+
+      filterDanRenderPresensiHistori();
     } else {
-      alert("Gagal: " + result.message);
+      alert("❌ Gagal: " + result.message);
     }
   } catch (err) {
-    alert("Kesalahan koneksi!");
+    alert("❌ Kesalahan koneksi!");
   } finally {
     if (btn) { btn.disabled = false; btn.innerHTML = "💾 Simpan Presensi Tanggal Ini"; }
   }
@@ -337,32 +331,70 @@ function formatKeYYYYMMDD(tglInput) {
 }
 
 function filterDanRenderPresensiHistori() {
+  let container = document.getElementById("tabelRiwayatPresensiBody");
+  if (!container) return;
+
   let search = (document.getElementById("presensiSearch")?.value || "").toLowerCase().trim();
   let filterTgl = document.getElementById("presensiFilterTgl")?.value || "";
-  let filterStatus = (document.getElementById("presensiFilterStatus")?.value || "").toUpperCase().trim();
+  let filterStatus = document.getElementById("presensiFilterStatus")?.value || "";
 
-  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
-  let setIdsSiswaKelas = new Set(siswaAktifList.map(s => String(s.id_siswa).trim()));
+  // Filter HANYA status non-hadir (S, I, A)
+  let listFiltered = listPresensiHarianData.filter(p => {
+    let st = String(p.status || "").toUpperCase().trim();
+    let isNonHadir = (st === "S" || st === "I" || st === "A");
+    
+    if (!isNonHadir) return false;
 
-  filteredPresensiData = listPresensiHarianData.filter(p => {
-    let idS = String(p.id_siswa).trim();
-    if (!setIdsSiswaKelas.has(idS)) return false;
+    // Ambil tanggal dengan fallback key yang fleksibel
+    let tglPres = String(p.tanggal || p.tgl_presensi || p.tgl || "").trim();
+    
+    let matchTgl = !filterTgl || tglPres === filterTgl;
+    let matchStatus = !filterStatus || st === filterStatus;
 
-    let s = siswaAktifList.find(x => String(x.id_siswa).trim() === idS);
-    let nama = s ? s.nama_lengkap.toLowerCase() : "";
+    let sObj = listSiswaData.find(s => String(s.id_siswa).trim() === String(p.id_siswa).trim());
+    let namaSiswa = sObj ? sObj.nama_lengkap.toLowerCase() : "";
+    let matchSearch = !search || namaSiswa.includes(search);
 
-    let tglLog = formatKeYYYYMMDD(p.tanggal);
-
-    let matchSearch = search === "" || nama.includes(search);
-    let matchTgl = filterTgl === "" || tglLog === filterTgl;
-    let matchStatus = filterStatus === "" || String(p.status_kehadiran).toUpperCase() === filterStatus;
-
-    return matchSearch && matchTgl && matchStatus;
+    return matchTgl && matchStatus && matchSearch;
   });
 
-  let txtTotal = document.getElementById("txtTotalLogPresensi");
-  if (txtTotal) txtTotal.innerText = `Total: ${filteredPresensiData.length} Log`;
+  let totalLogEl = document.getElementById("txtTotalLogPresensi");
+  if (totalLogEl) totalLogEl.innerText = `Total: ${listFiltered.length} Log`;
 
+  if (listFiltered.length === 0) {
+    container.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Belum ada histori catatan ketidakhadiran (Sakit/Izin/Alpa).</td></tr>';
+    return;
+  }
+
+  let html = "";
+  listFiltered.forEach((p, idx) => {
+    let sObj = listSiswaData.find(s => String(s.id_siswa).trim() === String(p.id_siswa).trim());
+    let namaSiswa = sObj ? sObj.nama_lengkap : `ID: ${p.id_siswa}`;
+    
+    // Normalisasi tampilan tanggal
+    let tglPres = String(p.tanggal || p.tgl_presensi || p.tgl || "-").trim();
+
+    let badgeStatus = "";
+    let st = String(p.status || "").toUpperCase().trim();
+    if (st === "S") badgeStatus = '<span class="badge bg-warning text-dark px-2 py-1">Sakit (S)</span>';
+    else if (st === "I") badgeStatus = '<span class="badge bg-info text-dark px-2 py-1">Izin (I)</span>';
+    else if (st === "A") badgeStatus = '<span class="badge bg-danger px-2 py-1">Alpa (A)</span>';
+
+    html += `
+      <tr>
+        <td class="text-center">${idx + 1}</td>
+        <td class="text-center font-monospace">${tglPres}</td>
+        <td><strong>${namaSiswa}</strong></td>
+        <td class="text-center">${badgeStatus}</td>
+        <td class="text-center">
+          <button onclick="hapusLogPresensi('${tglPres}', '${p.id_siswa}')" class="btn btn-sm btn-outline-danger" title="Hapus Log">🗑️ Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  container.innerHTML = html;
+}
   renderTabelHistoriPresensi();
 }
 
