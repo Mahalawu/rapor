@@ -44,7 +44,7 @@ function getSiswaKelasAktif() {
   });
 }
 
-// 4. Update Header Tampilan (FORMAT TEKS SAPAAN PERSONAL & RESPONSIF HP)
+// 4. Update Header Tampilan (FIXED KOTAK KOSONG ADMIN)
 function updateHeaderTampilan() {
   let userSession = typeof getUserSession === "function" ? getUserSession() : null;
   let kAktif = getKelasAktifUser();
@@ -68,9 +68,15 @@ function updateHeaderTampilan() {
     elGreeting.innerHTML = `👋 Halo, <strong>${namaUser}</strong>! Selamat datang di Dashboard Rapor <strong>Kelas ${kAktif} (Fase ${faseAktif}) ${nmSekolah}</strong>. Semester ${sem} TH ${thn}.`;
   }
 
+  // 🎯 PERBAIKAN DI SINI:
   let elSelect = document.getElementById("selectKelasLokal");
-  if (elSelect && kAktif !== "all") {
-    elSelect.value = kAktif;
+  if (elSelect) {
+    // Jika kAktif adalah angka 1-6, set ke kAktif. Jika "all" atau kosong, set ke "" (-- Pilih Kelas --)
+    if (["1", "2", "3", "4", "5", "6"].includes(String(kAktif))) {
+      elSelect.value = String(kAktif);
+    } else {
+      elSelect.value = ""; // Menampilkan placeholder "-- Pilih Kelas --"
+    }
   }
 }
 
