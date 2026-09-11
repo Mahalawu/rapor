@@ -6,14 +6,12 @@ function renderTabelTP() {
   let semAktif = String(infoSekolah.semester || "1").trim();
   let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
   
-  // 1. Ambil data TP KHUSUS KELAS AKTIF & SEMESTER AKTIF
   let rawData = listTPData.filter(tp => {
     let tpSem = String(tp.semester || "1").trim();
     let tpKelas = String(tp.kelas || kAktif).trim();
     return tpSem === semAktif && tpKelas === kAktif;
   });
 
-  // 2. Baca Filter & Search
   let filterMapel = (document.getElementById("tpFilterMapel")?.value || "").toUpperCase().trim();
   let search = (document.getElementById("tpSearch")?.value || "").toLowerCase().trim();
 
@@ -25,7 +23,6 @@ function renderTabelTP() {
     return matchMapel && matchSearch;
   });
 
-  // 3. Render Baris Tabel Sesuai Halaman (Pagination)
   renderTabelTPRows();
 }
 
@@ -126,7 +123,6 @@ function populateFilterMapelTP() {
   if (selectBulk) selectBulk.innerHTML = htmlSelect;
 }
 
-// 🎯 FUNGSI UTAMA 1: SIMPAN TP SINGLE / MANUAL
 async function simpanTPSingle() {
   let idMapel = document.getElementById("tp_single_mapel")?.value;
   let kodeTP = document.getElementById("tp_single_kode")?.value?.trim().toUpperCase();
@@ -151,13 +147,7 @@ async function simpanTPSingle() {
   if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Menyimpan..."; }
 
   try {
-    let response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "simpanTP", data: payload })
-    });
-
-    let result = await response.json();
+    let result = await kirimDataKeServer("simpanTP", payload);
     if (result.status === "success") {
       alert("🎉 " + result.message);
       
@@ -176,7 +166,6 @@ async function simpanTPSingle() {
   }
 }
 
-// 🎯 FUNGSI UTAMA 2: SIMPAN TP BULK / IMPORT BANYAK
 async function simpanTPBulk() {
   let idMapel = document.getElementById("tp_bulk_mapel")?.value;
   let bulkText = document.getElementById("tp_bulk_text")?.value?.trim();
@@ -216,13 +205,7 @@ async function simpanTPBulk() {
   if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Memproses Import..."; }
 
   try {
-    let response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "simpanTP", data: payloadList })
-    });
-
-    let result = await response.json();
+    let result = await kirimDataKeServer("simpanTP", payloadList);
     if (result.status === "success") {
       alert(`🎉 Berhasil mengimpor ${payloadList.length} TP!`);
       document.getElementById("tp_bulk_text").value = "";
@@ -239,7 +222,6 @@ async function simpanTPBulk() {
   }
 }
 
-// 🎯 FUNGSI EDIT MODAL TP
 function bukaModalEditTP(idTp, idMapel) {
   let tpObj = listTPData.find(x => 
     String(x.id_tp).trim().toUpperCase() === String(idTp).trim().toUpperCase() &&
@@ -268,7 +250,6 @@ function bukaModalEditTP(idTp, idMapel) {
   modal.show();
 }
 
-// 🎯 FUNGSI SIMPAN EDIT TP
 async function simpanEditTP() {
   let idTp = document.getElementById("edit_tp_kode").value.trim();
   let idMapel = document.getElementById("edit_tp_mapel").value.trim();
@@ -290,12 +271,7 @@ async function simpanEditTP() {
   btn.disabled = true; btn.innerHTML = "⏳ Menyimpan...";
 
   try {
-    let res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "editTP", data: payload })
-    });
-    let result = await res.json();
+    let result = await kirimDataKeServer("editTP", payload);
 
     if (result.status === "success") {
       alert("🎉 " + result.message);
@@ -323,7 +299,6 @@ async function simpanEditTP() {
   }
 }
 
-// 🎯 FUNGSI HAPUS TP DENGAN PROTEKSI INTEGRITAS DATA NILAI
 async function hapusTP(idTp, idMapel) {
   let idTpClean = String(idTp).trim().toUpperCase();
   let idMapelClean = String(idMapel).trim().toUpperCase();
@@ -347,12 +322,15 @@ async function hapusTP(idTp, idMapel) {
   }
 
   try {
-    let res = await fetch(API_URL, {
+    let userSession = typeof getUserSession === "function" ? getUserSession() : null;
+    let reqSekolah = userSession ? (userSession.id_sekolah || "SCH-SINE1") : "SCH-SINE1";
+
+    let response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "hapusTP", id_tp: idTp, id_mapel: idMapel })
+      body: JSON.stringify({ action: "hapusTP", id_tp: idTp, id_mapel: idMapel, id_sekolah: reqSekolah })
     });
-    let result = await res.json();
+    let result = await response.json();
 
     if (result.status === "success") {
       alert("🗑️ " + result.message);
