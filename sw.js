@@ -14,7 +14,7 @@ const urlsToCache = [
   './js/rekap.js',
   './js/pengaturan.js',
   './manifest.json',
-  './tutwuri.png'
+  './tutwuri.png',
   './logo.png'
 ];
 
