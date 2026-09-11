@@ -138,16 +138,11 @@ async function simpanSemuaNilai() {
   btn.disabled = true; btn.innerHTML = "⏳ Menyimpan...";
 
   try {
-    let response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "simpanNilai", data: payloadNilai })
-    });
-    let result = await response.json();
+    let result = await kirimDataKeServer("simpanNilai", payloadNilai);
+
     if (result.status === "success") {
       alert(`🎉 Berhasil menyimpan/memperbarui data nilai ${jenis}!`);
       
-      // Update memori lokal listNilaiData agar langsung tersinkronisasi
       payloadNilai.forEach(p => {
         let idxEksis = listNilaiData.findIndex(x => 
           String(x.id_siswa).trim() === String(p.id_siswa).trim() &&
