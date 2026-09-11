@@ -120,8 +120,16 @@ function populateDropdownSiswaGlobal() {
    =================================================== */
 
 async function muatDataAwal() {
-  try {
-    let kAktifAwal = getKelasAktifUser();
+  // 🎯 CEK SESI LOGIN DULU
+  let userSession = getUserSession();
+  if (!userSession) {
+    tampilkanModalLogin();
+    return; // Hentikan muat data jika belum login
+  }
+
+  terapkanHakAksesUser(userSession);
+  let kAktifAwal = getKelasAktifUser();
+  let reqSekolah = userSession.id_sekolah || "SCH-SINE1";
 
     // 🎯 AMBIL PENGATURAN SPESIFIK KELAS AKTIF (PREVENT BERANTAKAN DI FIRST LOAD)
     let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&kelas=${kAktifAwal}`);
