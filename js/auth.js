@@ -3,32 +3,20 @@
    =================================================== */
 
 // 1. Cek Sesi Login Saat Aplikasi Dibuka
+// 1. Cek Sesi Login Saat Aplikasi Dibuka
 function cekSesiLogin() {
   let userSession = getUserSession();
+  let overlayEl = document.getElementById("loginOverlay");
+  let mainAppEl = document.getElementById("appMainContainer");
   
   if (!userSession) {
-    tampilkanModalLogin();
+    if (overlayEl) overlayEl.style.setProperty("display", "flex", "important");
+    if (mainAppEl) mainAppEl.style.display = "none";
   } else {
+    if (overlayEl) overlayEl.style.setProperty("display", "none", "important");
+    if (mainAppEl) mainAppEl.style.display = "block";
     terapkanHakAksesUser(userSession);
   }
-}
-
-// 2. Ambil Sesi Pengguna dari Storage
-function getUserSession() {
-  let sessionData = sessionStorage.getItem("user_session") || localStorage.getItem("user_session");
-  return sessionData ? JSON.parse(sessionData) : null;
-}
-
-// 3. Tampilkan Modal Login (Anti-Close / Paksa Login)
-function tampilkanModalLogin() {
-  let modalEl = document.getElementById("modalLogin");
-  if (!modalEl) return;
-  
-  let modalObj = new bootstrap.Modal(modalEl, {
-    backdrop: 'static',
-    keyboard: false
-  });
-  modalObj.show();
 }
 
 // 4. Eksekusi Login ke Apps Script
@@ -74,12 +62,13 @@ async function prosesLogin() {
         localStorage.setItem("kelasAktif_User", userData.kelas);
       }
 
-      alert(`🎉 Selamat Datang, ${userData.nama_lengkap}!`);
+      // Sembunyikan Overlay & Tampilkan Main App
+      let overlayEl = document.getElementById("loginOverlay");
+      let mainAppEl = document.getElementById("appMainContainer");
+      if (overlayEl) overlayEl.style.setProperty("display", "none", "important");
+      if (mainAppEl) mainAppEl.style.display = "block";
 
-      // Sembunyikan Modal
-      let modalEl = document.getElementById("modalLogin");
-      let modalObj = bootstrap.Modal.getInstance(modalEl);
-      if (modalObj) modalObj.hide();
+      alert(`🎉 Selamat Datang, ${userData.nama_lengkap}!`);
 
       // Muat ulang data aplikasi sesuai identitas user
       if (typeof muatDataAwal === "function") await muatDataAwal();
@@ -92,6 +81,24 @@ async function prosesLogin() {
   } finally {
     if (btn) { btn.disabled = false; btn.innerHTML = "🔑 Masuk Aplikasi"; }
   }
+}
+
+// 2. Ambil Sesi Pengguna dari Storage
+function getUserSession() {
+  let sessionData = sessionStorage.getItem("user_session") || localStorage.getItem("user_session");
+  return sessionData ? JSON.parse(sessionData) : null;
+}
+
+// 3. Tampilkan Modal Login (Anti-Close / Paksa Login)
+function tampilkanModalLogin() {
+  let modalEl = document.getElementById("modalLogin");
+  if (!modalEl) return;
+  
+  let modalObj = new bootstrap.Modal(modalEl, {
+    backdrop: 'static',
+    keyboard: false
+  });
+  modalObj.show();
 }
 
 // 5. Terapkan Hak Akses UI Berdasarkan Role & Kelas
