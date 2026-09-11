@@ -174,6 +174,7 @@ function renderTabelPresensiHarian() {
   });
 
   container.innerHTML = html;
+  }
 }
 
 // 💾 SIMPAN PRESENSI HARIAN
