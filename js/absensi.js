@@ -365,3 +365,19 @@ function pilihTanggalPresensiForm(tglStr) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
+
+async function muatPresensiHarianDariServer() {
+  try {
+    let userSession = typeof getUserSession === "function" ? getUserSession() : null;
+    let reqSekolah = userSession ? (userSession.id_sekolah || "SCH-SINE1") : "SCH-SINE1";
+    let res = await fetch(`${API_URL}?action=getPresensiHarian&id_sekolah=${reqSekolah}`);
+    let result = await res.json();
+    if (result.status === "success") {
+      listPresensiHarianData = result.data || [];
+      filterDanRenderPresensiHistori();
+      alert("🔄 Data presensi berhasil diperbarui dari server!");
+    }
+  } catch (err) {
+    console.error("Gagal memuat histori presensi:", err);
+  }
+}
