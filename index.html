@@ -10,45 +10,44 @@
   <!-- LOGO / FAVICON -->
   <link rel="icon" type="image/png" href="https://mahalawu.github.io/rapor/logo.png">
   <link rel="apple-touch-icon" href="https://mahalawu.github.io/rapor/logo.png">
-    <script>
-  if (typeof navigator.serviceWorker !== 'undefined') {
-    navigator.serviceWorker.register('sw.js')
-  }
-</script>
+  <script>
+    if (typeof navigator.serviceWorker !== 'undefined') {
+      navigator.serviceWorker.register('sw.js')
+    }
+  </script>
 </head>
-<body class="bg-light p-4">
+<body class="bg-light p-3 p-md-4" style="min-height: 100vh;">
 
   <div class="container no-print" id="appMainContainer" style="display: none;">
-    <!-- Header Informasi Sekolah -->
-<!-- Header Informasi Sekolah & Sapaan User (Responsive HP) -->
-<div class="card mb-4 shadow-sm border-0">
-  <div class="card-body bg-primary text-white rounded-3 p-3 p-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <!-- Sisi Kiri: Sapaan Personal Dinamis -->
-    <div class="d-flex align-items-center gap-2 flex-wrap" style="max-width: 85%;">
-      <h5 id="headerGreetingText" class="mb-0 fw-bold lh-base" style="font-size: 1.05rem;">
-        Halo! Memuat data akun...
-      </h5>
-      
-      <!-- Dropdown Switcher khusus Admin/Kepsek -->
-      <select id="selectKelasLokal" class="form-select form-select-sm bg-white border-0 fw-bold shadow-sm ms-md-2" style="width: 95px; display: none;" onchange="gantiKelasLokal(this.value)">
-        <option value="-- Pilih Kelas --" disabled selected>-- Pilih Kelas --</option>
-        <option value="1">Kelas 1</option>
-        <option value="2">Kelas 2</option>
-        <option value="3">Kelas 3</option>
-        <option value="4">Kelas 4</option>
-        <option value="5">Kelas 5</option>
-        <option value="6">Kelas 6</option>
-      </select>
-    </div>
+    <!-- Header Informasi Sekolah & Sapaan User (Responsive HP) -->
+    <div class="card mb-4 shadow-sm border-0">
+      <div class="card-body bg-primary text-white rounded-3 p-3 p-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <!-- Sisi Kiri: Sapaan Personal Dinamis -->
+        <div class="d-flex align-items-center gap-2 flex-wrap" style="max-width: 85%;">
+          <h5 id="headerGreetingText" class="mb-0 fw-bold lh-base" style="font-size: 1.05rem;">
+            Halo! Memuat data akun...
+          </h5>
+          
+          <!-- Dropdown Switcher khusus Admin/Kepsek (FIXED VALUE = "") -->
+          <select id="selectKelasLokal" class="form-select form-select-sm bg-white border-0 fw-bold shadow-sm ms-md-2" style="width: 130px; display: none;" onchange="gantiKelasLokal(this.value)">
+            <option value="" disabled selected>-- Pilih Kelas --</option>
+            <option value="1">Kelas 1</option>
+            <option value="2">Kelas 2</option>
+            <option value="3">Kelas 3</option>
+            <option value="4">Kelas 4</option>
+            <option value="5">Kelas 5</option>
+            <option value="6">Kelas 6</option>
+          </select>
+        </div>
 
-    <!-- Sisi Kanan: Tombol Logout Clean -->
-    <div>
-      <button onclick="prosesLogout()" class="btn btn-sm btn-danger fw-bold shadow-sm px-3 py-2" title="Keluar dari Aplikasi">
-        🚪 Logout
-      </button>
+        <!-- Sisi Kanan: Tombol Logout Clean -->
+        <div>
+          <button onclick="prosesLogout()" class="btn btn-sm btn-danger fw-bold shadow-sm px-3 py-2" title="Keluar dari Aplikasi">
+            🚪 Logout
+          </button>
+        </div>
       </div>
-  </div>
-</div>
+    </div>
 
     <!-- Navigasi Tab Menu -->
     <ul class="nav nav-pills mb-4 fw-bold" id="pills-tab" role="tablist">
@@ -86,16 +85,18 @@
       <!-- TAB 0: DASHBOARD -->
       <div class="tab-pane fade show active" id="tab-dashboard">
         <div class="card shadow-sm border-0 mb-4">
-<!-- BANNER RINGKASAN DASHBOARD -->
-<div class="d-flex align-items-center justify-content-between flex-wrap mb-1 gap-2">
-  <h4 class="fw-bold text-dark mb-0">
-    📊 Ringkasan Progres & Status Rapor
-    <a href="https://mahalawu.github.io/rapor/apk/Aplikasi%20Rapor%20SDN%20Sine%201%20Versi%201.0.0.apk" download class="badge bg-warning text-dark ms-2 text-decoration-none" style="font-size: 0.65rem; padding: 0.35rem 0.65rem; vertical-align: middle;">Unduh APK</a>
-  </h4>
-</div>
-<p class="text-secondary mb-4" style="font-size: 0.92rem;">
-  Pantau dan selesaikan pengisian nilai sumatif, presensi, serta deskripsi kokurikuler secara efisien.
-</p>         
+          <div class="card-body p-4">
+            
+            <!-- BANNER RINGKASAN DASHBOARD -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap mb-1 gap-2">
+              <h4 class="fw-bold text-dark mb-0">
+                📊 Ringkasan Progres & Status Rapor
+                <a href="https://mahalawu.github.io/rapor/apk/Aplikasi%20Rapor%20SDN%20Sine%201%20Versi%201.0.0.apk" download class="badge bg-warning text-dark ms-2 text-decoration-none" style="font-size: 0.65rem; padding: 0.35rem 0.65rem; vertical-align: middle;">Unduh APK</a>
+              </h4>
+            </div>
+            <p class="text-secondary mb-4" style="font-size: 0.92rem;">
+              Pantau dan selesaikan pengisian nilai sumatif, presensi, serta deskripsi kokurikuler secara efisien.
+            </p>         
 
             <div class="row g-3 mb-4">
               <div class="col-md-4">
@@ -207,7 +208,6 @@
             <h4 class="card-title mb-0 fw-bold text-dark">Form Input Nilai Sumatif</h4>
           </div>
           <div class="card-body">
-            
             <div class="row g-3 mb-4">
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Jenis Asesmen Sumatif:</label>
@@ -272,7 +272,6 @@
                 </table>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -328,56 +327,54 @@
               </div>
 
               <!-- TABEL REKAP & HISTORI PRESENSI HARIAN -->
-                <div class="border-top pt-4 mt-4">
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold text-dark mb-0">📋 Riwayat & Rekap Catatan Presensi Non-Hadir</h5>
-                    <span class="badge bg-info text-dark" id="txtTotalLogPresensi">Total: 0 Log</span>
-                  </div>
+              <div class="border-top pt-4 mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold text-dark mb-0">📋 Riwayat & Rekap Catatan Presensi Non-Hadir</h5>
+                  <span class="badge bg-info text-dark" id="txtTotalLogPresensi">Total: 0 Log</span>
+                </div>
 
-                  <!-- BARIS FILTER & SEARCH -->
-                  <div class="row g-2 mb-3 align-items-center">
-                    <div class="col-md-4">
-                      <input type="text" id="presensiSearch" oninput="filterDanRenderPresensiHistori()" class="form-control form-control-sm" placeholder="🔍 Cari Nama Siswa...">
-                    </div>
-                    <div class="col-md-3">
-                      <input type="date" id="presensiFilterTgl" onchange="filterDanRenderPresensiHistori()" class="form-control form-control-sm">
-                    </div>
-                    <div class="col-md-3">
-                      <select id="presensiFilterStatus" onchange="filterDanRenderPresensiHistori()" class="form-select form-select-sm">
-                        <option value="">-- Semua Status --</option>
-                        <option value="S">Sakit (S)</option>
-                        <option value="I">Izin (I)</option>
-                        <option value="A">Alpa (A)</option>
-                      </select>
-                    </div>
-                    <div class="col-md-2 text-end">
-                      <button onclick="muatPresensiHarianDariServer()" class="btn btn-sm btn-outline-secondary w-100 fw-bold">🔄 Refresh Data</button>
-                    </div>
+                <div class="row g-2 mb-3 align-items-center">
+                  <div class="col-md-4">
+                    <input type="text" id="presensiSearch" oninput="filterDanRenderPresensiHistori()" class="form-control form-control-sm" placeholder="🔍 Cari Nama Siswa...">
                   </div>
-
-                  <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle mb-0">
-                      <thead class="table-secondary">
-                        <tr>
-                          <th style="width: 50px;" class="text-center">No</th>
-                          <th style="width: 130px;" class="text-center">Tanggal</th>
-                          <th>Nama Lengkap Siswa</th>
-                          <th style="width: 120px;" class="text-center">Status</th>
-                          <th style="width: 100px;" class="text-center">Aksi</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tabelRiwayatPresensiBody">
-                        <tr><td colspan="5" class="text-center text-muted py-3">Belum ada histori catatan ketidakhadiran.</td></tr>
-                      </tbody>
-                    </table>
+                  <div class="col-md-3">
+                    <input type="date" id="presensiFilterTgl" onchange="filterDanRenderPresensiHistori()" class="form-control form-control-sm">
                   </div>
-
-                  <!-- PAGINATION HISTORI PRESENSI -->
-                  <div class="d-flex justify-content-between align-items-center mt-3">
-                    <small class="text-muted" id="presensiPaginationInfo">Halaman 1 dari 1</small>
-                    <nav><ul class="pagination pagination-sm mb-0" id="presensiPaginationNav"></ul></nav>
+                  <div class="col-md-3">
+                    <select id="presensiFilterStatus" onchange="filterDanRenderPresensiHistori()" class="form-select form-select-sm">
+                      <option value="">-- Semua Status --</option>
+                      <option value="S">Sakit (S)</option>
+                      <option value="I">Izin (I)</option>
+                      <option value="A">Alpa (A)</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2 text-end">
+                    <button onclick="muatPresensiHarianDariServer()" class="btn btn-sm btn-outline-secondary w-100 fw-bold">🔄 Refresh Data</button>
                   </div>
                 </div>
+
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped align-middle mb-0">
+                    <thead class="table-secondary">
+                      <tr>
+                        <th style="width: 50px;" class="text-center">No</th>
+                        <th style="width: 130px;" class="text-center">Tanggal</th>
+                        <th>Nama Lengkap Siswa</th>
+                        <th style="width: 120px;" class="text-center">Status</th>
+                        <th style="width: 100px;" class="text-center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabelRiwayatPresensiBody">
+                      <tr><td colspan="5" class="text-center text-muted py-3">Belum ada histori catatan ketidakhadiran.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <small class="text-muted" id="presensiPaginationInfo">Halaman 1 dari 1</small>
+                  <nav><ul class="pagination pagination-sm mb-0" id="presensiPaginationNav"></ul></nav>
+                </div>
+              </div>
 
               <div class="tab-pane fade" id="abs-rapor">
                 <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4 py-3 px-3">
@@ -589,57 +586,56 @@
           </div>
           <div class="card-body">
             <div class="tab-content mb-4">
-<div class="tab-pane fade show active" id="siswa-single">
-  <div class="row g-3 mb-3">
-    <div class="col-md-3"><label class="form-label fw-semibold">NIS:</label><input type="text" id="sis_nis" class="form-control" placeholder="Contoh: 3062"></div>
-    <div class="col-md-3"><label class="form-label fw-semibold">NISN:</label><input type="text" id="sis_nisn" class="form-control" placeholder="Contoh: 3162771532"></div>
-    <div class="col-md-4"><label class="form-label fw-semibold">Nama Lengkap Siswa:</label><input type="text" id="sis_nama" class="form-control" placeholder="Contoh: ALEXZANDER AVITO"></div>
-    <div class="col-md-2">
-      <label class="form-label fw-semibold">L/P:</label>
-      <select id="sis_jk" class="form-select">
-        <option value="L">Laki-laki (L)</option>
-        <option value="P">Perempuan (P)</option>
-      </select>
-    </div>
-  </div>
+              <div class="tab-pane fade show active" id="siswa-single">
+                <div class="row g-3 mb-3">
+                  <div class="col-md-3"><label class="form-label fw-semibold">NIS:</label><input type="text" id="sis_nis" class="form-control" placeholder="Contoh: 3062"></div>
+                  <div class="col-md-3"><label class="form-label fw-semibold">NISN:</label><input type="text" id="sis_nisn" class="form-control" placeholder="Contoh: 3162771532"></div>
+                  <div class="col-md-4"><label class="form-label fw-semibold">Nama Lengkap Siswa:</label><input type="text" id="sis_nama" class="form-control" placeholder="Contoh: ALEXZANDER AVITO"></div>
+                  <div class="col-md-2">
+                    <label class="form-label fw-semibold">L/P:</label>
+                    <select id="sis_jk" class="form-select">
+                      <option value="L">Laki-laki (L)</option>
+                      <option value="P">Perempuan (P)</option>
+                    </select>
+                  </div>
+                </div>
 
-  <!-- SEKSI DATA IDENTITAS TAMBAHAN RAPOR -->
-  <div class="p-3 bg-light rounded border mb-3">
-    <small class="fw-bold text-primary text-uppercase d-block mb-2">📋 Identitas Rapor Tambahan (Khusus Kelas 1 / Kelengkapan Siswa)</small>
-    <div class="row g-2 mb-2">
-      <div class="col-md-3"><label class="form-label small mb-1">Tempat Lahir:</label><input type="text" id="sis_tempat_lahir" class="form-control form-control-sm" placeholder="Ngawi"></div>
-      <div class="col-md-3"><label class="form-label small mb-1">Tanggal Lahir:</label><input type="date" id="sis_tanggal_lahir" class="form-control form-control-sm"></div>
-      <div class="col-md-2">
-        <label class="form-label small mb-1">Agama:</label>
-        <select id="sis_agama" class="form-select form-select-sm">
-          <option value="Islam" selected>Islam</option>
-          <option value="Kristen">Kristen</option>
-          <option value="Katolik">Katolik</option>
-          <option value="Hindu">Hindu</option>
-          <option value="Buddha">Buddha</option>
-          <option value="Khonghucu">Khonghucu</option>
-        </select>
-      </div>
-      <div class="col-md-4"><label class="form-label small mb-1">Alamat Siswa:</label><input type="text" id="sis_alamat" class="form-control form-control-sm" placeholder="Ds. Sine RT 01/01"></div>
-    </div>
-    <div class="row g-2">
-      <div class="col-md-3"><label class="form-label small mb-1">Nama Ayah:</label><input type="text" id="sis_nama_ayah" class="form-control form-control-sm"></div>
-      <div class="col-md-3"><label class="form-label small mb-1">Nama Ibu:</label><input type="text" id="sis_nama_ibu" class="form-control form-control-sm"></div>
-      <div class="col-md-3"><label class="form-label small mb-1">Pekerjaan Ortu:</label><input type="text" id="sis_pekerjaan_ortu" class="form-control form-control-sm" placeholder="Petani / Wiraswasta"></div>
-      <div class="col-md-3"><label class="form-label small mb-1">Nama Wali (Opsional):</label><input type="text" id="sis_nama_wali" class="form-control form-control-sm"></div>
-    </div>
-  </div>
+                <div class="p-3 bg-light rounded border mb-3">
+                  <small class="fw-bold text-primary text-uppercase d-block mb-2">📋 Identitas Rapor Tambahan (Khusus Kelas 1 / Kelengkapan Siswa)</small>
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-3"><label class="form-label small mb-1">Tempat Lahir:</label><input type="text" id="sis_tempat_lahir" class="form-control form-control-sm" placeholder="Ngawi"></div>
+                    <div class="col-md-3"><label class="form-label small mb-1">Tanggal Lahir:</label><input type="date" id="sis_tanggal_lahir" class="form-control form-control-sm"></div>
+                    <div class="col-md-2">
+                      <label class="form-label small mb-1">Agama:</label>
+                      <select id="sis_agama" class="form-select form-select-sm">
+                        <option value="Islam" selected>Islam</option>
+                        <option value="Kristen">Kristen</option>
+                        <option value="Katolik">Katolik</option>
+                        <option value="Hindu">Hindu</option>
+                        <option value="Buddha">Buddha</option>
+                        <option value="Khonghucu">Khonghucu</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4"><label class="form-label small mb-1">Alamat Siswa:</label><input type="text" id="sis_alamat" class="form-control form-control-sm" placeholder="Ds. Sine RT 01/01"></div>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-md-3"><label class="form-label small mb-1">Nama Ayah:</label><input type="text" id="sis_nama_ayah" class="form-control form-control-sm"></div>
+                    <div class="col-md-3"><label class="form-label small mb-1">Nama Ibu:</label><input type="text" id="sis_nama_ibu" class="form-control form-control-sm"></div>
+                    <div class="col-md-3"><label class="form-label small mb-1">Pekerjaan Ortu:</label><input type="text" id="sis_pekerjaan_ortu" class="form-control form-control-sm" placeholder="Petani / Wiraswasta"></div>
+                    <div class="col-md-3"><label class="form-label small mb-1">Nama Wali (Opsional):</label><input type="text" id="sis_nama_wali" class="form-control form-control-sm"></div>
+                  </div>
+                </div>
 
-  <button onclick="simpanSiswaSingle()" class="btn btn-success fw-bold">💾 Tambahkan Siswa</button>
-</div>
+                <button onclick="simpanSiswaSingle()" class="btn btn-success fw-bold">💾 Tambahkan Siswa</button>
+              </div>
 
               <div class="tab-pane fade" id="siswa-bulk">
-              <div class="alert alert-info py-2 fs-6 mb-3">💡 <strong>Panduan Copy-Paste dari Excel:</strong><br>Copy kolom dari Excel secara berurutan:<br> 
-    <code>[NIS] [NISN] [Nama Lengkap] [L/P] [Tempat Lahir] [Tanggal Lahir] [Agama] [Alamat] [Nama Ayah] [Nama Ibu] [Pekerjaan Ortu] [Nama Wali]</code>
-    <br><small class="text-muted">*Catatan: Kolom setelah L/P bersifat opsional. Jika hanya copy 4 kolom utama saja, sistem tetap berjalan lancar.</small>
-              </div>
-              <textarea id="sis_bulk_text" class="form-control font-monospace mb-3" rows="6" placeholder="Paste data dari Excel di sini (bisa 4 kolom utama atau 12 kolom lengkap)..."></textarea>
-              <button onclick="simpanSiswaBulk()" class="btn btn-primary fw-bold">🚀 Import Semua Siswa</button>
+                <div class="alert alert-info py-2 fs-6 mb-3">💡 <strong>Panduan Copy-Paste dari Excel:</strong><br>Copy kolom dari Excel secara berurutan:<br> 
+                  <code>[NIS] [NISN] [Nama Lengkap] [L/P] [Tempat Lahir] [Tanggal Lahir] [Agama] [Alamat] [Nama Ayah] [Nama Ibu] [Pekerjaan Ortu] [Nama Wali]</code>
+                  <br><small class="text-muted">*Catatan: Kolom setelah L/P bersifat opsional. Jika hanya copy 4 kolom utama saja, sistem tetap berjalan lancar.</small>
+                </div>
+                <textarea id="sis_bulk_text" class="form-control font-monospace mb-3" rows="6" placeholder="Paste data dari Excel di sini (bisa 4 kolom utama atau 12 kolom lengkap)..."></textarea>
+                <button onclick="simpanSiswaBulk()" class="btn btn-primary fw-bold">🚀 Import Semua Siswa</button>
               </div>
             </div>
 
@@ -696,7 +692,6 @@
 
             <h5 class="fw-bold mb-3 border-top pt-3">Daftar TP Tersimpan</h5>
 
-            <!-- BARIS FILTER & SEARCH TP -->
             <div class="row g-2 mb-3 align-items-center border-top pt-3">
               <div class="col-md-4">
                 <input type="text" id="tpSearch" oninput="renderTabelTP()" class="form-control form-control-sm" placeholder="🔍 Cari Kode / Narasi TP...">
@@ -729,28 +724,21 @@
               </table>
             </div>
 
-            <!-- NAVIGASI PAGINATION TP -->
             <div class="d-flex justify-content-between align-items-center mt-3">
               <small class="text-muted"></small>
               <nav>
-                <ul class="pagination pagination-sm mb-0" id="tpPaginationNav">
-                  <!-- Dynamic Pagination -->
-                </ul>
+                <ul class="pagination pagination-sm mb-0" id="tpPaginationNav"></ul>
               </nav>
             </div>
-            
-
           </div>
         </div>
       </div>
 
-<!-- TAB 6: REKAP NILAI (FILTER, PAGINATION & MODE LEGER) -->
+      <!-- TAB 6: REKAP NILAI -->
       <div class="tab-pane fade" id="tab-rekap">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h4 class="card-title mb-0 fw-bold text-dark">📊 Rekapitulasi Nilai Asesmen</h4>
-            <!-- Switch Mode Tampilan -->
-            
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <button type="button" onclick="exportLegerToExcel()" class="btn btn-success btn-sm fw-bold">
                 📥 Export Leger ke Excel (.xlsx)</button>
@@ -763,8 +751,6 @@
             </div>
           </div>
           <div class="card-body">
-                    
-            <!-- BARIS FILTER & SEARCH (TOTAL GRID = 12) -->
             <div class="row g-2 mb-3 align-items-center">
               <div class="col-md-3">
                 <input type="text" id="rekapSearch" oninput="filterDanRenderRekap()" class="form-control form-control-sm" placeholder="🔍 Cari Nama Siswa...">
@@ -792,7 +778,6 @@
               </div>
             </div>
 
-            <!-- CONTAINER MODE 1: TABEL DETAIL (DEFAULT) -->
             <div id="containerRekapDetail">
               <div class="table-responsive">
                 <table class="table table-bordered align-middle mb-0">
@@ -813,24 +798,18 @@
                 </table>
               </div>
 
-              <!-- NAVIGASI PAGINATION -->
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <small class="text-muted" id="rekapPaginationInfo">Halaman 1 dari 1</small>
                 <nav>
-                  <ul class="pagination pagination-sm mb-0" id="rekapPaginationNav">
-                    <!-- Dynamic Pagination -->
-                  </ul>
+                  <ul class="pagination pagination-sm mb-0" id="rekapPaginationNav"></ul>
                 </nav>
               </div>
             </div>
 
-            <!-- CONTAINER MODE 2: TABEL LEGER MATRIKS -->
             <div id="containerRekapLeger" style="display: none;">
               <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle mb-0">
-                  <thead class="table-dark text-center" id="headerLegerMatriks">
-                    <!-- Header Mapel Dinamis -->
-                  </thead>
+                  <thead class="table-dark text-center" id="headerLegerMatriks"></thead>
                   <tbody id="tabelLegerMatriks">
                     <tr><td colspan="8" class="text-center text-muted py-3">Memuat Leger Matriks...</td></tr>
                   </tbody>
@@ -842,7 +821,7 @@
         </div>
       </div>
 
-      <!-- TAB 8: PREVIEW & CETAK RAPOR (SEKARANG SUDAH MASUK DIDALAM TAB CONTENT) -->
+      <!-- TAB 8: PREVIEW & CETAK RAPOR -->
       <div class="tab-pane fade" id="tab-cetak">
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -936,7 +915,6 @@
               <div class="col-md-6"><label class="form-label fw-semibold">NIP Guru Kelas:</label><input type="text" id="cfg_nip_walikelas" class="form-control"></div>
             </div>
 
-            <!-- SEKSI BARU: PEMBOBOTAN NILAI -->
             <h5 class="fw-bold text-primary mb-3">3. Pembobotan Nilai Akhir Rapor (%)</h5>
             <div class="alert alert-info py-2 fs-6 mb-3">
               💡 Setel persentase pembobotan Nilai Akhir Rapor. Jika sekolah <strong>100% murni TP/LM</strong>, setel LM = 100%, STS = 0%, SAS = 0%.
@@ -975,7 +953,7 @@
     </div>
   </div>
 
-  <!-- MODAL PREVIEW RAPOR -->
+  <!-- MODAL PREVIEW RAPOR (DI-SET HIDE TOTAL DILUAR MODE DOKUMEN CETAK) -->
   <div class="modal fade" id="modalCetak" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -991,48 +969,42 @@
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-<div class="modal-body p-4" id="areaCetakRapor">
+        <div class="modal-body p-4" id="areaCetakRapor">
 
-          <!-- ========================================== -->
           <!-- 1. TAMPILAN SAMPUL / COVER RAPOR -->
-          <!-- ========================================== -->
           <div id="tampilanCoverRapor" style="display: none;" class="text-center py-4 page-break">
-            <div style="border: 4px double #000; padding: 40px 20px; min-height: 90vh;" class="d-flex flex-column justify-content-between align-items-center">
+            <div style="border: 4px double #000; padding: 40px 20px;" class="d-flex flex-column justify-content-between align-items-center">
               <div>
                 <h2 class="fw-bold text-uppercase mb-2" style="font-size: 1.8rem; letter-spacing: 2px;">RAPOR</h2>
                 <h4 class="fw-bold text-uppercase mb-1" style="font-size: 1.3rem;">KURIKULUM MERDEKA</h4>
                 <p class="fs-6 text-muted">SEKOLAH DASAR (SD)</p>
               </div>
 
-              <!-- LOGO TUT WURI HANDAYANI / LOGO SEKOLAH -->
-              <div class="my-5">
-                <img src="https://mahalawu.github.io/rapor/logo.png" alt="Logo Sekolah" style="width: 160px; height: auto;" class="mb-3">
+              <div class="my-4">
+                <img src="https://mahalawu.github.io/rapor/logo.png" alt="Logo Sekolah" style="width: 140px; height: auto;" class="mb-3">
               </div>
 
               <div>
                 <p class="mb-1 fs-6">Nama Peserta Didik:</p>
-                <div class="border border-2 border-dark p-2 px-4 mb-4 fw-bold fs-5 text-uppercase d-inline-block" id="cover_namaSiswa" style="min-width: 300px;">
+                <div class="border border-2 border-dark p-2 px-4 mb-4 fw-bold fs-5 text-uppercase d-inline-block" id="cover_namaSiswa" style="min-width: 280px;">
                   -
                 </div>
 
                 <p class="mb-1 fs-6">NISN / NIS:</p>
-                <div class="fw-bold fs-6 font-monospace mb-5" id="cover_nisn">
+                <div class="fw-bold fs-6 font-monospace mb-4" id="cover_nisn">
                   - / -
                 </div>
               </div>
 
-              <div class="mt-4">
+              <div class="mt-3">
                 <h5 class="fw-bold text-uppercase mb-1" id="cover_namaSekolah">SDN SINE 1</h5>
                 <p class="mb-0 fs-6">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</p>
                 <p class="mb-0 fs-6">REPUBLIK INDONESIA</p>
               </div>
-
             </div>
           </div>
 
-          <!-- ========================================== -->
           <!-- 2. TAMPILAN LEMBAR IDENTITAS SISWA -->
-          <!-- ========================================== -->
           <div id="tampilanIdentitasRapor" style="display: none;" class="p-3 page-break fs-6">
             <div class="text-center mb-4 border-bottom border-2 border-dark pb-2">
               <h4 class="fw-bold text-uppercase mb-1">IDENTITAS PESERTA DIDIK</h4>
@@ -1055,7 +1027,6 @@
               </tbody>
             </table>
 
-            <!-- KOTAK PAS FOTO & TTD KEPSEK -->
             <div class="row align-items-center mt-5 pt-3">
               <div class="col-6 text-center">
                 <div class="border border-dark d-inline-block d-flex align-items-center justify-content-center text-muted" style="width: 3cm; height: 4cm; margin: 0 auto; background: #f8f9fa;">
@@ -1071,9 +1042,7 @@
             </div>
           </div>
 
-          <!-- ========================================== -->
-          <!-- 3. TAMPILAN RAPOR AKADEMIK (DIAMANKAN DALAM WADAH ID) -->
-          <!-- ========================================== -->
+          <!-- 3. TAMPILAN RAPOR AKADEMIK -->
           <div id="tampilanAkademikRapor">
             <div class="text-center mb-4 border-bottom pb-3">
               <h3 class="fw-bold text-uppercase mb-1" id="c_judulRapor">LAPORAN HASIL BELAJAR (RAPOR)</h3>
@@ -1109,7 +1078,6 @@
               <tbody id="c_tabelNilai"></tbody>
             </table>
 
-            <!-- BAGIAN KOKURIKULER SINGLE BOX -->
             <div class="mb-4 fs-6" id="sectionKokurikulerRapor">
               <table class="table table-bordered border-dark align-middle mb-0">
                 <thead class="table-secondary border-dark text-center">
@@ -1153,17 +1121,14 @@
                 <div class="border border-dark p-2 rounded" id="c_catatanWali" style="min-height: 60px;">-</div>
               </div>
 
-              <!-- KEPUTUSAN KENAIKAN KELAS / KELULUSAN -->
               <div id="boxKeputusanAkhir" class="mb-4 fs-6" style="display: none;">
                 <div class="border border-dark p-3 text-dark fw-bold" style="background-color: #f8f9fa;">
                   <p class="mb-1" id="labelKeputusanHeader">Keputusan:</p>
                   <p class="mb-0 fs-6 fw-normal" id="textKeputusanDetail">-</p>
                 </div>
               </div>
-
             </div>
 
-            <!-- KOTAK CATATAN / TANGGAPAN ORANG TUA / WALI -->
             <div class="mb-4 fs-6">
               <p class="fw-bold mb-1">Catatan / Tanggapan Orang Tua / Wali murid</p>
               <div class="border border-dark p-2 rounded" style="min-height: 70px;">
@@ -1188,9 +1153,9 @@
                 <small id="c_nipWaliKelas">-</small>
               </div>
             </div>
-          </div> <!-- PENUTUP ID tampilanAkademikRapor -->
+          </div>
 
-        </div> <!-- PENUTUP ID areaCetakRapor -->
+        </div>
 
         <div class="modal-footer no-print">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -1221,72 +1186,61 @@
     document.getElementById("selectMapel").addEventListener("change", updateDropdownTP);
     muatDataAwal();
   </script>
-<!-- MODAL EDIT SISWA -->
-<div class="modal fade" id="modalEditSiswa" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title fw-bold">✏️ Edit Data & Identitas Siswa</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="edit_sis_id">
-        <div class="row g-2 mb-3">
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">NIS:</label>
-            <input type="text" id="edit_sis_nis" class="form-control">
-          </div>
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">NISN:</label>
-            <input type="text" id="edit_sis_nisn" class="form-control">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label fw-semibold">Nama Lengkap Siswa:</label>
-            <input type="text" id="edit_sis_nama" class="form-control">
-          </div>
-          <div class="col-md-2">
-            <label class="form-label fw-semibold">L/P:</label>
-            <select id="edit_sis_jk" class="form-select">
-              <option value="L">Laki-laki (L)</option>
-              <option value="P">Perempuan (P)</option>
-            </select>
-          </div>
-        </div>
 
-        <input type="hidden" id="edit_sis_kelas">
-
-        <h6 class="fw-bold text-primary border-top pt-3 mb-2">📋 Identitas Rapor Tambahan</h6>
-        <div class="row g-2 mb-2">
-          <div class="col-md-4"><label class="form-label small mb-1">Tempat Lahir:</label><input type="text" id="edit_sis_tempat_lahir" class="form-control form-control-sm"></div>
-          <div class="col-md-4"><label class="form-label small mb-1">Tanggal Lahir:</label><input type="date" id="edit_sis_tanggal_lahir" class="form-control form-control-sm"></div>
-          <div class="col-md-4">
-            <label class="form-label small mb-1">Agama:</label>
-            <select id="edit_sis_agama" class="form-select form-select-sm">
-              <option value="Islam">Islam</option>
-              <option value="Kristen">Kristen</option>
-              <option value="Katolik">Katolik</option>
-              <option value="Hindu">Hindu</option>
-              <option value="Buddha">Buddha</option>
-              <option value="Khonghucu">Khonghucu</option>
-            </select>
+  <!-- MODAL EDIT SISWA -->
+  <div class="modal fade" id="modalEditSiswa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title fw-bold">✏️ Edit Data & Identitas Siswa</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit_sis_id">
+          <div class="row g-2 mb-3">
+            <div class="col-md-3"><label class="form-label fw-semibold">NIS:</label><input type="text" id="edit_sis_nis" class="form-control"></div>
+            <div class="col-md-3"><label class="form-label fw-semibold">NISN:</label><input type="text" id="edit_sis_nisn" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label fw-semibold">Nama Lengkap Siswa:</label><input type="text" id="edit_sis_nama" class="form-control"></div>
+            <div class="col-md-2">
+              <label class="form-label fw-semibold">L/P:</label>
+              <select id="edit_sis_jk" class="form-select">
+                <option value="L">Laki-laki (L)</option>
+                <option value="P">Perempuan (P)</option>
+              </select>
+            </div>
+          </div>
+          <input type="hidden" id="edit_sis_kelas">
+          <h6 class="fw-bold text-primary border-top pt-3 mb-2">📋 Identitas Rapor Tambahan</h6>
+          <div class="row g-2 mb-2">
+            <div class="col-md-4"><label class="form-label small mb-1">Tempat Lahir:</label><input type="text" id="edit_sis_tempat_lahir" class="form-control form-control-sm"></div>
+            <div class="col-md-4"><label class="form-label small mb-1">Tanggal Lahir:</label><input type="date" id="edit_sis_tanggal_lahir" class="form-control form-control-sm"></div>
+            <div class="col-md-4">
+              <label class="form-label small mb-1">Agama:</label>
+              <select id="edit_sis_agama" class="form-select form-select-sm">
+                <option value="Islam">Islam</option>
+                <option value="Kristen">Kristen</option>
+                <option value="Katolik">Katolik</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Buddha">Buddha</option>
+                <option value="Khonghucu">Khonghucu</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-2"><label class="form-label small mb-1">Alamat Lengkap Siswa:</label><input type="text" id="edit_sis_alamat" class="form-control form-control-sm"></div>
+          <div class="row g-2">
+            <div class="col-md-3"><label class="form-label small mb-1">Nama Ayah:</label><input type="text" id="edit_sis_nama_ayah" class="form-control form-control-sm"></div>
+            <div class="col-md-3"><label class="form-label small mb-1">Nama Ibu:</label><input type="text" id="edit_sis_nama_ibu" class="form-control form-control-sm"></div>
+            <div class="col-md-3"><label class="form-label small mb-1">Pekerjaan Ortu:</label><input type="text" id="edit_sis_pekerjaan_ortu" class="form-control form-control-sm"></div>
+            <div class="col-md-3"><label class="form-label small mb-1">Nama Wali:</label><input type="text" id="edit_sis_nama_wali" class="form-control form-control-sm"></div>
           </div>
         </div>
-        <div class="mb-2"><label class="form-label small mb-1">Alamat Lengkap Siswa:</label><input type="text" id="edit_sis_alamat" class="form-control form-control-sm"></div>
-        
-        <div class="row g-2">
-          <div class="col-md-3"><label class="form-label small mb-1">Nama Ayah:</label><input type="text" id="edit_sis_nama_ayah" class="form-control form-control-sm"></div>
-          <div class="col-md-3"><label class="form-label small mb-1">Nama Ibu:</label><input type="text" id="edit_sis_nama_ibu" class="form-control form-control-sm"></div>
-          <div class="col-md-3"><label class="form-label small mb-1">Pekerjaan Ortu:</label><input type="text" id="edit_sis_pekerjaan_ortu" class="form-control form-control-sm"></div>
-          <div class="col-md-3"><label class="form-label small mb-1">Nama Wali:</label><input type="text" id="edit_sis_nama_wali" class="form-control form-control-sm"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" onclick="simpanEditSiswa()" id="btnSimpanEditSiswa" class="btn btn-primary fw-bold">💾 Simpan Perubahan</button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="button" onclick="simpanEditSiswa()" id="btnSimpanEditSiswa" class="btn btn-primary fw-bold">💾 Simpan Perubahan</button>
       </div>
     </div>
   </div>
-</div>
 
   <!-- MODAL EDIT TP -->
   <div class="modal fade" id="modalEditTP" tabindex="-1" aria-hidden="true">
@@ -1299,26 +1253,12 @@
         <div class="modal-body">
           <input type="hidden" id="edit_tp_mapel_old">
           <input type="hidden" id="edit_tp_kode_old">
-          
           <div class="row g-3 mb-3">
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Mata Pelajaran:</label>
-              <select id="edit_tp_mapel" class="form-select" disabled></select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">Kode TP:</label>
-              <input type="text" id="edit_tp_kode" class="form-control fw-bold" readonly>
-            </div>
-            <div class="col-md-2">
-              <label class="form-label fw-semibold">Kelas:</label>
-              <input type="text" id="edit_tp_kelas" class="form-control" readonly>
-            </div>
-            <div class="col-md-2">
-              <label class="form-label fw-semibold">Semester:</label>
-              <input type="text" id="edit_tp_semester" class="form-control" readonly>
-            </div>
+            <div class="col-md-4"><label class="form-label fw-semibold">Mata Pelajaran:</label><select id="edit_tp_mapel" class="form-select" disabled></select></div>
+            <div class="col-md-4"><label class="form-label fw-semibold">Kode TP:</label><input type="text" id="edit_tp_kode" class="form-control fw-bold" readonly></div>
+            <div class="col-md-2"><label class="form-label fw-semibold">Kelas:</label><input type="text" id="edit_tp_kelas" class="form-control" readonly></div>
+            <div class="col-md-2"><label class="form-label fw-semibold">Semester:</label><input type="text" id="edit_tp_semester" class="form-control" readonly></div>
           </div>
-
           <div class="mb-3">
             <label class="form-label fw-semibold">Narasi TP:</label>
             <textarea id="edit_tp_narasi" class="form-control" rows="3" placeholder="Tuliskan narasi TP..."></textarea>
@@ -1332,38 +1272,36 @@
     </div>
   </div>
 
-<!-- 🎯 FULL SCREEN LOGIN OVERLAY (GANTI MODAL BOOTSTRAP LAMA) -->
-<div id="loginOverlay" class="position-fixed top-0 start-0 w-100 h-100 bg-primary d-flex align-items-center justify-content-center" style="z-index: 99999;">
-  <div class="card border-0 shadow-lg p-4" style="max-width: 420px; width: 90%; border-radius: 16px;">
-    <div class="text-center mb-4">
-      <div class="fs-1 mb-2"><img src="https://mahalawu.github.io/rapor/tutwuri.png" alt="Logo Rapor" width="150"></div>
-      <h4 class="fw-bold text-dark mb-1">Aplikasi Rapor SD</h4>
-      <small class="text-muted">Kurikulum Merdeka</small>
-    </div>
-    
-    <form onsubmit="event.preventDefault(); prosesLogin();">
-      <div class="mb-3">
-        <label for="login_username" class="form-label fw-semibold text-dark">Username</label>
-        <input type="text" class="form-control form-control-lg fs-6" id="login_username" placeholder="Masukkan username..." required autocomplete="username">
+  <!-- FULL SCREEN LOGIN OVERLAY -->
+  <div id="loginOverlay" class="position-fixed top-0 start-0 w-100 h-100 bg-primary d-flex align-items-center justify-content-center" style="z-index: 99999;">
+    <div class="card border-0 shadow-lg p-4" style="max-width: 420px; width: 90%; border-radius: 16px;">
+      <div class="text-center mb-4">
+        <div class="fs-1 mb-2"><img src="https://mahalawu.github.io/rapor/tutwuri.png" alt="Logo Rapor" width="150"></div>
+        <h4 class="fw-bold text-dark mb-1">Aplikasi Rapor SD</h4>
+        <small class="text-muted">Kurikulum Merdeka</small>
       </div>
-      <div class="mb-3">
-        <label for="login_password" class="form-label fw-semibold text-dark">Password</label>
-        <input type="password" class="form-control form-control-lg fs-6" id="login_password" placeholder="Masukkan password..." required autocomplete="current-password">
+      <form onsubmit="event.preventDefault(); prosesLogin();">
+        <div class="mb-3">
+          <label for="login_username" class="form-label fw-semibold text-dark">Username</label>
+          <input type="text" class="form-control form-control-lg fs-6" id="login_username" placeholder="Masukkan username..." required autocomplete="username">
+        </div>
+        <div class="mb-3">
+          <label for="login_password" class="form-label fw-semibold text-dark">Password</label>
+          <input type="password" class="form-control form-control-lg fs-6" id="login_password" placeholder="Masukkan password..." required autocomplete="current-password">
+        </div>
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" id="login_remember">
+          <label class="form-check-label text-muted small" for="login_remember">
+            Ingat Saya di Perangkat Ini
+          </label>
+        </div>
+        <button type="submit" id="btnLoginSubmit" class="btn btn-primary btn-lg w-100 fw-bold fs-6">🔑 Masuk Aplikasi</button>
+      </form>
+      <div class="text-center mt-4 pt-3 border-top">
+        <small class="text-muted" style="font-size: 0.75rem;">Developed by Mahalawu © 2026 All Rights Reserved.</small>
       </div>
-      <div class="form-check mb-4">
-        <input class="form-check-input" type="checkbox" id="login_remember">
-        <label class="form-check-label text-muted small" for="login_remember">
-          Ingat Saya di Perangkat Ini
-        </label>
-      </div>
-      <button type="submit" id="btnLoginSubmit" class="btn btn-primary btn-lg w-100 fw-bold fs-6">🔑 Masuk Aplikasi</button>
-    </form>
-    
-    <div class="text-center mt-4 pt-3 border-top">
-      <small class="text-muted" style="font-size: 0.75rem;">Developed by Mahalawu © 2026 All Rights Reserved.</small>
     </div>
   </div>
-</div>
-  
+
 </body>
 </html>
