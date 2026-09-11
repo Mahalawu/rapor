@@ -178,6 +178,7 @@ function renderTabelPresensiHarian() {
 }
 
 // 💾 SIMPAN PRESENSI HARIAN
+// 💾 SIMPAN PRESENSI HARIAN
 async function simpanPresensiHarian() {
   let tglInput = document.getElementById("tglPresensiHarian")?.value || document.getElementById("inputTanggalPresensi")?.value;
   if (!tglInput) {
@@ -197,6 +198,7 @@ async function simpanPresensiHarian() {
     payload.push({
       tanggal: tglInput,
       id_siswa: idS,
+      nama_lengkap: s.nama_lengkap || "",
       status: status
     });
   });
@@ -217,6 +219,7 @@ async function simpanPresensiHarian() {
         if (idx >= 0) {
           listPresensiHarianData[idx].status = p.status;
           listPresensiHarianData[idx].status_kehadiran = p.status;
+          listPresensiHarianData[idx].nama_lengkap = p.nama_lengkap;
         } else {
           listPresensiHarianData.push(p);
         }
@@ -314,9 +317,10 @@ function filterDanRenderPresensiHistori() {
     let matchTgl = !filterTgl || tglPres === filterTgl;
     let matchStatus = !filterStatus || st === filterStatus;
 
-    let sObj = listSiswaData.find(s => String(s.id_siswa).trim() === String(p.id_siswa).trim());
-    let namaSiswa = sObj ? sObj.nama_lengkap.toLowerCase() : "";
-    let matchSearch = !search || namaSiswa.includes(search);
+    // Pencarian nama siswa dari properti p.nama_lengkap atau dari listSiswaData
+    let sObj = listSiswaData.find(s => String(s.id_siswa || "").trim() === String(p.id_siswa || "").trim());
+    let namaStr = p.nama_lengkap || (sObj ? sObj.nama_lengkap : "");
+    let matchSearch = !search || namaStr.toLowerCase().includes(search);
 
     return matchTgl && matchStatus && matchSearch;
   });
@@ -331,8 +335,8 @@ function filterDanRenderPresensiHistori() {
 
   let html = "";
   listFiltered.forEach((p, idx) => {
-    let sObj = listSiswaData.find(s => String(s.id_siswa).trim() === String(p.id_siswa).trim());
-    let namaSiswa = sObj ? sObj.nama_lengkap : `ID: ${p.id_siswa}`;
+    let sObj = listSiswaData.find(s => String(s.id_siswa || "").trim() === String(p.id_siswa || "").trim());
+    let namaSiswa = p.nama_lengkap || (sObj ? sObj.nama_lengkap : `ID: ${p.id_siswa}`);
     let tglPres = formatKeYYYYMMDD(p.tanggal || p.tgl_presensi || p.tgl || "-");
 
     let badgeStatus = "";
