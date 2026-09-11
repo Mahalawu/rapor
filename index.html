@@ -20,32 +20,34 @@
 
   <div class="container no-print" id="appMainContainer" style="display: none;">
     <!-- Header Informasi Sekolah -->
-    <div class="card mb-4 shadow-sm border-0">
-      <div class="card-body bg-primary text-white rounded p-4 d-flex justify-content-between align-items-center">
-        <div>
-          <h2 id="namaSekolah" class="mb-1 fw-bold">Memuat Data Sekolah...</h2>
-          <p class="mb-0">
-            Tahun Ajaran: <span id="tahunAjaran">-</span> | Semester: <span id="semester">-</span> | 
-            <span class="badge bg-warning text-dark fw-bold" id="labelKelasFase">Kelas -</span>
-          </p>
-        </div>
-    
-<!-- Dropdown Switcher & Akun User Header -->
-<div class="d-flex align-items-center gap-2 flex-wrap">    
-  <select id="selectKelasLokal" class="form-select form-select-sm bg-white border-0 fw-bold shadow-sm" style="width: 95px; border-radius: 8px; font-size: 0.8rem;" onchange="gantiKelasLokal(this.value)">
-    <option value="1">Kelas 1</option>
-    <option value="2">Kelas 2</option>
-    <option value="3">Kelas 3</option>
-    <option value="4">Kelas 4</option>
-    <option value="5">Kelas 5</option>
-    <option value="6">Kelas 6</option>
-  </select>
-
-  <span id="userLoginBadge" class="badge bg-white text-dark border-0 shadow-sm px-3 py-2 fs-6"></span>
-  <button onclick="prosesLogout()" class="btn btn-sm btn-danger fw-bold shadow-sm px-3" title="Keluar dari Sistem">🚪 Logout</button>
-</div>
-      </div>
+<!-- Header Informasi Sekolah & Sapaan User (Responsive HP) -->
+<div class="card mb-4 shadow-sm border-0">
+  <div class="card-body bg-primary text-white rounded-3 p-3 p-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <!-- Sisi Kiri: Sapaan Personal Dinamis -->
+    <div class="d-flex align-items-center gap-2 flex-wrap" style="max-width: 85%;">
+      <h5 id="headerGreetingText" class="mb-0 fw-bold lh-base" style="font-size: 1.05rem;">
+        Halo! Memuat data akun...
+      </h5>
+      
+      <!-- Dropdown Switcher khusus Admin/Kepsek -->
+      <select id="selectKelasLokal" class="form-select form-select-sm bg-white border-0 fw-bold shadow-sm ms-md-2" style="width: 95px; display: none;" onchange="gantiKelasLokal(this.value)">
+        <option value="1">Kelas 1</option>
+        <option value="2">Kelas 2</option>
+        <option value="3">Kelas 3</option>
+        <option value="4">Kelas 4</option>
+        <option value="5">Kelas 5</option>
+        <option value="6">Kelas 6</option>
+      </select>
     </div>
+
+    <!-- Sisi Kanan: Tombol Logout Clean -->
+    <div>
+      <button onclick="prosesLogout()" class="btn btn-sm btn-danger fw-bold shadow-sm px-3 py-2" title="Keluar dari Aplikasi">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+</div>
 
     <!-- Navigasi Tab Menu -->
     <ul class="nav nav-pills mb-4 fw-bold" id="pills-tab" role="tablist">
