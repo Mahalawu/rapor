@@ -44,8 +44,9 @@ function getSiswaKelasAktif() {
   });
 }
 
-// 4. Update Tampilan Header Utama & Badge Kelas/Fase
+// 4. Update Tampilan Header Utama & Badge Kelas/Fase (REVISED UI)
 function updateHeaderTampilan() {
+  let userSession = typeof getUserSession === "function" ? getUserSession() : null;
   let kAktif = getKelasAktifUser();
   let faseAktif = getFaseKelasAktif();
   
@@ -61,12 +62,20 @@ function updateHeaderTampilan() {
   if (document.getElementById("semester")) {
     document.getElementById("semester").innerText = infoSekolah.semester || "-";
   }
+  
+  // Format Teks Badge Kelas
   if (document.getElementById("labelKelasFase")) {
-    document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${faseAktif})`;
+    if (userSession && (userSession.role === "admin" || kAktif === "all")) {
+      document.getElementById("labelKelasFase").innerText = `Akses Admin / Kepala Sekolah`;
+    } else {
+      document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${faseAktif})`;
+    }
   }
   
   let elSelect = document.getElementById("selectKelasLokal");
-  if (elSelect) elSelect.value = kAktif;
+  if (elSelect && kAktif !== "all") {
+    elSelect.value = kAktif;
+  }
 }
 
 // 5. Ubah Kelas dari Dropdown Switcher Header (ISOLASI DATA 100%)
