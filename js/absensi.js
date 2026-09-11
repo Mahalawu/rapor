@@ -61,9 +61,9 @@ function pilihSiswaAbsensi() {
 
   // Hitung otomatis dari presensi harian
   let logsSiswa = listPresensiHarianData.filter(x => String(x.id_siswa).trim() === String(idSiswa).trim());
-  let autoSakit = logsSiswa.filter(x => x.status_kehadiran === "S").length;
-  let autoIzin = logsSiswa.filter(x => x.status_kehadiran === "I").length;
-  let autoAlpa = logsSiswa.filter(x => x.status_kehadiran === "A").length;
+  let autoSakit = logsSiswa.filter(x => String(x.status || x.status_kehadiran).toUpperCase() === "S").length;
+  let autoIzin = logsSiswa.filter(x => String(x.status || x.status_kehadiran).toUpperCase() === "I").length;
+  let autoAlpa = logsSiswa.filter(x => String(x.status || x.status_kehadiran).toUpperCase() === "A").length;
 
   // Cek jika sudah ada data tersimpan di database
   let abs = listAbsensiData.find(x => String(x.id_siswa).trim() === String(idSiswa).trim());
@@ -145,10 +145,10 @@ function renderTabelPresensiHarian() {
     
     let logEksis = listPresensiHarianData.filter(x => 
       String(x.id_siswa).trim() === idS && 
-      String(x.tanggal).split("T")[0] === tglInput
+      String(x.tanggal || x.tgl_presensi || "").split("T")[0] === tglInput
     );
 
-    let st = logEksis.length > 0 ? logEksis[0].status_kehadiran : "H";
+    let st = logEksis.length > 0 ? String(logEksis[0].status || logEksis[0].status_kehadiran).toUpperCase() : "H";
 
     html += `
       <tr>
@@ -156,16 +156,16 @@ function renderTabelPresensiHarian() {
         <td><strong>${siswa.nama_lengkap}</strong></td>
         <td class="text-center">
           <div class="btn-group btn-group-sm" role="group" aria-label="Status ${idS}">
-            <input type="radio" class="btn-check" name="pres_${idS}" id="h_${idS}" value="H" ${st === 'H' ? 'checked' : ''}>
+            <input type="radio" class="btn-check" name="pres_status_${idS}" id="h_${idS}" value="H" ${st === 'H' ? 'checked' : ''}>
             <label class="btn btn-outline-success" for="h_${idS}">Hadir</label>
 
-            <input type="radio" class="btn-check" name="pres_${idS}" id="s_${idS}" value="S" ${st === 'S' ? 'checked' : ''}>
+            <input type="radio" class="btn-check" name="pres_status_${idS}" id="s_${idS}" value="S" ${st === 'S' ? 'checked' : ''}>
             <label class="btn btn-outline-warning" for="s_${idS}">Sakit</label>
 
-            <input type="radio" class="btn-check" name="pres_${idS}" id="i_${idS}" value="I" ${st === 'I' ? 'checked' : ''}>
+            <input type="radio" class="btn-check" name="pres_status_${idS}" id="i_${idS}" value="I" ${st === 'I' ? 'checked' : ''}>
             <label class="btn btn-outline-info" for="i_${idS}">Izin</label>
 
-            <input type="radio" class="btn-check" name="pres_${idS}" id="a_${idS}" value="A" ${st === 'A' ? 'checked' : ''}>
+            <input type="radio" class="btn-check" name="pres_status_${idS}" id="a_${idS}" value="A" ${st === 'A' ? 'checked' : ''}>
             <label class="btn btn-outline-danger" for="a_${idS}">Alpa</label>
           </div>
         </td>
@@ -174,29 +174,29 @@ function renderTabelPresensiHarian() {
   });
 
   container.innerHTML = html;
-  }
+  filterDanRenderPresensiHistori();
 }
+
 // 💾 SIMPAN PRESENSI HARIAN
 async function simpanPresensiHarian() {
-  let tglInput = document.getElementById("tglPresensiHarian")?.value;
+  let tglInput = document.getElementById("tglPresensiHarian")?.value || document.getElementById("inputTanggalPresensi")?.value;
   if (!tglInput) {
     alert("⚠️ Pilih tanggal presensi terlebih dahulu!");
     return;
   }
 
-  let siswaAktif = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
+  let kAktif = typeof getKelasAktifUser === "function" ? getKelasAktifUser() : String(infoSekolah.kelas || "5").trim();
+  let siswaAktif = listSiswaData.filter(s => String(s.kelas || "5").trim() === kAktif);
   let payload = [];
 
   siswaAktif.forEach(s => {
-    // Cari status dari radio/button toggle per siswa
-    let elStatus = document.querySelector(`input[name="pres_status_${s.id_siswa}"]:checked`) ||
-                   document.querySelector(`.btn-presensi-status[data-idsiswa="${s.id_siswa}"].active`);
-    
-    let status = elStatus ? elStatus.value : "H"; // Default Hadir (H)
+    let idS = String(s.id_siswa).trim();
+    let elStatus = document.querySelector(`input[name="pres_status_${idS}"]:checked`);
+    let status = elStatus ? elStatus.value : "H";
 
     payload.push({
       tanggal: tglInput,
-      id_siswa: s.id_siswa,
+      id_siswa: idS,
       status: status
     });
   });
@@ -209,14 +209,14 @@ async function simpanPresensiHarian() {
     if (result.status === "success") {
       alert("🎉 Presensi tanggal " + tglInput + " berhasil disimpan!");
       
-      // Update memori lokal listPresensiHarianData
       payload.forEach(p => {
         let idx = listPresensiHarianData.findIndex(x => 
-          String(x.tanggal || x.tgl_presensi) === String(p.tanggal) && 
-          String(x.id_siswa) === String(p.id_siswa)
+          String(x.tanggal || x.tgl_presensi).split("T")[0] === String(p.tanggal) && 
+          String(x.id_siswa).trim() === String(p.id_siswa).trim()
         );
         if (idx >= 0) {
           listPresensiHarianData[idx].status = p.status;
+          listPresensiHarianData[idx].status_kehadiran = p.status;
         } else {
           listPresensiHarianData.push(p);
         }
@@ -259,16 +259,7 @@ async function simpanAbsensiSiswa() {
   if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Menyimpan..."; }
 
   try {
-    let response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        action: "simpanAbsensi",
-        data: payload
-      })
-    });
-
-    let result = await response.json();
+    let result = await kirimDataKeServer("simpanAbsensi", payload);
     if (result.status === "success") {
       alert("🎉 Data Absensi & Catatan Rapor berhasil disimpan!");
       
@@ -288,38 +279,12 @@ async function simpanAbsensiSiswa() {
   }
 }
 
-let currentPresensiPage = 1;
-const presensiRowsPerPage = 10;
-let filteredPresensiData = [];
-
-// Fungsi memuat ulang data presensi harian dari server
-async function muatPresensiHarianDariServer() {
-  try {
-    let res = await fetch(`${API_URL}?action=getPresensiHarian`);
-    let result = await res.json();
-    if (result.status === "success") {
-      listPresensiHarianData = result.data || [];
-      filterDanRenderPresensiHistori();
-    }
-  } catch (err) {
-    console.error("Gagal memuat histori presensi:", err);
-  }
-}
-
-// Fungsi filter dan pagination histori presensi
-// Helper konversi tanggal ke YYYY-MM-DD
+// HELPER FORMAT TANGGAL YYYY-MM-DD
 function formatKeYYYYMMDD(tglInput) {
   if (!tglInput) return "";
-  if (tglInput instanceof Date) {
-    let y = tglInput.getFullYear();
-    let m = String(tglInput.getMonth() + 1).padStart(2, '0');
-    let d = String(tglInput.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
   let str = String(tglInput).trim();
   if (str.includes("T")) str = str.split("T")[0];
   
-  // Jika formatnya "Mon Aug 31 2026..."
   let parsed = new Date(str);
   if (!isNaN(parsed.getTime())) {
     let y = parsed.getFullYear();
@@ -330,6 +295,7 @@ function formatKeYYYYMMDD(tglInput) {
   return str;
 }
 
+// 🎯 FILTER DAN RENDER HISTORI KETIDAKHADIRAN
 function filterDanRenderPresensiHistori() {
   let container = document.getElementById("tabelRiwayatPresensiBody");
   if (!container) return;
@@ -338,16 +304,13 @@ function filterDanRenderPresensiHistori() {
   let filterTgl = document.getElementById("presensiFilterTgl")?.value || "";
   let filterStatus = document.getElementById("presensiFilterStatus")?.value || "";
 
-  // Filter HANYA status non-hadir (S, I, A)
   let listFiltered = listPresensiHarianData.filter(p => {
-    let st = String(p.status || "").toUpperCase().trim();
+    let st = String(p.status || p.status_kehadiran || "").toUpperCase().trim();
     let isNonHadir = (st === "S" || st === "I" || st === "A");
     
     if (!isNonHadir) return false;
 
-    // Ambil tanggal dengan fallback key yang fleksibel
-    let tglPres = String(p.tanggal || p.tgl_presensi || p.tgl || "").trim();
-    
+    let tglPres = formatKeYYYYMMDD(p.tanggal || p.tgl_presensi || p.tgl);
     let matchTgl = !filterTgl || tglPres === filterTgl;
     let matchStatus = !filterStatus || st === filterStatus;
 
@@ -370,12 +333,10 @@ function filterDanRenderPresensiHistori() {
   listFiltered.forEach((p, idx) => {
     let sObj = listSiswaData.find(s => String(s.id_siswa).trim() === String(p.id_siswa).trim());
     let namaSiswa = sObj ? sObj.nama_lengkap : `ID: ${p.id_siswa}`;
-    
-    // Normalisasi tampilan tanggal
-    let tglPres = String(p.tanggal || p.tgl_presensi || p.tgl || "-").trim();
+    let tglPres = formatKeYYYYMMDD(p.tanggal || p.tgl_presensi || p.tgl || "-");
 
     let badgeStatus = "";
-    let st = String(p.status || "").toUpperCase().trim();
+    let st = String(p.status || p.status_kehadiran || "").toUpperCase().trim();
     if (st === "S") badgeStatus = '<span class="badge bg-warning text-dark px-2 py-1">Sakit (S)</span>';
     else if (st === "I") badgeStatus = '<span class="badge bg-info text-dark px-2 py-1">Izin (I)</span>';
     else if (st === "A") badgeStatus = '<span class="badge bg-danger px-2 py-1">Alpa (A)</span>';
@@ -387,7 +348,7 @@ function filterDanRenderPresensiHistori() {
         <td><strong>${namaSiswa}</strong></td>
         <td class="text-center">${badgeStatus}</td>
         <td class="text-center">
-          <button onclick="hapusLogPresensi('${tglPres}', '${p.id_siswa}')" class="btn btn-sm btn-outline-danger" title="Hapus Log">🗑️ Hapus</button>
+          <button onclick="pilihTanggalPresensiForm('${tglPres}')" class="btn btn-sm btn-outline-primary fw-bold">✏️ Edit</button>
         </td>
       </tr>
     `;
@@ -395,105 +356,9 @@ function filterDanRenderPresensiHistori() {
 
   container.innerHTML = html;
 }
-  renderTabelHistoriPresensi();
 
-function renderTabelHistoriPresensi() {
-  let totalRows = filteredPresensiData.length;
-  let totalPages = Math.ceil(totalRows / presensiRowsPerPage) || 1;
-  if (currentPresensiPage > totalPages) currentPresensiPage = totalPages;
-
-  let startIndex = (currentPresensiPage - 1) * presensiRowsPerPage;
-  let pageData = filteredPresensiData.slice(startIndex, startIndex + presensiRowsPerPage);
-
-  let container = document.getElementById("tabelRiwayatPresensiBody");
-  if (!container) return;
-
-  if (pageData.length === 0) {
-    container.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Tidak ada data histori ketidakhadiran yang cocok.</td></tr>';
-    renderPaginationPresensiNav(0, 1);
-    return;
-  }
-
-  let siswaAktifList = typeof getSiswaKelasAktif === "function" ? getSiswaKelasAktif() : listSiswaData;
-  let html = "";
-
-  pageData.forEach((p, idx) => {
-    let s = siswaAktifList.find(x => String(x.id_siswa).trim() === String(p.id_siswa).trim());
-    let nama = s ? s.nama_lengkap : `ID: ${p.id_siswa}`;
-    
-    let tglRaw = formatKeYYYYMMDD(p.tanggal); // "2026-08-31"
-    let tglFormatted = tglRaw;
-    
-    if (tglRaw && tglRaw.includes("-")) {
-      let parts = tglRaw.split("-");
-      if (parts.length === 3) {
-        tglFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`; // "31/08/2026"
-      }
-    }
-
-    let st = String(p.status_kehadiran).toUpperCase();
-    let badgeSt = st === "S" ? '<span class="badge bg-warning text-dark">Sakit (S)</span>'
-      : (st === "I" ? '<span class="badge bg-info text-dark">Izin (I)</span>' 
-      : '<span class="badge bg-danger">Alpa (A)</span>');
-
-    html += `
-      <tr>
-        <td class="text-center">${startIndex + idx + 1}</td>
-        <td class="text-center font-monospace">${tglFormatted || '-'}</td>
-        <td><strong>${nama}</strong></td>
-        <td class="text-center">${badgeSt}</td>
-        <td class="text-center">
-          <button onclick="pilihTanggalPresensiForm('${tglRaw}')" class="btn btn-sm btn-outline-primary fw-bold" title="Edit Presensi Tanggal Ini">
-            ✏️ Edit
-          </button>
-        </td>
-      </tr>
-    `;
-  });
-
-  container.innerHTML = html;
-  renderPaginationPresensiNav(totalRows, totalPages);
-}
-
-function renderPaginationPresensiNav(totalRows, totalPages) {
-  let infoEl = document.getElementById("presensiPaginationInfo");
-  let navEl = document.getElementById("presensiPaginationNav");
-
-  if (infoEl) {
-    infoEl.innerText = totalRows > 0 
-      ? `Halaman ${currentPresensiPage} dari ${totalPages} (${totalRows} Log)`
-      : "Halaman 1 dari 1 (0 Log)";
-  }
-
-  if (!navEl) return;
-  let html = "";
-
-  html += `<li class="page-item ${currentPresensiPage <= 1 ? 'disabled' : ''}">
-            <button class="page-link" onclick="gantiHalamanPresensi(${currentPresensiPage - 1})">Previous</button>
-           </li>`;
-
-  for (let i = 1; i <= totalPages; i++) {
-    html += `<li class="page-item ${i === currentPresensiPage ? 'active' : ''}">
-              <button class="page-link" onclick="gantiHalamanPresensi(${i})">${i}</button>
-             </li>`;
-  }
-
-  html += `<li class="page-item ${currentPresensiPage >= totalPages ? 'disabled' : ''}">
-            <button class="page-link" onclick="gantiHalamanPresensi(${currentPresensiPage + 1})">Next</button>
-           </li>`;
-
-  navEl.innerHTML = html;
-}
-
-function gantiHalamanPresensi(page) {
-  if (page < 1) return;
-  currentPresensiPage = page;
-  renderTabelHistoriPresensi();
-}
-
-// Buka form input presensi untuk tanggal spesifik saat tombol Edit diklik
 function pilihTanggalPresensiForm(tglStr) {
-  let inputTgl = document.getElementById("tglPresensiHarian");
+  let inputTgl = document.getElementById("tglPresensiHarian") || document.getElementById("inputTanggalPresensi");
   if (inputTgl) {
     inputTgl.value = tglStr;
     muatPresensiHarianTanggal();
