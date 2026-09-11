@@ -214,3 +214,49 @@ async function muatDataAwal() {
     alert("Gagal memuat data awal!"); 
   }
 }
+
+/* ===================================================
+   HELPER GLOBAL SIMPAN DATA (POST TO GOOGLE APPS SCRIPT)
+   =================================================== */
+
+async function kirimDataKeServer(actionName, payloadData) {
+  let userSession = typeof getUserSession === "function" ? getUserSession() : null;
+  let idSekolahAktif = userSession ? (userSession.id_sekolah || "SCH-SINE1") : "SCH-SINE1";
+
+  if (Array.isArray(payloadData)) {
+    payloadData.forEach(item => {
+      if (typeof item === 'object' && item !== null) {
+        item.id_sekolah = idSekolahAktif;
+      }
+    });
+  } else if (typeof payloadData === 'object' && payloadData !== null) {
+    payloadData.id_sekolah = idSekolahAktif;
+  }
+
+  try {
+    let response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: actionName,
+        data: payloadData
+      })
+    });
+
+    let resultText = await response.text();
+    let resultJson;
+
+    try {
+      resultJson = JSON.parse(resultText);
+    } catch (e) {
+      console.error("Respon server bukan JSON:", resultText);
+      return { status: "error", message: "Respon server tidak valid!" };
+    }
+
+    return resultJson;
+
+  } catch (err) {
+    console.error(`Error simpan data (${actionName}):`, err);
+    return { status: "error", message: "Kesalahan koneksi ke server: " + err.message };
+  }
+}
