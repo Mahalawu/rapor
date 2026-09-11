@@ -100,28 +100,30 @@ function tampilkanModalLogin() {
   modalObj.show();
 }
 
-// 5. Terapkan Hak Akses UI
+// 5. Terapkan Hak Akses UI Berdasarkan Role & Kelas
 function terapkanHakAksesUser(user) {
+  if (!user) return;
+
   let selectKelas = document.getElementById("selectKelasLokal");
 
   if (user.role === "guru" && user.kelas !== "all") {
-    // Guru: Sembunyikan dropdown switcher kelas
+    // 🎯 GURU KELAS: Sembunyikan total dropdown switcher kelas
     if (selectKelas) {
       selectKelas.style.setProperty("display", "none", "important");
     }
   } else if (user.role === "admin" || user.kelas === "all") {
-    // Admin/Kepsek: Tampilkan dropdown switcher kelas
+    // 🎯 ADMIN / KEPSEK: Tampilkan dropdown switcher kelas
     if (selectKelas) {
       selectKelas.style.setProperty("display", "inline-block", "important");
       selectKelas.disabled = false;
-      if (!selectKelas.value || selectKelas.value === "all") {
-        selectKelas.value = "1";
-        localStorage.setItem("kelasAktif_User", "1");
-      }
+      
+      // Ambil kelas aktif yang tersimpan di localStorage (jika ada)
+      let kSimpanan = localStorage.getItem("kelasAktif_User");
+      selectKelas.value = kSimpanan ? kSimpanan : "";
     }
   }
-  
-  // Refresh teks sapaan header
+
+  // 🎯 Refresh teks sapaan personal di header utama
   if (typeof updateHeaderTampilan === "function") {
     updateHeaderTampilan();
   }
