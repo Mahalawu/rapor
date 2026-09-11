@@ -73,9 +73,12 @@ function updateHeaderTampilan() {
 async function gantiKelasLokal(kelasBaru) {
   localStorage.setItem("kelasAktif_User", kelasBaru);
   
+  let userSession = typeof getUserSession === "function" ? getUserSession() : null;
+  let reqSekolah = userSession ? (userSession.id_sekolah || "SCH-SINE1") : "SCH-SINE1";
+
   // Ambil ulang pengaturan spesifik kelas baru dari server
   try {
-    let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&kelas=${kelasBaru}`);
+    let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&id_sekolah=${reqSekolah}&kelas=${kelasBaru}`);
     let dataPengaturan = await resPengaturan.json();
     if (dataPengaturan.status === "success" && dataPengaturan.data) {
       infoSekolah = dataPengaturan.data;
@@ -86,15 +89,8 @@ async function gantiKelasLokal(kelasBaru) {
 
   updateHeaderTampilan();
   
-  // Re-render seluruh tampilan aplikasi secara otomatis
-  if (typeof populateDropdownSiswaGlobal === "function") populateDropdownSiswaGlobal();
-  if (typeof renderTabelSiswaMaster === "function") renderTabelSiswaMaster();
-  if (typeof renderTabelTP === "function") renderTabelTP();
-  if (typeof renderTabelSiswaInput === "function") renderTabelSiswaInput();
-  if (typeof renderTabCetakRapor === "function") renderTabCetakRapor();
-  if (typeof renderDashboard === "function") renderDashboard();
-  if (typeof filterDanRenderRekap === "function") filterDanRenderRekap();
-  if (typeof loadFormPengaturan === "function") loadFormPengaturan();
+  // Re-render seluruh data aplikasi sesuai kelas baru
+  await muatDataAwal();
   
   alert(`🔄 Tampilan berhasil disesuaikan untuk Kelas ${kelasBaru} (Fase ${infoSekolah.fase})!`);
 }
@@ -120,25 +116,28 @@ function populateDropdownSiswaGlobal() {
    =================================================== */
 
 async function muatDataAwal() {
-  // 🎯 CEK SESI LOGIN DULU
-  let userSession = getUserSession();
-  if (!userSession) {
-    tampilkanModalLogin();
-    return; // Hentikan muat data jika belum login
-  }
+  try {
+    // 🎯 1. CEK SESI LOGIN DULU
+    let userSession = typeof getUserSession === "function" ? getUserSession() : null;
+    if (!userSession) {
+      if (typeof tampilkanModalLogin === "function") tampilkanModalLogin();
+      return; // Hentikan muat data jika belum login
+    }
 
-  terapkanHakAksesUser(userSession);
-  let kAktifAwal = getKelasAktifUser();
-  let reqSekolah = userSession.id_sekolah || "SCH-SINE1";
+    if (typeof terapkanHakAksesUser === "function") terapkanHakAksesUser(userSession);
+    
+    let kAktifAwal = getKelasAktifUser();
+    let reqSekolah = userSession.id_sekolah || "SCH-SINE1";
 
-    // 🎯 AMBIL PENGATURAN SPESIFIK KELAS AKTIF (PREVENT BERANTAKAN DI FIRST LOAD)
-    let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&kelas=${kAktifAwal}`);
+    // 🎯 2. AMBIL PENGATURAN SPESIFIK KELAS AKTIF
+    let resPengaturan = await fetch(`${API_URL}?action=getPengaturan&id_sekolah=${reqSekolah}&kelas=${kAktifAwal}`);
     let dataPengaturan = await resPengaturan.json();
     if (dataPengaturan.status === "success" && dataPengaturan.data) {
       infoSekolah = dataPengaturan.data;
       updateHeaderTampilan();
     }
 
+    // 🎯 3. FETCH MAPEL (UNIVERSAL)
     let resMapel = await fetch(`${API_URL}?action=getMapel`);
     let dataMapel = await resMapel.json();
     if (dataMapel.status === "success") {
@@ -153,7 +152,8 @@ async function muatDataAwal() {
       if (document.getElementById("tp_bulk_mapel")) document.getElementById("tp_bulk_mapel").innerHTML = selectHtml;
     }
 
-    let resSiswa = await fetch(`${API_URL}?action=getSiswa`);
+    // 🎯 4. FETCH SISWA (TERFILTRASI ID_SEKOLAH & KELAS)
+    let resSiswa = await fetch(`${API_URL}?action=getSiswa&id_sekolah=${reqSekolah}&kelas=${kAktifAwal}`);
     let dataSiswa = await resSiswa.json();
     if (dataSiswa.status === "success") {
       listSiswaData = dataSiswa.data;
@@ -162,22 +162,24 @@ async function muatDataAwal() {
       populateDropdownSiswaGlobal();
     }
 
-    let resTP = await fetch(`${API_URL}?action=getTP`);
+    // 🎯 5. FETCH TP (TERFILTRASI ID_SEKOLAH & KELAS)
+    let resTP = await fetch(`${API_URL}?action=getTP&id_sekolah=${reqSekolah}&kelas=${kAktifAwal}`);
     let dataTP = await resTP.json();
     if (dataTP.status === "success") { 
       let semAktif = String(infoSekolah.semester || "1").trim();
       listTPData = dataTP.data.filter(tp => String(tp.semester || "1").trim() === semAktif); 
     }
 
-    let resAbs = await fetch(`${API_URL}?action=getAbsensi`);
+    // 🎯 6. FETCH ABSENSI, PRESENSI & KOKURIKULER (TERFILTRASI ID_SEKOLAH)
+    let resAbs = await fetch(`${API_URL}?action=getAbsensi&id_sekolah=${reqSekolah}`);
     let dataAbs = await resAbs.json();
     if (dataAbs.status === "success") { listAbsensiData = dataAbs.data; }
 
-    let resPresHarian = await fetch(`${API_URL}?action=getPresensiHarian`);
+    let resPresHarian = await fetch(`${API_URL}?action=getPresensiHarian&id_sekolah=${reqSekolah}`);
     let dataPresHarian = await resPresHarian.json();
     if (dataPresHarian.status === "success") { listPresensiHarianData = dataPresHarian.data; }
 
-    let resKoku = await fetch(`${API_URL}?action=getKokurikuler`);
+    let resKoku = await fetch(`${API_URL}?action=getKokurikuler&id_sekolah=${reqSekolah}`);
     let dataKoku = await resKoku.json();
     if (dataKoku.status === "success") { listKokurikulerData = dataKoku.data; }
 
@@ -186,8 +188,9 @@ async function muatDataAwal() {
       document.getElementById("tglPresensiHarian").value = today;
     }
 
+    // 🎯 7. FETCH NILAI (TERFILTRASI ID_SEKOLAH)
     try {
-      let resNilai = await fetch(`${API_URL}?action=getNilai`);
+      let resNilai = await fetch(`${API_URL}?action=getNilai&id_sekolah=${reqSekolah}`);
       let dataNilai = await resNilai.json();
       if (dataNilai.status === "success") {
         listNilaiData = dataNilai.data || [];
@@ -196,5 +199,8 @@ async function muatDataAwal() {
 
     if (typeof renderDashboard === "function") renderDashboard();
 
-  } catch (error) { alert("Gagal memuat data awal!"); }
+  } catch (error) { 
+    console.error("Error muat data awal:", error);
+    alert("Gagal memuat data awal!"); 
+  }
 }
