@@ -101,7 +101,7 @@ function tampilkanModalLogin() {
   modalObj.show();
 }
 
-// 5. Terapkan Hak Akses UI Berdasarkan Role & Kelas
+// 5. Terapkan Hak Akses UI Berdasarkan Role & Kelas (REVISED STRICT UI)
 function terapkanHakAksesUser(user) {
   let elUserBadge = document.getElementById("userLoginBadge");
   if (elUserBadge) {
@@ -109,17 +109,32 @@ function terapkanHakAksesUser(user) {
   }
 
   let selectKelas = document.getElementById("selectKelasLokal");
-  
+  let badgeKelasFase = document.getElementById("labelKelasFase");
+
   if (user.role === "guru" && user.kelas !== "all") {
-    // Jika Guru Kelas -> Kunci Dropdown Switcher Hanya Pada Kelasnya
+    // 1. GURU KELAS: Sembunyikan total dropdown switcher kelas
     if (selectKelas) {
-      selectKelas.value = user.kelas;
-      selectKelas.disabled = true; // Kunci agar guru tak bisa ganti ke kelas lain
+      selectKelas.style.setProperty("display", "none", "important");
+    }
+    // Update badge kuning header khusus guru
+    if (badgeKelasFase) {
+      let fase = typeof getFaseKelasAktif === "function" ? getFaseKelasAktif() : "C";
+      badgeKelasFase.innerText = `Kelas ${user.kelas} (Fase ${fase})`;
     }
   } else if (user.role === "admin" || user.kelas === "all") {
-    // Jika Admin / Kepsek -> Bebas Pindah Kelas
+    // 2. ADMIN / KEPSEK: Tampilkan dropdown switcher kelas
     if (selectKelas) {
+      selectKelas.style.setProperty("display", "inline-block", "important");
       selectKelas.disabled = false;
+      // Jika belum ada pilihan kelas di dropdown, default-kan ke Kelas 1
+      if (!selectKelas.value || selectKelas.value === "all") {
+        selectKelas.value = "1";
+        localStorage.setItem("kelasAktif_User", "1");
+      }
+    }
+    // Update badge kuning header khusus Admin/Kepsek
+    if (badgeKelasFase) {
+      badgeKelasFase.innerText = `Akses Admin / Kepala Sekolah`;
     }
   }
 }
