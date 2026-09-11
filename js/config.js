@@ -44,7 +44,7 @@ function getSiswaKelasAktif() {
   });
 }
 
-// 4. Update Tampilan Header Utama & Badge Kelas/Fase (REVISED UI)
+// 4. Update Header Tampilan (FORMAT TEKS SAPAAN PERSONAL & RESPONSIF HP)
 function updateHeaderTampilan() {
   let userSession = typeof getUserSession === "function" ? getUserSession() : null;
   let kAktif = getKelasAktifUser();
@@ -53,25 +53,21 @@ function updateHeaderTampilan() {
   infoSekolah.kelas = kAktif; 
   infoSekolah.fase = faseAktif;
 
-  if (document.getElementById("namaSekolah")) {
-    document.getElementById("namaSekolah").innerText = infoSekolah.nama_sekolah || "Nama Sekolah Belum Diatur";
+  let elGreeting = document.getElementById("headerGreetingText");
+  if (!elGreeting) return;
+
+  let namaUser = userSession ? userSession.nama_lengkap : "Pengguna";
+  let roleUser = userSession ? userSession.role : "guru";
+  let nmSekolah = infoSekolah.nama_sekolah || "SDN Sine 1";
+  let sem = infoSekolah.semester || "1";
+  let thn = infoSekolah.tahun_ajaran || "2026/2027";
+
+  if (roleUser === "admin" || kAktif === "all") {
+    elGreeting.innerHTML = `👋 Halo, <strong>${namaUser}</strong>! Selamat datang di Panel Pengawasan Rapor <strong>${nmSekolah}</strong>. Semester ${sem} TH ${thn}.`;
+  } else {
+    elGreeting.innerHTML = `👋 Halo, <strong>${namaUser}</strong>! Selamat datang di Dashboard Rapor <strong>Kelas ${kAktif} (Fase ${faseAktif}) ${nmSekolah}</strong>. Semester ${sem} TH ${thn}.`;
   }
-  if (document.getElementById("tahunAjaran")) {
-    document.getElementById("tahunAjaran").innerText = infoSekolah.tahun_ajaran || "-";
-  }
-  if (document.getElementById("semester")) {
-    document.getElementById("semester").innerText = infoSekolah.semester || "-";
-  }
-  
-  // Format Teks Badge Kelas
-  if (document.getElementById("labelKelasFase")) {
-    if (userSession && (userSession.role === "admin" || kAktif === "all")) {
-      document.getElementById("labelKelasFase").innerText = `Akses Admin / Kepala Sekolah`;
-    } else {
-      document.getElementById("labelKelasFase").innerText = `Kelas ${kAktif} (Fase ${faseAktif})`;
-    }
-  }
-  
+
   let elSelect = document.getElementById("selectKelasLokal");
   if (elSelect && kAktif !== "all") {
     elSelect.value = kAktif;
